@@ -54,30 +54,41 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  // prokarieru.cz → landing page
-  if (hostname === 'prokarieru.cz' || hostname === 'www.prokarieru.cz') {
+  // Detekce prostředí na základě domény
+  const isDev = hostname.includes('-dev.fun')
+  const baseDomain = isDev ? '-dev.fun' : '.cz'
+  const mainDomain = isDev ? 'prokarieru-dev.fun' : 'prokarieru.cz'
+
+  // prokarieru.cz nebo prokarieru-dev.fun → landing page
+  if (hostname === mainDomain || hostname === `www.${mainDomain}`) {
     return NextResponse.rewrite(new URL('/landing', request.url), { headers: response.headers })
   }
 
-  // admin.prokarieru.cz → admin sekce
-  if (hostname === 'admin.prokarieru.cz') {
+  // admin.prokarieru.cz nebo admin.prokarieru-dev.fun → admin sekce
+  if (hostname === `admin.${mainDomain}`) {
     return response
   }
 
   // Extrahuj portál a subdoménu
-  // Formát: [subdomena.]portal.cz
+  // Formát: [subdomena.]portal.cz nebo [subdomena.]portal-dev.fun
   const parts = hostname.replace('www.', '').split('.')
 
   if (parts.length >= 2) {
-    const tld = parts.pop() // 'cz'
-    const portalSlug = parts.pop() // 'prostavare'
+    const tld = parts.pop() // 'cz' nebo 'fun'
+    let portalSlug = parts.pop() // 'prostavare' nebo 'prostavare-dev'
     const subdomain = parts.pop() // 'katalog', 'veletrh', nebo undefined
 
-    // Ulož portal slug do headers pro další použití
+    // Odstraň '-dev' suffix z portal slug pro jednotné zpracování
+    if (isDev && portalSlug) {
+      portalSlug = portalSlug.replace('-dev', '')
+    }
+
+    // Přidej environment info do headers
+    response.headers.set('x-environment', isDev ? 'development' : 'production')
     response.headers.set('x-portal-slug', portalSlug || '')
     response.headers.set('x-subdomain', subdomain || '')
 
-    // katalog.prostavare.cz → /catalog
+    // katalog.prostavare.cz nebo katalog.prostavare-dev.fun → /catalog
     if (subdomain === 'katalog') {
       return NextResponse.rewrite(
         new URL(`/catalog${pathname}`, request.url),
@@ -85,7 +96,7 @@ export async function middleware(request: NextRequest) {
       )
     }
 
-    // veletrh.prostavare.cz → /fair
+    // veletrh.prostavare.cz nebo veletrh.prostavare-dev.fun → /fair
     if (subdomain === 'veletrh') {
       return NextResponse.rewrite(
         new URL(`/fair${pathname}`, request.url),
@@ -93,7 +104,7 @@ export async function middleware(request: NextRequest) {
       )
     }
 
-    // prostavare.cz → /portal (landing page s rozcestníkem)
+    // prostavare.cz nebo prostavare-dev.fun → /portal (landing page s rozcestníkem)
     if (!subdomain && portalSlug !== 'prokarieru') {
       return NextResponse.rewrite(
         new URL(`/portal${pathname}`, request.url),
