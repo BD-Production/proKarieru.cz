@@ -11,7 +11,8 @@ Projekt podporuje tři prostředí:
 
 ### Prokarieru Platform
 - `prokarieru-dev.fun` - hlavní landing page
-- `admin.prokarieru-dev.fun` - admin rozhraní
+- `prokarieru-dev.fun/admin` - admin rozhraní
+- `prokarieru-dev.fun/login` - přihlášení
 
 ### Prostavare Portal
 - `prostavare-dev.fun` - portál landing page
@@ -44,7 +45,6 @@ V DNS pro `dev.fun` domény nastav:
 
 ```
 prokarieru-dev.fun           A    <vercel-ip>
-*.prokarieru-dev.fun         A    <vercel-ip>
 prostavare-dev.fun           A    <vercel-ip>
 *.prostavare-dev.fun         A    <vercel-ip>
 ```
@@ -52,7 +52,6 @@ prostavare-dev.fun           A    <vercel-ip>
 Nebo použij CNAME na Vercel:
 ```
 prokarieru-dev.fun           CNAME    cname.vercel-dns.com
-*.prokarieru-dev.fun         CNAME    cname.vercel-dns.com
 prostavare-dev.fun           CNAME    cname.vercel-dns.com
 *.prostavare-dev.fun         CNAME    cname.vercel-dns.com
 ```
@@ -62,9 +61,9 @@ prostavare-dev.fun           CNAME    cname.vercel-dns.com
 1. Vytvoř nový projekt na Vercelu pro dev prostředí
 2. Přidej domény v Vercel dashboard:
    - `prokarieru-dev.fun`
-   - `*.prokarieru-dev.fun`
    - `prostavare-dev.fun`
-   - `*.prostavare-dev.fun`
+   - `katalog.prostavare-dev.fun`
+   - `veletrh.prostavare-dev.fun`
 
 3. Nastav Environment Variables v Vercelu:
    ```
@@ -81,14 +80,16 @@ Middleware automaticky detekuje prostředí podle domény:
 ```typescript
 // Production
 prokarieru.cz → /landing
-admin.prokarieru.cz → /admin
+prokarieru.cz/admin → /admin
+prokarieru.cz/login → /login
 prostavare.cz → /portal
 katalog.prostavare.cz → /catalog
 veletrh.prostavare.cz → /fair
 
 // Development
 prokarieru-dev.fun → /landing
-admin.prokarieru-dev.fun → /admin
+prokarieru-dev.fun/admin → /admin
+prokarieru-dev.fun/login → /login
 prostavare-dev.fun → /portal
 katalog.prostavare-dev.fun → /catalog
 veletrh.prostavare-dev.fun → /fair

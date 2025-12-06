@@ -1,17 +1,10 @@
-import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
+export default function RootPage() {
+  // This page should not be reached in production due to middleware rewrites
+  // prokarieru.cz → /landing
+  // prostavare.cz → /portal
+  // katalog.prostavare.cz → /catalog
+  // etc.
 
-export default async function RootPage() {
-  const headersList = await headers()
-  const hostname = headersList.get('host') || ''
-
-  // Admin domain redirect to /admin
-  if (hostname.includes('admin.')) {
-    redirect('/admin')
-  }
-
-  // For other domains, this shouldn't be reached due to middleware rewrites
-  // But just in case, show a simple message
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">

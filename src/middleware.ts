@@ -65,13 +65,14 @@ export async function middleware(request: NextRequest) {
   const mainDomain = isDev ? 'prokarieru-dev.fun' : 'prokarieru.cz'
 
   // prokarieru.cz nebo prokarieru-dev.fun → landing page
+  // Admin je dostupný na /admin path (prokarieru-dev.fun/admin)
   if (hostname === mainDomain || hostname === `www.${mainDomain}`) {
+    // Pokud jde o admin cestu, nechej projít bez rewrite
+    if (pathname.startsWith('/admin') || pathname.startsWith('/login')) {
+      return response
+    }
+    // Jinak rewrite na landing page
     return NextResponse.rewrite(new URL('/landing', request.url), { headers: response.headers })
-  }
-
-  // admin.prokarieru.cz nebo admin.prokarieru-dev.fun → admin sekce
-  if (hostname === `admin.${mainDomain}`) {
-    return response
   }
 
   // Extrahuj portál a subdoménu
