@@ -2,6 +2,8 @@
 
 Dulezite informace k zapamatovani mezi sessions.
 
+**Posledni aktualizace:** 2025-12-06
+
 ---
 
 ## O projektu
@@ -20,39 +22,71 @@ Dulezite informace k zapamatovani mezi sessions.
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- Supabase (PostgreSQL + Storage + Auth)
-- Vercel
-- Ecomail API (pro souteze)
+- **Next.js 16** (App Router) - POZOR: Aktualizovano z puvodnich 14!
+- **TypeScript**
+- **Tailwind CSS 4** - POZOR: Nova verze 4!
+- **shadcn/ui**
+- **Supabase** (PostgreSQL + Storage + Auth)
+- **Vercel**
+- **Ecomail API** (pro souteze - credentials TBD)
 
 ---
 
-## Aktualni stav (aktualizovat prubezne)
+## Aktualni stav
 
-**Stav:** PRE-IMPLEMENTACE (jen dokumentace, zadny kod)
-**Datum posledni aktualizace:** 2025-12-02
+**Stav:** AKTIVNI VYVOJ - ~70% MVP DOKONCENO
+**Datum posledni aktualizace:** 2025-12-06
+
+### Co je hotove:
+- Kompletni infrastruktura (Next.js, Supabase, middleware)
+- Admin sekce (CRUD pro portaly, firmy, edice)
+- Verejne stranky (landing, katalog, detail firmy)
+- Databaze s 9 tabulkami + RLS + seed data
+
+### Co chybi do MVP:
+1. Upload obrazku do Supabase Storage (API endpoint)
+2. Client-side search v katalogu
+3. Funkcni carousel na detailu firmy
+4. Prepinani edici
 
 ---
 
 ## Dulezite odkazy
 
-- Referencni design: https://prostavare.vercel.app/
-- Specifikace: `roadmap/init.md`
+- **Referencni design:** https://prostavare.vercel.app/
+- **Specifikace:** `roadmap/init.md`
+- **Supabase:** https://stjedwggzxnglzcleeaw.supabase.co
+- **GitHub:** https://github.com/BD-Production/proKarieru.cz.git
+- **Domeny:** prokarieru.cz, prostavare.cz
+
+---
+
+## Struktura projektu
+
+```
+D:\dev\proKarieru.cz\
+├── src/
+│   ├── app/           # Next.js App Router stranky
+│   ├── components/    # React komponenty
+│   ├── lib/           # Utility, Supabase klienti
+│   └── types/         # TypeScript typy
+├── supabase/
+│   └── schema.sql     # Databazove schema
+├── roadmap/           # Projektova dokumentace
+└── .env.local         # Supabase credentials
+```
 
 ---
 
 ## Rozhodnuti a jejich duvody
-
-*Zde zaznamenavat dulezita rozhodnuti ucinna behem vyvoje.*
 
 1. **Multi-domain routing pres middleware** - Jeden deploy obsluhuje vsechny domeny, middleware smeruje na spravne sekce.
 
 2. **GA4 per portal v DB** - Kazdy portal ma vlastni GA4 ID ulozene v databazi, ne v env variables.
 
 3. **OG images s fallbacky** - Firma ma vlastni OG image, fallback na prvni stranku brozury, pak logo.
+
+4. **Next.js 16 + Tailwind 4** - Pouzity nejnovejsi verze (upgrade z puvodnich 14/3).
 
 ---
 
@@ -61,12 +95,23 @@ Dulezite informace k zapamatovani mezi sessions.
 1. Nemenit strukturu DB bez aktualizace dokumentace
 2. Nepridavat nove portaly bez odpovidajicich DNS zaznamu
 3. Nepouzivat hardcoded domeny - vse nacitat z DB
+4. Neprepisovat RLS policies bez pochopeni bezpecnostnich implikaci
 
 ---
 
 ## Kontakty a pristupy
 
-*Doplnit az budou k dispozici:*
-- Supabase projekt: [TBD]
-- Vercel projekt: [TBD]
-- Domeny: [TBD]
+| Sluzba | URL/Info | Stav |
+|--------|----------|------|
+| Supabase | https://stjedwggzxnglzcleeaw.supabase.co | Pripojeno |
+| GitHub | https://github.com/BD-Production/proKarieru.cz.git | Pripojeno |
+| Domeny | prokarieru.cz, prostavare.cz | Zaregistrovany |
+| Ecomail | TBD | Ceka na credentials |
+
+---
+
+## Poznámky pro další session
+
+- MVP je z 70% hotove, zbyva 4 hlavni ukoly
+- Faze 2 (Veletrh) nezahajovat pred dokoncenim MVP
+- Ecomail credentials budou potreba az pro Fazi 2

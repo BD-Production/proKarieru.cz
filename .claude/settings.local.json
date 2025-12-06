@@ -13,7 +13,11 @@
       "Bash(npx shadcn@latest add button card input label form sonner dialog dropdown-menu table badge separator -y)",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(find:*)",
+      "Bash(npm outdated:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
