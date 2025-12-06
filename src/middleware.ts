@@ -22,41 +22,46 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  // Supabase session refresh
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          )
-          response = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
-        },
-      },
+  // Supabase session refresh - pouze pokud máme credentials
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    try {
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        {
+          cookies: {
+            getAll() {
+              return request.cookies.getAll()
+            },
+            setAll(cookiesToSet) {
+              cookiesToSet.forEach(({ name, value }) =>
+                request.cookies.set(name, value)
+              )
+              response = NextResponse.next({
+                request,
+              })
+              cookiesToSet.forEach(({ name, value, options }) =>
+                response.cookies.set(name, value, options)
+              )
+            },
+          },
+        }
+      )
+
+      await supabase.auth.getUser()
+    } catch (error) {
+      console.error('Supabase auth error in middleware:', error)
     }
-  )
+  }
 
-  await supabase.auth.getUser()
-
-  // Localhost development routing
-  if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
-    // Pro lokální vývoj necháme vše projít
+  // Localhost a Vercel preview URL routing
+  if (hostname.includes('localhost') || hostname.includes('127.0.0.1') || hostname.includes('.vercel.app')) {
+    // Pro lokální vývoj a Vercel preview necháme vše projít
     return response
   }
 
   // Detekce prostředí na základě domény
   const isDev = hostname.includes('-dev.fun')
-  const baseDomain = isDev ? '-dev.fun' : '.cz'
   const mainDomain = isDev ? 'prokarieru-dev.fun' : 'prokarieru.cz'
 
   // prokarieru.cz nebo prokarieru-dev.fun → landing page
@@ -83,33 +88,35 @@ export async function middleware(request: NextRequest) {
       portalSlug = portalSlug.replace('-dev', '')
     }
 
-    // Přidej environment info do headers
-    response.headers.set('x-environment', isDev ? 'development' : 'production')
-    response.headers.set('x-portal-slug', portalSlug || '')
-    response.headers.set('x-subdomain', subdomain || '')
+    // Přidej environment info do headers (jen pokud máme validní data)
+    if (portalSlug) {
+      response.headers.set('x-environment', isDev ? 'development' : 'production')
+      response.headers.set('x-portal-slug', portalSlug)
+      response.headers.set('x-subdomain', subdomain || '')
 
-    // katalog.prostavare.cz nebo katalog.prostavare-dev.fun → /catalog
-    if (subdomain === 'katalog') {
-      return NextResponse.rewrite(
-        new URL(`/catalog${pathname}`, request.url),
-        { headers: response.headers }
-      )
-    }
+      // katalog.prostavare.cz nebo katalog.prostavare-dev.fun → /catalog
+      if (subdomain === 'katalog') {
+        return NextResponse.rewrite(
+          new URL(`/catalog${pathname}`, request.url),
+          { headers: response.headers }
+        )
+      }
 
-    // veletrh.prostavare.cz nebo veletrh.prostavare-dev.fun → /fair
-    if (subdomain === 'veletrh') {
-      return NextResponse.rewrite(
-        new URL(`/fair${pathname}`, request.url),
-        { headers: response.headers }
-      )
-    }
+      // veletrh.prostavare.cz nebo veletrh.prostavare-dev.fun → /fair
+      if (subdomain === 'veletrh') {
+        return NextResponse.rewrite(
+          new URL(`/fair${pathname}`, request.url),
+          { headers: response.headers }
+        )
+      }
 
-    // prostavare.cz nebo prostavare-dev.fun → /portal (landing page s rozcestníkem)
-    if (!subdomain && portalSlug !== 'prokarieru') {
-      return NextResponse.rewrite(
-        new URL(`/portal${pathname}`, request.url),
-        { headers: response.headers }
-      )
+      // prostavare.cz nebo prostavare-dev.fun → /portal (landing page s rozcestníkem)
+      if (!subdomain && portalSlug !== 'prokarieru') {
+        return NextResponse.rewrite(
+          new URL(`/portal${pathname}`, request.url),
+          { headers: response.headers }
+        )
+      }
     }
   }
 
