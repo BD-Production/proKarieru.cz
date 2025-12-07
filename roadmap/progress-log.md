@@ -4,6 +4,25 @@ Chronologicky zaznam vsech provedenych praci.
 
 ---
 
+## 2025-12-07
+
+### Revize roadmapy a identifikace dalsich kroku
+- Provedena komplexni analyza TODOs v kodu
+- Aktualizovany priority - upload obrazku je jiz HOTOVY (commit ddb15bc)
+- Identifikovany 4 hlavni ukoly pro dokonceni MVP:
+  1. Portal detection z middleware (hardcoded v `/portal/page.tsx`)
+  2. Client-side search v katalogu
+  3. Prepinani edici
+  4. Carousel pro stranky brozury
+
+### Zjistene TODOs v kodu:
+- `src/app/catalog/page.tsx:10` - Portal detection z middleware
+- `src/app/portal/page.tsx:6` - Portal detection z middleware
+- `src/app/fair/page.tsx:7` - Fair data z databaze
+- `src/app/catalog/[companySlug]/page.tsx:84` - Carousel pro stranky
+
+---
+
 ## 2025-12-06
 
 ### Audit a aktualizace dokumentace

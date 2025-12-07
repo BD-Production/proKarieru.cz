@@ -2,7 +2,7 @@
 
 Seznam otazek, ktere potrebuji objasneni pred nebo behem implementace.
 
-**Posledni aktualizace:** 2025-12-06
+**Posledni aktualizace:** 2025-12-07
 
 ---
 
@@ -14,8 +14,8 @@ Seznam otazek, ktere potrebuji objasneni pred nebo behem implementace.
 - **Moznosti:**
   a) Primy upload do Supabase Storage z klienta
   b) Upload pres Next.js API route (lepsi kontrola, validace)
-- **Status:** K ROZHODNUTI
-- **Priorita:** VYSOKA (blokuje dokonceni MVP)
+- **Status:** VYRESENO (2025-12-07)
+- **Reseni:** Implementovano v commit ddb15bc "Company logos"
 
 ### 2. Carousel implementace
 - **Otazka:** Jaka knihovna pro carousel stranek brozury?

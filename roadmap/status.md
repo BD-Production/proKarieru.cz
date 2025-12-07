@@ -1,6 +1,6 @@
 # proKarieru - Status projektu
 
-**Posledni aktualizace:** 2025-12-06
+**Posledni aktualizace:** 2025-12-07
 
 ---
 
@@ -37,10 +37,13 @@ Projekt je v pokrocile fazi implementace. Mezi 2.12. a 6.12.2025 probehla intenz
 
 | Ukol | Priorita | Poznamka |
 |------|----------|----------|
-| Upload obrazku do Storage | VYSOKA | API endpoint pro skutecny upload |
-| Client-side search | VYSOKA | Filtrovani firem v katalogu |
-| Funkcni carousel | STREDNI | Zobrazeni stranek brozury |
-| Prepinani edici | STREDNI | Vyber edice v katalogu |
+| Portal detection z middleware | VYSOKA | `/portal/page.tsx` pouziva hardcoded data |
+| Client-side search | VYSOKA | Filtrovani firem v katalogu (UI existuje, neni funkcni) |
+| Funkcni carousel | STREDNI | Detail firmy - stranky brozury jsou pod sebou, chybi swipe |
+| Prepinani edici | STREDNI | Tabs existuji vizualne, neni klikaci |
+| Fair data z databaze | NIZKA | `/fair/page.tsx` pouziva mock data |
+
+**Poznamka:** Upload do Supabase Storage je HOTOVY - posledni commit "Company logos" (ddb15bc) toto implementoval.
 
 ---
 
@@ -89,9 +92,30 @@ Projekt je v pokrocile fazi implementace. Mezi 2.12. a 6.12.2025 probehla intenz
 
 ## Dalsi kroky (v poradi priority)
 
-1. **Implementovat upload obrazku** - API endpoint pro Supabase Storage
-2. **Pridat client-side search** - Filtrovani v katalogu
-3. **Zprovoznit carousel** - Prohlizeni stranek brozury
-4. **Prepinac edici** - Vyber rocniku/edice v katalogu
+### Doporuceny postup pro dokonceni MVP:
+
+1. **Portal detection z middleware** (VYSOKA)
+   - Soubor: `src/app/portal/page.tsx`
+   - Aktualne: hardcoded portal data
+   - Cil: Nacitat portal z DB podle domeny/middleware headers
+
+2. **Client-side search v katalogu** (VYSOKA)
+   - Soubor: `src/app/catalog/page.tsx`
+   - Aktualne: Input existuje ale nefiltruje
+   - Cil: Real-time filtrovani firem podle nazvu (debounce 300ms)
+
+3. **Prepinani edici** (STREDNI)
+   - Soubor: `src/app/catalog/page.tsx`
+   - Aktualne: Tabs existuji ale nejsou interaktivni
+   - Cil: Kliknutim na tab se prepne edice a nacte odpovidajici firmy
+
+4. **Carousel pro stranky brozury** (STREDNI)
+   - Soubor: `src/app/catalog/[companySlug]/page.tsx`
+   - Aktualne: Stranky zobrazeny pod sebou
+   - Cil: Swipeable carousel (Embla Carousel - doporuceno shadcn/ui)
+
+5. **Fair data z databaze** (NIZKA - muze pockat na Fazi 2)
+   - Soubor: `src/app/fair/page.tsx`
+   - Aktualne: Mock data
 
 Po dokonceni MVP: Zahajit Fazi 2 (Veletrh).

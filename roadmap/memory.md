@@ -2,7 +2,7 @@
 
 Dulezite informace k zapamatovani mezi sessions.
 
-**Posledni aktualizace:** 2025-12-06
+**Posledni aktualizace:** 2025-12-07
 
 ---
 
@@ -44,10 +44,12 @@ Dulezite informace k zapamatovani mezi sessions.
 - Databaze s 9 tabulkami + RLS + seed data
 
 ### Co chybi do MVP:
-1. Upload obrazku do Supabase Storage (API endpoint)
-2. Client-side search v katalogu
-3. Funkcni carousel na detailu firmy
-4. Prepinani edici
+1. Portal detection z middleware (hardcoded data v `/portal/page.tsx`)
+2. Client-side search v katalogu (Input existuje, neni funkcni)
+3. Prepinani edici (Tabs existuji vizualne, nejsou klikaci)
+4. Funkcni carousel na detailu firmy (stranky jsou pod sebou)
+
+**POZOR:** Upload obrazku je uz HOTOVY - commit ddb15bc "Company logos"
 
 ---
 
@@ -115,3 +117,12 @@ D:\dev\proKarieru.cz\
 - MVP je z 70% hotove, zbyva 4 hlavni ukoly
 - Faze 2 (Veletrh) nezahajovat pred dokoncenim MVP
 - Ecomail credentials budou potreba az pro Fazi 2
+
+### Konkretni soubory k uprave pro MVP:
+1. `src/app/portal/page.tsx` - Nahradit hardcoded portal data za DB dotaz
+2. `src/app/catalog/page.tsx` - Pridat search filtrovani + funkcni tabs
+3. `src/app/catalog/[companySlug]/page.tsx` - Implementovat carousel (Embla)
+
+### Tech Stack upozorneni:
+- Next.js 16 + React 19 (ne 14 jak v init.md)
+- Tailwind CSS 4 (ne 3)
