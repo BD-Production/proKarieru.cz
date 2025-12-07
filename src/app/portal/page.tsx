@@ -1,14 +1,31 @@
 import Link from 'next/link'
+import { headers } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BookOpen, CalendarDays } from 'lucide-react'
 
-export default function PortalPage() {
-  // TODO: Get portal from middleware headers or domain detection
-  const portal = {
-    name: 'proStavare',
-    tagline: 'Propojujeme stavebni firmy s talenty',
-    primary_color: '#C34751',
-    domain: 'prostavare.cz',
+export default async function PortalPage() {
+  const headersList = await headers()
+  const portalSlug = headersList.get('x-portal-slug')
+
+  const supabase = await createClient()
+  const { data: portal } = await supabase
+    .from('portals')
+    .select('*')
+    .eq('slug', portalSlug)
+    .eq('is_active', true)
+    .single()
+
+  // Fallback if portal not found
+  if (!portal) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-2">Portál nenalezen</h1>
+          <p className="text-gray-500">Tento portál neexistuje nebo není aktivní.</p>
+        </div>
+      </div>
+    )
   }
 
   return (
