@@ -9,7 +9,9 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Company } from '@/types/database'
+import { LogoUpload } from '@/components/admin/LogoUpload'
 
 export default function EditCompanyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -28,25 +30,26 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
     is_active: true,
   })
 
-  useEffect(() => {
-    async function loadCompany() {
-      const { data } = await supabase
-        .from('companies')
-        .select('*')
-        .eq('id', id)
-        .single()
+  const loadCompany = async () => {
+    const { data } = await supabase
+      .from('companies')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-      if (data) {
-        setCompany(data)
-        setFormData({
-          name: data.name,
-          slug: data.slug,
-          logo_url: data.logo_url || '',
-          og_image_url: data.og_image_url || '',
-          is_active: data.is_active,
-        })
-      }
+    if (data) {
+      setCompany(data)
+      setFormData({
+        name: data.name,
+        slug: data.slug,
+        logo_url: data.logo_url || '',
+        og_image_url: data.og_image_url || '',
+        is_active: data.is_active,
+      })
     }
+  }
+
+  useEffect(() => {
     loadCompany()
   }, [id, supabase])
 
@@ -103,6 +106,11 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
     router.refresh()
   }
 
+  const handleLogoUploadComplete = (logoUrl: string) => {
+    setFormData((prev) => ({ ...prev, logo_url: logoUrl }))
+    loadCompany() // Reload to show new logo
+  }
+
   if (!company) {
     return <div className="p-8">Nacitam...</div>
   }
@@ -134,6 +142,43 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
 
       <Card className="max-w-2xl">
         <CardHeader>
+          <CardTitle>Logo firmy</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {formData.logo_url && (
+            <div className="space-y-2">
+              <Label>Aktuální logo</Label>
+              <div className="flex items-center gap-4">
+                <div className="w-24 h-24 border rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                  <Image
+                    src={formData.logo_url}
+                    alt={company.name}
+                    width={96}
+                    height={96}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="text-sm text-gray-500">
+                  Rozměry: 400×400 px<br />
+                  Formát: WebP
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label>Nahrát nové logo</Label>
+            <LogoUpload
+              companyId={id}
+              currentLogoUrl={formData.logo_url}
+              onUploadComplete={handleLogoUploadComplete}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="max-w-2xl">
+        <CardHeader>
           <CardTitle>Zakladni informace</CardTitle>
         </CardHeader>
         <CardContent>
@@ -157,16 +202,6 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
                 value={formData.slug}
                 onChange={handleChange}
                 required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="logo_url">URL loga</Label>
-              <Input
-                id="logo_url"
-                name="logo_url"
-                value={formData.logo_url}
-                onChange={handleChange}
               />
             </div>
 

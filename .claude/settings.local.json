@@ -17,7 +17,11 @@
       "Bash(find:*)",
       "Bash(npm outdated:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(copy \"D:\\dev\\proKarieru.cz\\src\\app\\admin\\login\\page.tsx\" \"D:\\dev\\proKarieru.cz\\src\\app\\login\\page.tsx\")",
+      "Bash(git restore:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

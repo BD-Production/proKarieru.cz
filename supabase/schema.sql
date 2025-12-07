@@ -195,7 +195,11 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('company-pages', 'company-pages', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Storage policies
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('company-logos', 'company-logos', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Storage policies for company-pages
 CREATE POLICY "Public read company-pages" ON storage.objects
   FOR SELECT USING (bucket_id = 'company-pages');
 
@@ -207,6 +211,19 @@ CREATE POLICY "Authenticated update company-pages" ON storage.objects
 
 CREATE POLICY "Authenticated delete company-pages" ON storage.objects
   FOR DELETE USING (bucket_id = 'company-pages' AND auth.role() = 'authenticated');
+
+-- Storage policies for company-logos
+CREATE POLICY "Public read company-logos" ON storage.objects
+  FOR SELECT USING (bucket_id = 'company-logos');
+
+CREATE POLICY "Authenticated upload company-logos" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'company-logos' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated update company-logos" ON storage.objects
+  FOR UPDATE USING (bucket_id = 'company-logos' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated delete company-logos" ON storage.objects
+  FOR DELETE USING (bucket_id = 'company-logos' AND auth.role() = 'authenticated');
 
 -- ============================================
 -- SEED DATA - Prvni portal proStavare
