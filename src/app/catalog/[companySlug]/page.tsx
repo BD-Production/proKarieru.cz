@@ -1,9 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { BrochureCarousel } from '@/components/BrochureCarousel'
 
 export default async function CompanyDetailPage({
   params,
@@ -80,45 +80,15 @@ export default async function CompanyDetailPage({
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         {pages.length > 0 ? (
-          <div className="space-y-4">
-            {/* Page viewer - simple version, TODO: add carousel */}
-            {pages.map((page: { id: string; image_url: string; page_number: number }) => (
-              <div
-                key={page.id}
-                className="bg-white rounded-lg shadow-sm overflow-hidden"
-              >
-                <div className="relative aspect-[3/4]">
-                  <Image
-                    src={page.image_url}
-                    alt={`${company.name} - strana ${page.page_number}`}
-                    fill
-                    className="object-contain"
-                    priority={page.page_number === 1}
-                  />
-                </div>
-              </div>
-            ))}
-
-            {/* Page indicator */}
-            <div className="flex justify-center gap-2 py-4">
-              {pages.map((page: { id: string; page_number: number }, index: number) => (
-                <div
-                  key={page.id}
-                  className="w-2 h-2 rounded-full"
-                  style={{
-                    backgroundColor:
-                      index === 0
-                        ? portal?.primary_color || '#C34751'
-                        : '#E5E7EB',
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+          <BrochureCarousel
+            pages={pages}
+            companyName={company.name}
+            primaryColor={portal?.primary_color}
+          />
         ) : (
           <div className="text-center py-20 bg-white rounded-lg">
             <p className="text-gray-500">
-              Pro tuto firmu nejsou v aktualni edici k dispozici zadne stranky.
+              Pro tuto firmu nejsou v aktuální edici k dispozici žádné stránky.
             </p>
           </div>
         )}
