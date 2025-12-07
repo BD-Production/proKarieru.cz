@@ -95,12 +95,16 @@ export async function middleware(request: NextRequest) {
       response.headers.set('x-portal-slug', portalSlug)
       response.headers.set('x-subdomain', subdomain || '')
 
-      // katalog.prostavare.cz nebo katalog.prostavare-dev.fun → /catalog
+      // katalog.prostavare.cz nebo katalog.prostavare-dev.fun → pouze root path
       if (subdomain === 'katalog') {
-        return NextResponse.rewrite(
-          new URL(`/catalog${pathname}`, request.url),
-          { headers: response.headers }
-        )
+        if (pathname === '/') {
+          return NextResponse.rewrite(
+            new URL('/catalog', request.url),
+            { headers: response.headers }
+          )
+        }
+        // Ostatní cesty na katalog subdoméně nejsou povoleny
+        return NextResponse.next()
       }
 
       // veletrh.prostavare.cz nebo veletrh.prostavare-dev.fun → /fair
@@ -111,8 +115,32 @@ export async function middleware(request: NextRequest) {
         )
       }
 
-      // prostavare.cz nebo prostavare-dev.fun → /portal (landing page s rozcestníkem)
+      // prostavare.cz nebo prostavare-dev.fun (hlavní portálová doména)
       if (!subdomain && portalSlug !== 'prokarieru') {
+        // Admin a login routes - passthrough
+        if (pathname.startsWith('/admin') || pathname.startsWith('/login')) {
+          return response
+        }
+
+        // Root path → katalog
+        if (pathname === '/') {
+          return NextResponse.rewrite(
+            new URL('/catalog', request.url),
+            { headers: response.headers }
+          )
+        }
+
+        // Single-segment path (company slug) → company detail
+        // Pattern: /metrostav (pouze alphanumerické znaky a pomlčky)
+        const segments = pathname.split('/').filter(Boolean)
+        if (segments.length === 1 && /^[a-z0-9-]+$/.test(segments[0])) {
+          return NextResponse.rewrite(
+            new URL(`/catalog/${segments[0]}`, request.url),
+            { headers: response.headers }
+          )
+        }
+
+        // Ostatní cesty → /portal (zachová přístup k /portal rozcestníku)
         return NextResponse.rewrite(
           new URL(`/portal${pathname}`, request.url),
           { headers: response.headers }
