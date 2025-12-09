@@ -32,6 +32,7 @@ CREATE TABLE editions (
   year INTEGER NOT NULL,
   season VARCHAR(20),
   location VARCHAR(100),
+  pdf_url TEXT,
   is_active BOOLEAN DEFAULT false,
   display_order INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -199,6 +200,10 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('company-logos', 'company-logos', true)
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('edition-pdfs', 'edition-pdfs', true)
+ON CONFLICT (id) DO NOTHING;
+
 -- Storage policies for company-pages
 CREATE POLICY "Public read company-pages" ON storage.objects
   FOR SELECT USING (bucket_id = 'company-pages');
@@ -224,6 +229,19 @@ CREATE POLICY "Authenticated update company-logos" ON storage.objects
 
 CREATE POLICY "Authenticated delete company-logos" ON storage.objects
   FOR DELETE USING (bucket_id = 'company-logos' AND auth.role() = 'authenticated');
+
+-- Storage policies for edition-pdfs
+CREATE POLICY "Public read edition-pdfs" ON storage.objects
+  FOR SELECT USING (bucket_id = 'edition-pdfs');
+
+CREATE POLICY "Authenticated upload edition-pdfs" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'edition-pdfs' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated update edition-pdfs" ON storage.objects
+  FOR UPDATE USING (bucket_id = 'edition-pdfs' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated delete edition-pdfs" ON storage.objects
+  FOR DELETE USING (bucket_id = 'edition-pdfs' AND auth.role() = 'authenticated');
 
 -- ============================================
 -- SEED DATA - Prvni portal proStavare

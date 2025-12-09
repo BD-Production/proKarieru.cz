@@ -2,19 +2,18 @@
 
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { Upload, X, Check } from 'lucide-react'
+import { Upload, X, Check, FileText } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
-interface LogoUploadProps {
-  companyId: string
-  currentLogoUrl?: string | null
-  onUploadComplete: (logoUrl: string) => void
+interface PdfUploadProps {
+  editionId: string
+  currentPdfUrl?: string | null
+  onUploadComplete: (pdfUrl: string) => void
 }
 
-export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: LogoUploadProps) {
+export function PdfUpload({ editionId, currentPdfUrl, onUploadComplete }: PdfUploadProps) {
   const [dragActive, setDragActive] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [imageSrc, setImageSrc] = useState<string>('')
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string>('')
 
@@ -32,12 +31,13 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
   }
 
   const validateFile = (file: File): string | null => {
-    if (!file.type.startsWith('image/')) {
-      return 'Soubor musí být obrázek (PNG, JPG nebo WebP)'
+    if (file.type !== 'application/pdf') {
+      return 'Soubor musí být ve formátu PDF'
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-      return 'Soubor je příliš velký (max 2MB)'
+    // Max 50MB
+    if (file.size > 50 * 1024 * 1024) {
+      return 'Soubor je příliš velký (max 50MB)'
     }
 
     return null
@@ -52,12 +52,6 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
 
     setError('')
     setSelectedFile(file)
-
-    const reader = new FileReader()
-    reader.addEventListener('load', () => {
-      setImageSrc(reader.result?.toString() || '')
-    })
-    reader.readAsDataURL(file)
   }
 
   const handleDrop = (e: React.DragEvent) => {
@@ -76,71 +70,20 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
     }
   }
 
-  const resizeImage = async (imageSrc: string): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => {
-        const canvas = document.createElement('canvas')
-        const ctx = canvas.getContext('2d')
-
-        if (!ctx) {
-          reject(new Error('No 2d context'))
-          return
-        }
-
-        const maxSize = 512
-        let { width, height } = img
-
-        // Scale down if larger than maxSize
-        if (width > maxSize || height > maxSize) {
-          if (width > height) {
-            height = Math.round((height / width) * maxSize)
-            width = maxSize
-          } else {
-            width = Math.round((width / height) * maxSize)
-            height = maxSize
-          }
-        }
-
-        canvas.width = width
-        canvas.height = height
-
-        ctx.drawImage(img, 0, 0, width, height)
-
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error('Canvas is empty'))
-              return
-            }
-            resolve(blob)
-          },
-          'image/webp',
-          0.9
-        )
-      }
-      img.onerror = () => reject(new Error('Failed to load image'))
-      img.src = imageSrc
-    })
-  }
-
   const handleUpload = async () => {
-    if (!imageSrc || !selectedFile) return
+    if (!selectedFile) return
 
     setUploading(true)
     setError('')
 
     try {
-      const resizedBlob = await resizeImage(imageSrc)
-
-      const fileExt = 'webp'
-      const fileName = `${companyId}/logo.${fileExt}`
+      const fileName = `${editionId}/catalog.pdf`
 
       const { error: uploadError, data } = await supabase.storage
-        .from('company-logos')
-        .upload(fileName, resizedBlob, {
+        .from('edition-pdfs')
+        .upload(fileName, selectedFile, {
           upsert: true,
-          contentType: 'image/webp'
+          contentType: 'application/pdf'
         })
 
       if (uploadError) {
@@ -149,26 +92,25 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
 
       if (data) {
         const { data: { publicUrl } } = supabase.storage
-          .from('company-logos')
+          .from('edition-pdfs')
           .getPublicUrl(fileName)
 
+        // Update edition pdf_url in database
         const { error: updateError } = await supabase
-          .from('companies')
-          .update({ logo_url: publicUrl })
-          .eq('id', companyId)
+          .from('editions')
+          .update({ pdf_url: publicUrl })
+          .eq('id', editionId)
 
         if (updateError) {
           throw updateError
         }
 
         onUploadComplete(publicUrl)
-
         setSelectedFile(null)
-        setImageSrc('')
       }
     } catch (err) {
       console.error('Upload error:', err)
-      setError('Chyba při nahrávání loga')
+      setError('Chyba při nahrávání PDF')
     } finally {
       setUploading(false)
     }
@@ -176,13 +118,18 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
 
   const handleCancel = () => {
     setSelectedFile(null)
-    setImageSrc('')
     setError('')
+  }
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
   }
 
   return (
     <div className="space-y-4">
-      {!imageSrc ? (
+      {!selectedFile ? (
         <div
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
             dragActive
@@ -198,10 +145,10 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
             <Upload className="w-12 h-12 text-gray-400" />
             <div>
               <p className="text-sm font-medium mb-1">
-                Přetáhněte logo sem nebo klikněte pro výběr
+                Přetáhněte PDF sem nebo klikněte pro výběr
               </p>
               <p className="text-xs text-gray-500">
-                PNG, JPG nebo WebP • Max 2MB • Automaticky zmenšeno na max 512 px
+                Pouze PDF • Max 50MB
               </p>
             </div>
             <Button
@@ -215,7 +162,7 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
           <input
             ref={inputRef}
             type="file"
-            accept="image/png,image/jpeg,image/webp"
+            accept="application/pdf"
             onChange={handleChange}
             className="hidden"
           />
@@ -223,15 +170,14 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
       ) : (
         <div className="space-y-4">
           <div className="border rounded-lg p-4 bg-gray-50">
-            <p className="text-sm font-medium mb-2">
-              Náhled loga:
-            </p>
-            <div className="flex justify-center">
-              <img
-                src={imageSrc}
-                alt="Logo preview"
-                className="max-w-full max-h-64 object-contain"
-              />
+            <div className="flex items-center gap-4">
+              <FileText className="w-12 h-12 text-red-500" />
+              <div className="flex-1">
+                <p className="font-medium">{selectedFile.name}</p>
+                <p className="text-sm text-gray-500">
+                  {formatFileSize(selectedFile.size)}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -242,7 +188,7 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
               disabled={uploading}
             >
               <Check className="w-4 h-4 mr-2" />
-              {uploading ? 'Nahrávám...' : 'Nahrát logo'}
+              {uploading ? 'Nahrávám...' : 'Nahrát PDF'}
             </Button>
             <Button
               type="button"
@@ -259,6 +205,25 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
 
       {error && (
         <p className="text-sm text-red-600">{error}</p>
+      )}
+
+      {currentPdfUrl && !selectedFile && (
+        <div className="border rounded-lg p-4 bg-green-50 border-green-200">
+          <div className="flex items-center gap-4">
+            <FileText className="w-8 h-8 text-green-600" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-green-800">PDF katalog nahrán</p>
+              <a
+                href={currentPdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-green-600 hover:underline"
+              >
+                Zobrazit PDF
+              </a>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import type { Edition, Portal } from '@/types/database'
+import { PdfUpload } from '@/components/admin/PdfUpload'
 
 export default function EditEditionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -30,6 +31,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
     display_order: 0,
     is_active: false,
   })
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadData() {
@@ -50,6 +52,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
           display_order: e.display_order,
           is_active: e.is_active,
         })
+        setPdfUrl(e.pdf_url || null)
       }
       if (portalsResult.data) setPortals(portalsResult.data)
     }
@@ -252,6 +255,19 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
               </Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      <Card className="max-w-2xl">
+        <CardHeader>
+          <CardTitle>PDF Katalog</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PdfUpload
+            editionId={id}
+            currentPdfUrl={pdfUrl}
+            onUploadComplete={(url) => setPdfUrl(url)}
+          />
         </CardContent>
       </Card>
     </div>

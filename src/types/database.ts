@@ -21,6 +21,7 @@ export interface Edition {
   year: number
   season: 'spring' | 'winter' | 'fall' | null
   location: string | null
+  pdf_url: string | null
   is_active: boolean
   display_order: number
   created_at: string
