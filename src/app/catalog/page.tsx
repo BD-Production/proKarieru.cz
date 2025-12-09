@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Building2, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Loader } from '@/components/Loader'
 
 type Portal = {
   id: string
@@ -140,14 +141,7 @@ export default function CatalogPage() {
     : editions.find((e) => e.is_active) || editions[0]
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-500">Načítání katalogu...</p>
-        </div>
-      </div>
-    )
+    return <Loader text="Načítání katalogu..." />
   }
 
   if (!portal) {

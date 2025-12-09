@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { FileText, ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Loader } from '@/components/Loader'
 import dynamic from 'next/dynamic'
 
 const PdfViewer = dynamic(() => import('@/components/PdfViewer').then(mod => mod.PdfViewer), {
@@ -12,8 +13,13 @@ const PdfViewer = dynamic(() => import('@/components/PdfViewer').then(mod => mod
   loading: () => (
     <div className="flex items-center justify-center min-h-[400px] bg-gray-50 rounded-lg">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-        <p className="text-gray-500">Načítání PDF prohlížeče...</p>
+        <div
+          className="h-12 w-12 rounded-full border-4 border-gray-200 animate-spin mx-auto mb-4"
+          style={{ borderTopColor: '#C34751' }}
+        />
+        <p className="text-lg font-medium" style={{ color: '#C34751' }}>
+          Načítání PDF prohlížeče...
+        </p>
       </div>
     </div>
   ),
@@ -86,14 +92,7 @@ export default function CatalogPdfPage() {
     : editions.find((e) => e.is_active) || editions[0]
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-500">Načítání katalogu...</p>
-        </div>
-      </div>
-    )
+    return <Loader text="Načítání katalogu..." />
   }
 
   if (!portal) {
