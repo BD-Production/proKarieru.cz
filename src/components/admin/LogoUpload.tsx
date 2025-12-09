@@ -2,20 +2,22 @@
 
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { Upload, X, Check } from 'lucide-react'
+import { Upload, X, Check, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 interface LogoUploadProps {
   companyId: string
   currentLogoUrl?: string | null
   onUploadComplete: (logoUrl: string) => void
+  onLogoDelete?: () => void
 }
 
-export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: LogoUploadProps) {
+export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete, onLogoDelete }: LogoUploadProps) {
   const [dragActive, setDragActive] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [imageSrc, setImageSrc] = useState<string>('')
   const [uploading, setUploading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string>('')
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -180,8 +182,72 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
     setError('')
   }
 
+  const handleDelete = async () => {
+    if (!confirm('Opravdu chcete smazat logo? Tato akce je nevratná.')) {
+      return
+    }
+
+    setDeleting(true)
+    setError('')
+
+    try {
+      // Delete file from storage
+      const fileName = `${companyId}/logo.webp`
+      await supabase.storage
+        .from('company-logos')
+        .remove([fileName])
+
+      // Update database - set logo_url to null
+      const { error: updateError } = await supabase
+        .from('companies')
+        .update({ logo_url: null })
+        .eq('id', companyId)
+
+      if (updateError) {
+        throw updateError
+      }
+
+      onLogoDelete?.()
+    } catch (err) {
+      console.error('Delete error:', err)
+      setError('Chyba při mazání loga')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   return (
     <div className="space-y-4">
+      {/* Current logo display */}
+      {currentLogoUrl && !imageSrc && (
+        <div className="border rounded-lg p-4 bg-gray-50">
+          <p className="text-sm font-medium mb-3">Aktuální logo:</p>
+          <div className="flex items-start gap-4">
+            <img
+              src={`${currentLogoUrl}?v=${Date.now()}`}
+              alt="Aktuální logo"
+              className="w-24 h-24 object-contain border rounded bg-white"
+            />
+            <div className="flex-1">
+              <p className="text-xs text-gray-500 mb-3">
+                Formát: WebP
+              </p>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {deleting ? 'Mažu...' : 'Smazat logo'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload area */}
       {!imageSrc ? (
         <div
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${

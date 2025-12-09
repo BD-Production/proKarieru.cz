@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 import type { Company } from '@/types/database'
 import { LogoUpload } from '@/components/admin/LogoUpload'
 
@@ -111,6 +110,11 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
     loadCompany() // Reload to show new logo
   }
 
+  const handleLogoDelete = () => {
+    setFormData((prev) => ({ ...prev, logo_url: '' }))
+    loadCompany() // Reload to reflect deletion
+  }
+
   if (!company) {
     return <div className="p-8">Nacitam...</div>
   }
@@ -144,36 +148,13 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
         <CardHeader>
           <CardTitle>Logo firmy</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {formData.logo_url && (
-            <div className="space-y-2">
-              <Label>Aktuální logo</Label>
-              <div className="flex items-center gap-4">
-                <div className="w-24 h-24 border rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
-                  <Image
-                    src={formData.logo_url}
-                    alt={company.name}
-                    width={96}
-                    height={96}
-                    className="object-contain"
-                  />
-                </div>
-                <div className="text-sm text-gray-500">
-                  Rozměry: 400×400 px<br />
-                  Formát: WebP
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-2">
-            <Label>Nahrát nové logo</Label>
-            <LogoUpload
-              companyId={id}
-              currentLogoUrl={formData.logo_url}
-              onUploadComplete={handleLogoUploadComplete}
-            />
-          </div>
+        <CardContent>
+          <LogoUpload
+            companyId={id}
+            currentLogoUrl={formData.logo_url || null}
+            onUploadComplete={handleLogoUploadComplete}
+            onLogoDelete={handleLogoDelete}
+          />
         </CardContent>
       </Card>
 
