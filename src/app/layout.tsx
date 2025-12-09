@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "proKariéru",
-  description: "Platforma pro kariérní portály a veletrhy práce",
+  title: "proStavaře.cz",
+  description: "Katalog firem a veletrh práce pro stavební obory",
   icons: {
     icon: "/favicon.webp",
     apple: "/favicon.webp",
