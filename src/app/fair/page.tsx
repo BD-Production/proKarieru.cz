@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CalendarDays, MapPin, Clock, Trophy, Map } from 'lucide-react'
+import { PortalAnalytics } from '@/components/PortalAnalytics'
 
 export default function FairPage() {
   // TODO: Get fair data from database based on portal
@@ -21,8 +22,10 @@ export default function FairPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
+    <>
+      <PortalAnalytics />
+      <div className="min-h-screen bg-white">
+        {/* Header */}
       <header className="border-b">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -144,6 +147,7 @@ export default function FairPage() {
           </Link>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   )
 }

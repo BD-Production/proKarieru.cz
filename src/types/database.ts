@@ -9,6 +9,7 @@ export interface Portal {
   logo_url: string | null
   og_image_url: string | null
   ga_measurement_id: string | null
+  gtm_container_id: string | null
   is_active: boolean
   created_at: string
   updated_at: string

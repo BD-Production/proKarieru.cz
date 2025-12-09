@@ -24,6 +24,7 @@ export default function NewPortalPage() {
     primary_color: '#C34751',
     secondary_color: '#6D6F7E',
     ga_measurement_id: '',
+    gtm_container_id: '',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +58,7 @@ export default function NewPortalPage() {
       primary_color: formData.primary_color,
       secondary_color: formData.secondary_color || null,
       ga_measurement_id: formData.ga_measurement_id || null,
+      gtm_container_id: formData.gtm_container_id || null,
       is_active: true,
     })
 
@@ -181,15 +183,27 @@ export default function NewPortalPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="ga_measurement_id">GA4 Measurement ID</Label>
-              <Input
-                id="ga_measurement_id"
-                name="ga_measurement_id"
-                placeholder="G-XXXXXXXXXX"
-                value={formData.ga_measurement_id}
-                onChange={handleChange}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="ga_measurement_id">GA4 Measurement ID</Label>
+                <Input
+                  id="ga_measurement_id"
+                  name="ga_measurement_id"
+                  placeholder="G-XXXXXXXXXX"
+                  value={formData.ga_measurement_id}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gtm_container_id">GTM Container ID</Label>
+                <Input
+                  id="gtm_container_id"
+                  name="gtm_container_id"
+                  placeholder="GT-XXXXXXXX"
+                  value={formData.gtm_container_id}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
 
             {error && (
