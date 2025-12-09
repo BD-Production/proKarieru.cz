@@ -24,7 +24,8 @@
       "Bash(cat:*)",
       "Bash(git reset:*)",
       "Bash(tree:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(copy:*)"
     ],
     "deny": [],
     "ask": []
