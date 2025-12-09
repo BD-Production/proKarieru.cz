@@ -130,21 +130,8 @@ export async function middleware(request: NextRequest) {
           )
         }
 
-        // Single-segment path (company slug) → company detail
-        // Pattern: /metrostav (pouze alphanumerické znaky a pomlčky)
-        const segments = pathname.split('/').filter(Boolean)
-        if (segments.length === 1 && /^[a-z0-9-]+$/.test(segments[0])) {
-          return NextResponse.rewrite(
-            new URL(`/catalog/${segments[0]}`, request.url),
-            { headers: response.headers }
-          )
-        }
-
-        // Ostatní cesty → /portal (zachová přístup k /portal rozcestníku)
-        return NextResponse.rewrite(
-          new URL(`/portal${pathname}`, request.url),
-          { headers: response.headers }
-        )
+        // Ostatní cesty (včetně /{company-slug}) projdou přímo
+        return response
       }
     }
   }

@@ -64,7 +64,7 @@ export default async function CompanyDetailPage({
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <Button asChild variant="ghost" size="icon">
-              <Link href="/catalog">
+              <Link href="/">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </Button>
@@ -97,9 +97,9 @@ export default async function CompanyDetailPage({
       {/* Footer */}
       <footer className="border-t bg-white py-6 px-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between text-sm text-gray-500">
-          <Link href="/catalog" className="hover:underline flex items-center gap-1">
+          <Link href="/" className="hover:underline flex items-center gap-1">
             <ChevronLeft className="h-4 w-4" />
-            Zpet do katalogu
+            Zpět do katalogu
           </Link>
           <span>{portal?.name}</span>
         </div>

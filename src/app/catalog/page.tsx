@@ -167,7 +167,7 @@ export default function CatalogPage() {
       <header className="border-b sticky top-0 bg-white z-10">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/portal">
+            <Link href="/">
               <h1
                 className="text-xl font-bold"
                 style={{ color: portal.primary_color }}
@@ -222,7 +222,7 @@ export default function CatalogPage() {
             {filteredCompanies.map((company) => (
               <Link
                 key={company.id}
-                href={`/catalog/${company.slug}`}
+                href={`/${company.slug}`}
                 className="group"
               >
                 <div className="aspect-square border rounded-lg overflow-hidden bg-white hover:shadow-lg transition-shadow flex items-center justify-center p-4">
@@ -269,8 +269,8 @@ export default function CatalogPage() {
       <footer className="border-t py-6 px-4 mt-auto">
         <div className="max-w-6xl mx-auto flex items-center justify-between text-sm text-gray-500">
           <span>&copy; {new Date().getFullYear()} {portal.name}</span>
-          <Link href="/portal" className="hover:underline">
-            ← Zpět na portál
+          <Link href="/" className="hover:underline">
+            ← Zpět na hlavní stránku
           </Link>
         </div>
       </footer>
