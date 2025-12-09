@@ -117,8 +117,8 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
       throw new Error('No 2d context')
     }
 
-    // Set canvas size to 400x400
-    const targetSize = 400
+    // Set canvas size to 512x512
+    const targetSize = 512
     canvas.width = targetSize
     canvas.height = targetSize
 
@@ -232,7 +232,7 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete }: Logo
                 Přetáhněte logo sem nebo klikněte pro výběr
               </p>
               <p className="text-xs text-gray-500">
-                PNG, JPG nebo WebP • Max 2MB • Čtvercový formát 400×400 px
+                PNG, JPG nebo WebP • Max 2MB • Čtvercový formát 512×512 px
               </p>
             </div>
             <Button

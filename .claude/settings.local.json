@@ -21,7 +21,9 @@
       "Bash(git push:*)",
       "Bash(copy \"D:\\dev\\proKarieru.cz\\src\\app\\admin\\login\\page.tsx\" \"D:\\dev\\proKarieru.cz\\src\\app\\login\\page.tsx\")",
       "Bash(git restore:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git reset:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []
