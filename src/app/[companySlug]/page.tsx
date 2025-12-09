@@ -5,13 +5,24 @@ import { ArrowLeft, ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { BrochureCarousel } from '@/components/BrochureCarousel'
 import { GoogleAnalytics, GTMNoScript } from '@/components/GoogleAnalytics'
+import { EditionTabs } from '@/components/EditionTabs'
+
+type Edition = {
+  id: string
+  name: string
+  is_active: boolean
+  display_order: number
+}
 
 export default async function CompanyDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ companySlug: string }>
+  searchParams: Promise<{ edition?: string }>
 }) {
   const { companySlug } = await params
+  const { edition: selectedEditionId } = await searchParams
   const supabase = await createClient()
 
   // Get company
@@ -34,14 +45,18 @@ export default async function CompanyDetailPage({
     .limit(1)
     .single()
 
-  // Get active edition
-  const { data: edition } = await supabase
+  // Get all editions for portal
+  const { data: editions } = await supabase
     .from('editions')
-    .select('*')
+    .select('id, name, is_active, display_order')
     .eq('portal_id', portal?.id)
-    .eq('is_active', true)
-    .limit(1)
-    .single()
+    .order('is_active', { ascending: false })
+    .order('display_order')
+
+  // Determine active edition (from URL param or default to is_active)
+  const edition = selectedEditionId
+    ? editions?.find((e: Edition) => e.id === selectedEditionId)
+    : editions?.find((e: Edition) => e.is_active) || editions?.[0]
 
   // Get company pages for this edition
   const { data: companyEdition } = await supabase
@@ -82,6 +97,16 @@ export default async function CompanyDetailPage({
               </span>
             )}
           </div>
+          {editions && editions.length > 1 && edition && (
+            <div className="mt-4">
+              <EditionTabs
+                editions={editions}
+                activeEditionId={edition.id}
+                basePath={`/${companySlug}`}
+                primaryColor={portal?.primary_color}
+              />
+            </div>
+          )}
         </div>
       </header>
 
