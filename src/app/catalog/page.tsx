@@ -74,27 +74,58 @@ export default function CatalogPage() {
 
       setEditions(editionsData || [])
 
-      // Determine active edition
-      const activeEdition = selectedEditionId
-        ? editionsData?.find((e) => e.id === selectedEditionId)
-        : editionsData?.find((e) => e.is_active) || editionsData?.[0]
-
-      if (!activeEdition) {
+      if (!editionsData || editionsData.length === 0) {
         setLoading(false)
         return
       }
 
-      // Load companies for active edition
-      const { data: companyEditions } = await supabase
-        .from('company_editions')
-        .select(`
-          *,
-          company:companies(id, name, slug, logo_url)
-        `)
-        .eq('edition_id', activeEdition.id)
-        .order('display_order')
+      // Load companies based on filter
+      let companiesData: Company[] = []
 
-      const companiesData = companyEditions?.map((ce: any) => ce.company).filter(Boolean) || []
+      if (selectedEditionId) {
+        // Filter by specific edition - sort alphabetically
+        const { data: companyEditions } = await supabase
+          .from('company_editions')
+          .select(`
+            *,
+            company:companies(id, name, slug, logo_url)
+          `)
+          .eq('edition_id', selectedEditionId)
+
+        companiesData = companyEditions?.map((ce: any) => ce.company).filter(Boolean) || []
+        // Sort alphabetically by name
+        companiesData.sort((a, b) => a.name.localeCompare(b.name, 'cs'))
+      } else {
+        // Load all companies from all editions
+        const editionIds = editionsData.map((e) => e.id)
+        const { data: companyEditions } = await supabase
+          .from('company_editions')
+          .select(`
+            *,
+            company:companies(id, name, slug, logo_url)
+          `)
+          .in('edition_id', editionIds)
+
+        // Count editions per company and deduplicate
+        const companyEditionCount = new Map<string, number>()
+        const companyMap = new Map<string, Company>()
+        companyEditions?.forEach((ce: any) => {
+          if (ce.company) {
+            companyEditionCount.set(ce.company.id, (companyEditionCount.get(ce.company.id) || 0) + 1)
+            if (!companyMap.has(ce.company.id)) {
+              companyMap.set(ce.company.id, ce.company)
+            }
+          }
+        })
+        companiesData = Array.from(companyMap.values())
+        // Sort by edition count (desc), then alphabetically
+        companiesData.sort((a, b) => {
+          const countDiff = (companyEditionCount.get(b.id) || 0) - (companyEditionCount.get(a.id) || 0)
+          if (countDiff !== 0) return countDiff
+          return a.name.localeCompare(b.name, 'cs')
+        })
+      }
+
       setCompanies(companiesData)
       setFilteredCompanies(companiesData)
       setLoading(false)
@@ -130,15 +161,15 @@ export default function CatalogPage() {
     router.replace(`/catalog?${params.toString()}`, { scroll: false })
   }
 
-  const handleEditionChange = (editionId: string) => {
+  const handleEditionChange = (editionId: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
-    params.set('edition', editionId)
+    if (editionId) {
+      params.set('edition', editionId)
+    } else {
+      params.delete('edition')
+    }
     router.replace(`/catalog?${params.toString()}`)
   }
-
-  const activeEdition = selectedEditionId
-    ? editions.find((e) => e.id === selectedEditionId)
-    : editions.find((e) => e.is_active) || editions[0]
 
   if (loading) {
     return <Loader text="Načítání katalogu..." />
@@ -175,20 +206,35 @@ export default function CatalogPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Edition tabs */}
+        {/* Edition filters */}
         {editions.length > 1 && (
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <button
+              onClick={() => handleEditionChange(null)}
+              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors ${
+                !selectedEditionId
+                  ? 'text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+              style={
+                !selectedEditionId
+                  ? { backgroundColor: portal.primary_color }
+                  : {}
+              }
+            >
+              Vše
+            </button>
             {editions.map((edition) => (
               <button
                 key={edition.id}
                 onClick={() => handleEditionChange(edition.id)}
                 className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors ${
-                  edition.id === activeEdition?.id
+                  edition.id === selectedEditionId
                     ? 'text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
                 style={
-                  edition.id === activeEdition?.id
+                  edition.id === selectedEditionId
                     ? { backgroundColor: portal.primary_color }
                     : {}
                 }
@@ -216,7 +262,7 @@ export default function CatalogPage() {
             {filteredCompanies.map((company) => (
               <Link
                 key={company.id}
-                href={`/${company.slug}`}
+                href={selectedEditionId ? `/${company.slug}?edition=${selectedEditionId}` : `/${company.slug}`}
                 className="group"
               >
                 <div className="aspect-square border rounded-lg overflow-hidden bg-white hover:shadow-lg transition-shadow flex items-center justify-center p-4">
