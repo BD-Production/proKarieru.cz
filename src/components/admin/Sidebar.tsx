@@ -17,11 +17,11 @@ import { Button } from '@/components/ui/button'
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { name: 'Portaly', href: '/admin/portals', icon: Globe },
+  { name: 'Portály', href: '/admin/portals', icon: Globe },
   { name: 'Edice', href: '/admin/editions', icon: BookOpen },
   { name: 'Firmy', href: '/admin/companies', icon: Building2 },
   { name: 'Veletrhy', href: '/admin/fairs', icon: CalendarDays },
-  { name: 'Souteze', href: '/admin/contests', icon: Trophy },
+  { name: 'Soutěže', href: '/admin/contests', icon: Trophy },
 ]
 
 export function AdminSidebar() {
@@ -75,7 +75,7 @@ export function AdminSidebar() {
           onClick={handleLogout}
         >
           <LogOut className="h-5 w-5" />
-          Odhlasit se
+          Odhlásit se
         </Button>
       </div>
     </aside>

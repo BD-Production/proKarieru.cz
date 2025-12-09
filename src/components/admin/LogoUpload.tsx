@@ -154,6 +154,7 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete, onLogo
           .from('company-logos')
           .getPublicUrl(fileName)
 
+        // Store clean URL without cache-busting (add it when displaying)
         const { error: updateError } = await supabase
           .from('companies')
           .update({ logo_url: publicUrl })
@@ -163,7 +164,8 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete, onLogo
           throw updateError
         }
 
-        onUploadComplete(publicUrl)
+        // Return URL with cache-busting for immediate display
+        onUploadComplete(`${publicUrl}?v=${Date.now()}`)
 
         setSelectedFile(null)
         setImageSrc('')

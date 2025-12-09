@@ -5,15 +5,15 @@ export default function FairsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Veletrhy</h1>
-        <p className="text-gray-500">Sprava veletrhu prace</p>
+        <p className="text-gray-500">Správa veletrhů práce</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Pripravujeme</CardTitle>
+          <CardTitle>Připravujeme</CardTitle>
         </CardHeader>
         <CardContent className="text-gray-500">
-          Sprava veletrhu bude dostupna ve Fazi 2.
+          Správa veletrhů bude dostupná ve Fázi 2.
         </CardContent>
       </Card>
     </div>

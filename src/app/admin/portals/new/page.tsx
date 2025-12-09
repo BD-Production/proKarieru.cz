@@ -79,19 +79,19 @@ export default function NewPortalPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">Novy portal</h1>
-          <p className="text-gray-500">Vytvorte novy karierni portal</p>
+          <h1 className="text-3xl font-bold">Nový portál</h1>
+          <p className="text-gray-500">Vytvořte nový kariérní portál</p>
         </div>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Zakladni informace</CardTitle>
+          <CardTitle>Základní informace</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nazev portalu *</Label>
+              <Label htmlFor="name">Název portálu *</Label>
               <Input
                 id="name"
                 name="name"
@@ -115,7 +115,7 @@ export default function NewPortalPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="domain">Domena *</Label>
+                <Label htmlFor="domain">Doména *</Label>
                 <Input
                   id="domain"
                   name="domain"
@@ -132,7 +132,7 @@ export default function NewPortalPage() {
               <Input
                 id="tagline"
                 name="tagline"
-                placeholder="Propojujeme stavebni firmy s talenty"
+                placeholder="Propojujeme stavební firmy s talenty"
                 value={formData.tagline}
                 onChange={handleChange}
               />
@@ -140,7 +140,7 @@ export default function NewPortalPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="primary_color">Primarni barva *</Label>
+                <Label htmlFor="primary_color">Primární barva *</Label>
                 <div className="flex gap-2">
                   <Input
                     type="color"
@@ -160,7 +160,7 @@ export default function NewPortalPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="secondary_color">Sekundarni barva</Label>
+                <Label htmlFor="secondary_color">Sekundární barva</Label>
                 <div className="flex gap-2">
                   <Input
                     type="color"
@@ -198,10 +198,10 @@ export default function NewPortalPage() {
 
             <div className="flex gap-4 pt-4">
               <Button type="submit" disabled={loading}>
-                {loading ? 'Ukladam...' : 'Vytvorit portal'}
+                {loading ? 'Ukládám...' : 'Vytvořit portál'}
               </Button>
               <Button asChild variant="outline">
-                <Link href="/admin/portals">Zrusit</Link>
+                <Link href="/admin/portals">Zrušit</Link>
               </Button>
             </div>
           </form>

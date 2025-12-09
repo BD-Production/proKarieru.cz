@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Building2, Search } from 'lucide-react'
@@ -35,6 +34,9 @@ export default function CatalogPage() {
   const [companies, setCompanies] = useState<Company[]>([])
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Cache-busting timestamp (generated once per page load)
+  const timestamp = useMemo(() => Date.now(), [])
 
   const searchQuery = searchParams.get('search') || ''
   const selectedEditionId = searchParams.get('edition')
@@ -225,12 +227,12 @@ export default function CatalogPage() {
               >
                 <div className="aspect-square border rounded-lg overflow-hidden bg-white hover:shadow-lg transition-shadow flex items-center justify-center p-4">
                   {company.logo_url ? (
-                    <Image
-                      src={company.logo_url}
+                    <img
+                      src={`${company.logo_url.split('?')[0]}?v=${timestamp}`}
                       alt={company.name}
                       width={160}
                       height={160}
-                      className="object-contain group-hover:scale-105 transition-transform"
+                      className="object-contain group-hover:scale-105 transition-transform max-w-full max-h-full"
                     />
                   ) : (
                     <div className="text-center">

@@ -1,6 +1,6 @@
+import { unstable_noStore as noStore } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -14,7 +14,9 @@ import { Badge } from '@/components/ui/badge'
 import { Plus, Building2 } from 'lucide-react'
 
 export default async function CompaniesPage() {
+  noStore() // Disable caching to ensure fresh data and logo timestamps
   const supabase = await createClient()
+  const timestamp = Date.now() // Generate once per request for consistent cache-busting
   const { data: companies } = await supabase
     .from('companies')
     .select('*')
@@ -25,12 +27,12 @@ export default async function CompaniesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Firmy</h1>
-          <p className="text-gray-500">Sprava firem v systemu</p>
+          <p className="text-gray-500">Správa firem v systému</p>
         </div>
         <Button asChild>
           <Link href="/admin/companies/new">
             <Plus className="mr-2 h-4 w-4" />
-            Pridat firmu
+            Přidat firmu
           </Link>
         </Button>
       </div>
@@ -40,7 +42,7 @@ export default async function CompaniesPage() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-16">Logo</TableHead>
-              <TableHead>Nazev</TableHead>
+              <TableHead>Název</TableHead>
               <TableHead>Slug</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Akce</TableHead>
@@ -52,8 +54,8 @@ export default async function CompaniesPage() {
                 <TableRow key={company.id}>
                   <TableCell>
                     {company.logo_url ? (
-                      <Image
-                        src={company.logo_url}
+                      <img
+                        src={`${company.logo_url.split('?')[0]}?v=${timestamp}`}
                         alt={company.name}
                         width={40}
                         height={40}
@@ -69,7 +71,7 @@ export default async function CompaniesPage() {
                   <TableCell className="text-gray-500">{company.slug}</TableCell>
                   <TableCell>
                     <Badge variant={company.is_active ? 'default' : 'secondary'}>
-                      {company.is_active ? 'Aktivni' : 'Neaktivni'}
+                      {company.is_active ? 'Aktivní' : 'Neaktivní'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right space-x-2">
@@ -85,7 +87,7 @@ export default async function CompaniesPage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                  Zadne firmy. Pridejte prvni firmu.
+                  Žádné firmy. Přidejte první firmu.
                 </TableCell>
               </TableRow>
             )}

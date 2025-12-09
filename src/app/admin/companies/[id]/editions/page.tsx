@@ -75,7 +75,7 @@ export default function CompanyEditionsPage({ params }: { params: Promise<{ id: 
   }
 
   const handleRemoveEdition = async (companyEditionId: string) => {
-    if (!confirm('Opravdu chcete odebrat firmu z teto edice? Vsechny stranky budou smazany.')) {
+    if (!confirm('Opravdu chcete odebrat firmu z této edice? Všechny stránky budou smazány.')) {
       return
     }
 
@@ -124,14 +124,14 @@ export default function CompanyEditionsPage({ params }: { params: Promise<{ id: 
   }
 
   const handleDeletePage = async (pageId: string) => {
-    if (!confirm('Opravdu chcete smazat tuto stranku?')) return
+    if (!confirm('Opravdu chcete smazat tuto stránku?')) return
 
     await supabase.from('company_pages').delete().eq('id', pageId)
     await loadData()
   }
 
   if (!company) {
-    return <div className="p-8">Nacitam...</div>
+    return <div className="p-8">Načítám...</div>
   }
 
   return (
@@ -151,7 +151,7 @@ export default function CompanyEditionsPage({ params }: { params: Promise<{ id: 
       {/* Add to edition */}
       <Card>
         <CardHeader>
-          <CardTitle>Pridat do edice</CardTitle>
+          <CardTitle>Přidat do edice</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
@@ -169,7 +169,7 @@ export default function CompanyEditionsPage({ params }: { params: Promise<{ id: 
             </select>
             <Button onClick={handleAddEdition} disabled={!selectedEdition || loading}>
               <Plus className="mr-2 h-4 w-4" />
-              Pridat
+              Přidat
             </Button>
           </div>
         </CardContent>
@@ -179,7 +179,7 @@ export default function CompanyEditionsPage({ params }: { params: Promise<{ id: 
       {companyEditions.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center text-gray-500">
-            Firma neni prirazena k zadne edici.
+            Firma není přiřazena k žádné edici.
           </CardContent>
         </Card>
       ) : (
@@ -238,18 +238,18 @@ export default function CompanyEditionsPage({ params }: { params: Promise<{ id: 
                     disabled={uploading === ce.id}
                   />
                   {uploading === ce.id ? (
-                    <span className="text-gray-500">Nahravam...</span>
+                    <span className="text-gray-500">Nahrávám...</span>
                   ) : (
                     <>
                       <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                      <span className="text-sm text-gray-500">Nahrat stranky</span>
+                      <span className="text-sm text-gray-500">Nahrát stránky</span>
                     </>
                   )}
                 </label>
               </div>
 
               <p className="text-xs text-gray-500">
-                Pocet stranek: {ce.pages.length} | Nahrajte obrazky stranek brozury (webp, jpg, png)
+                Počet stránek: {ce.pages.length} | Nahrajte obrázky stránek brožury (webp, jpg, png)
               </p>
             </CardContent>
           </Card>

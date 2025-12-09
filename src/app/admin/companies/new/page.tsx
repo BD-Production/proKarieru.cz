@@ -69,19 +69,19 @@ export default function NewCompanyPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">Nova firma</h1>
-          <p className="text-gray-500">Pridejte novou firmu do systemu</p>
+          <h1 className="text-3xl font-bold">Nová firma</h1>
+          <p className="text-gray-500">Přidejte novou firmu do systému</p>
         </div>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Zakladni informace</CardTitle>
+          <CardTitle>Základní informace</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nazev firmy *</Label>
+              <Label htmlFor="name">Název firmy *</Label>
               <Input
                 id="name"
                 name="name"
@@ -117,7 +117,7 @@ export default function NewCompanyPage() {
                 onChange={handleChange}
               />
               <p className="text-xs text-gray-500">
-                Logo muzete nahrat pozdeji pres Supabase Storage
+                Logo můžete nahrát později v editaci firmy
               </p>
             </div>
 
@@ -127,10 +127,10 @@ export default function NewCompanyPage() {
 
             <div className="flex gap-4 pt-4">
               <Button type="submit" disabled={loading}>
-                {loading ? 'Ukladam...' : 'Vytvorit firmu'}
+                {loading ? 'Ukládám...' : 'Vytvořit firmu'}
               </Button>
               <Button asChild variant="outline">
-                <Link href="/admin/companies">Zrusit</Link>
+                <Link href="/admin/companies">Zrušit</Link>
               </Button>
             </div>
           </form>

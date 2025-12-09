@@ -17,7 +17,7 @@ export default async function AdminDashboard() {
 
   const stats = [
     {
-      name: 'Portaly',
+      name: 'Portály',
       value: portalsResult.count || 0,
       icon: Globe,
       href: '/admin/portals'
@@ -46,7 +46,7 @@ export default async function AdminDashboard() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-gray-500">Prehled systemu proKarieru</p>
+        <p className="text-gray-500">Přehled systému proKarieru</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -70,30 +70,30 @@ export default async function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Rychle akce</CardTitle>
+            <CardTitle>Rychlé akce</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <Button asChild className="w-full justify-start">
-              <Link href="/admin/companies/new">+ Pridat firmu</Link>
+              <Link href="/admin/companies/new">+ Přidat firmu</Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/admin/editions/new">+ Nova edice</Link>
+              <Link href="/admin/editions/new">+ Nová edice</Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/admin/portals/new">+ Novy portal</Link>
+              <Link href="/admin/portals/new">+ Nový portál</Link>
             </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Napoveda</CardTitle>
+            <CardTitle>Nápověda</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-gray-500 space-y-2">
-            <p><strong>Portal</strong> = prostavare.cz, prostrojare.cz...</p>
-            <p><strong>Edice</strong> = Brozura (Jaro 2025 Praha)</p>
-            <p><strong>Firma</strong> = Globalni entita, muze byt ve vice edicich</p>
-            <p><strong>Veletrh</strong> = Akce s mapou a soutezi</p>
+            <p><strong>Portál</strong> = prostavare.cz, prostrojare.cz...</p>
+            <p><strong>Edice</strong> = Brožura (Jaro 2025 Praha)</p>
+            <p><strong>Firma</strong> = Globální entita, může být ve více edicích</p>
+            <p><strong>Veletrh</strong> = Akce s mapou a soutěží</p>
           </CardContent>
         </Card>
       </div>

@@ -95,7 +95,7 @@ export default function EditPortalPage({ params }: { params: Promise<{ id: strin
   }
 
   const handleDelete = async () => {
-    if (!confirm('Opravdu chcete smazat tento portal? Tato akce je nevratna.')) {
+    if (!confirm('Opravdu chcete smazat tento portál? Tato akce je nevratná.')) {
       return
     }
 
@@ -113,7 +113,7 @@ export default function EditPortalPage({ params }: { params: Promise<{ id: strin
   }
 
   if (!portal) {
-    return <div className="p-8">Nacitam...</div>
+    return <div className="p-8">Načítám...</div>
   }
 
   return (
@@ -126,24 +126,24 @@ export default function EditPortalPage({ params }: { params: Promise<{ id: strin
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Upravit portal</h1>
+            <h1 className="text-3xl font-bold">Upravit portál</h1>
             <p className="text-gray-500">{portal.name}</p>
           </div>
         </div>
         <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
           <Trash2 className="mr-2 h-4 w-4" />
-          {deleting ? 'Mazu...' : 'Smazat'}
+          {deleting ? 'Mažu...' : 'Smazat'}
         </Button>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Zakladni informace</CardTitle>
+          <CardTitle>Základní informace</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nazev portalu *</Label>
+              <Label htmlFor="name">Název portálu *</Label>
               <Input
                 id="name"
                 name="name"
@@ -165,7 +165,7 @@ export default function EditPortalPage({ params }: { params: Promise<{ id: strin
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="domain">Domena *</Label>
+                <Label htmlFor="domain">Doména *</Label>
                 <Input
                   id="domain"
                   name="domain"
@@ -188,7 +188,7 @@ export default function EditPortalPage({ params }: { params: Promise<{ id: strin
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="primary_color">Primarni barva *</Label>
+                <Label htmlFor="primary_color">Primární barva *</Label>
                 <div className="flex gap-2">
                   <Input
                     type="color"
@@ -207,7 +207,7 @@ export default function EditPortalPage({ params }: { params: Promise<{ id: strin
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="secondary_color">Sekundarni barva</Label>
+                <Label htmlFor="secondary_color">Sekundární barva</Label>
                 <div className="flex gap-2">
                   <Input
                     type="color"
@@ -247,7 +247,7 @@ export default function EditPortalPage({ params }: { params: Promise<{ id: strin
                 onChange={handleChange}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="is_active">Portal je aktivni</Label>
+              <Label htmlFor="is_active">Portál je aktivní</Label>
             </div>
 
             {error && (
@@ -256,10 +256,10 @@ export default function EditPortalPage({ params }: { params: Promise<{ id: strin
 
             <div className="flex gap-4 pt-4">
               <Button type="submit" disabled={loading}>
-                {loading ? 'Ukladam...' : 'Ulozit zmeny'}
+                {loading ? 'Ukládám...' : 'Uložit změny'}
               </Button>
               <Button asChild variant="outline">
-                <Link href="/admin/portals">Zrusit</Link>
+                <Link href="/admin/portals">Zrušit</Link>
               </Button>
             </div>
           </form>

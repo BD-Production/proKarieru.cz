@@ -81,19 +81,19 @@ export default function NewEditionPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">Nova edice</h1>
-          <p className="text-gray-500">Vytvorte novou edici brozury</p>
+          <h1 className="text-3xl font-bold">Nová edice</h1>
+          <p className="text-gray-500">Vytvořte novou edici brožury</p>
         </div>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Zakladni informace</CardTitle>
+          <CardTitle>Základní informace</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="portal_id">Portal *</Label>
+              <Label htmlFor="portal_id">Portál *</Label>
               <select
                 id="portal_id"
                 name="portal_id"
@@ -102,7 +102,7 @@ export default function NewEditionPage() {
                 required
                 className="w-full px-3 py-2 border rounded-md"
               >
-                <option value="">Vyberte portal</option>
+                <option value="">Vyberte portál</option>
                 {portals.map((portal) => (
                   <option key={portal.id} value={portal.id}>
                     {portal.name}
@@ -112,7 +112,7 @@ export default function NewEditionPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name">Nazev edice *</Label>
+              <Label htmlFor="name">Název edice *</Label>
               <Input
                 id="name"
                 name="name"
@@ -136,7 +136,7 @@ export default function NewEditionPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="season">Sezona</Label>
+                <Label htmlFor="season">Sezóna</Label>
                 <select
                   id="season"
                   name="season"
@@ -144,7 +144,7 @@ export default function NewEditionPage() {
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-md"
                 >
-                  <option value="">Bez sezony</option>
+                  <option value="">Bez sezóny</option>
                   <option value="spring">Jaro</option>
                   <option value="fall">Podzim</option>
                   <option value="winter">Zima</option>
@@ -164,7 +164,7 @@ export default function NewEditionPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="display_order">Poradi zobrazeni</Label>
+                <Label htmlFor="display_order">Pořadí zobrazení</Label>
                 <Input
                   type="number"
                   id="display_order"
@@ -181,10 +181,10 @@ export default function NewEditionPage() {
 
             <div className="flex gap-4 pt-4">
               <Button type="submit" disabled={loading}>
-                {loading ? 'Ukladam...' : 'Vytvorit edici'}
+                {loading ? 'Ukládám...' : 'Vytvořit edici'}
               </Button>
               <Button asChild variant="outline">
-                <Link href="/admin/editions">Zrusit</Link>
+                <Link href="/admin/editions">Zrušit</Link>
               </Button>
             </div>
           </form>

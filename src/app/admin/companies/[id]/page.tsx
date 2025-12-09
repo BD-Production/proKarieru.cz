@@ -88,7 +88,7 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
   }
 
   const handleDelete = async () => {
-    if (!confirm('Opravdu chcete smazat tuto firmu? Tato akce je nevratna.')) {
+    if (!confirm('Opravdu chcete smazat tuto firmu? Tato akce je nevratná.')) {
       return
     }
 
@@ -116,7 +116,7 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
   }
 
   if (!company) {
-    return <div className="p-8">Nacitam...</div>
+    return <div className="p-8">Načítám...</div>
   }
 
   return (
@@ -139,7 +139,7 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
           </Button>
           <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
             <Trash2 className="mr-2 h-4 w-4" />
-            {deleting ? 'Mazu...' : 'Smazat'}
+            {deleting ? 'Mažu...' : 'Smazat'}
           </Button>
         </div>
       </div>
@@ -160,12 +160,12 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Zakladni informace</CardTitle>
+          <CardTitle>Základní informace</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nazev firmy *</Label>
+              <Label htmlFor="name">Název firmy *</Label>
               <Input
                 id="name"
                 name="name"
@@ -191,7 +191,7 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
               <Input
                 id="og_image_url"
                 name="og_image_url"
-                placeholder="Pro sdileni na socialnich sitich"
+                placeholder="Pro sdílení na sociálních sítích"
                 value={formData.og_image_url}
                 onChange={handleChange}
               />
@@ -206,7 +206,7 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
                 onChange={handleChange}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="is_active">Firma je aktivni</Label>
+              <Label htmlFor="is_active">Firma je aktivní</Label>
             </div>
 
             {error && (
@@ -215,10 +215,10 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
 
             <div className="flex gap-4 pt-4">
               <Button type="submit" disabled={loading}>
-                {loading ? 'Ukladam...' : 'Ulozit zmeny'}
+                {loading ? 'Ukládám...' : 'Uložit změny'}
               </Button>
               <Button asChild variant="outline">
-                <Link href="/admin/companies">Zrusit</Link>
+                <Link href="/admin/companies">Zrušit</Link>
               </Button>
             </div>
           </form>

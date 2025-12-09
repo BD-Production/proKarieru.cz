@@ -34,12 +34,12 @@ export default async function EditionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Edice</h1>
-          <p className="text-gray-500">Sprava edici brozur</p>
+          <p className="text-gray-500">Správa edicí brožur</p>
         </div>
         <Button asChild>
           <Link href="/admin/editions/new">
             <Plus className="mr-2 h-4 w-4" />
-            Nova edice
+            Nová edice
           </Link>
         </Button>
       </div>
@@ -48,10 +48,10 @@ export default async function EditionsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nazev</TableHead>
-              <TableHead>Portal</TableHead>
+              <TableHead>Název</TableHead>
+              <TableHead>Portál</TableHead>
               <TableHead>Rok</TableHead>
-              <TableHead>Sezona</TableHead>
+              <TableHead>Sezóna</TableHead>
               <TableHead>Lokace</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Akce</TableHead>
@@ -76,7 +76,7 @@ export default async function EditionsPage() {
                   <TableCell>{edition.location || '-'}</TableCell>
                   <TableCell>
                     <Badge variant={edition.is_active ? 'default' : 'secondary'}>
-                      {edition.is_active ? 'Aktivni' : 'Neaktivni'}
+                      {edition.is_active ? 'Aktivní' : 'Neaktivní'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -89,7 +89,7 @@ export default async function EditionsPage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                  Zadne edice. Pridejte prvni edici.
+                  Žádné edice. Přidejte první edici.
                 </TableCell>
               </TableRow>
             )}

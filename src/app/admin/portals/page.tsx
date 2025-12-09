@@ -23,13 +23,13 @@ export default async function PortalsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Portaly</h1>
-          <p className="text-gray-500">Sprava kariernich portalu</p>
+          <h1 className="text-3xl font-bold">Portály</h1>
+          <p className="text-gray-500">Správa kariérních portálů</p>
         </div>
         <Button asChild>
           <Link href="/admin/portals/new">
             <Plus className="mr-2 h-4 w-4" />
-            Pridat portal
+            Přidat portál
           </Link>
         </Button>
       </div>
@@ -38,8 +38,8 @@ export default async function PortalsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nazev</TableHead>
-              <TableHead>Domena</TableHead>
+              <TableHead>Název</TableHead>
+              <TableHead>Doména</TableHead>
               <TableHead>Barva</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Akce</TableHead>
@@ -62,7 +62,7 @@ export default async function PortalsPage() {
                   </TableCell>
                   <TableCell>
                     <Badge variant={portal.is_active ? 'default' : 'secondary'}>
-                      {portal.is_active ? 'Aktivni' : 'Neaktivni'}
+                      {portal.is_active ? 'Aktivní' : 'Neaktivní'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -75,7 +75,7 @@ export default async function PortalsPage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                  Zadne portaly. Pridejte prvni portal.
+                  Žádné portály. Přidejte první portál.
                 </TableCell>
               </TableRow>
             )}

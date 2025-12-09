@@ -102,7 +102,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
   }
 
   const handleDelete = async () => {
-    if (!confirm('Opravdu chcete smazat tuto edici? Tato akce je nevratna.')) {
+    if (!confirm('Opravdu chcete smazat tuto edici? Tato akce je nevratná.')) {
       return
     }
 
@@ -120,7 +120,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
   }
 
   if (!edition) {
-    return <div className="p-8">Nacitam...</div>
+    return <div className="p-8">Načítám...</div>
   }
 
   return (
@@ -139,18 +139,18 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
         </div>
         <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
           <Trash2 className="mr-2 h-4 w-4" />
-          {deleting ? 'Mazu...' : 'Smazat'}
+          {deleting ? 'Mažu...' : 'Smazat'}
         </Button>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Zakladni informace</CardTitle>
+          <CardTitle>Základní informace</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="portal_id">Portal *</Label>
+              <Label htmlFor="portal_id">Portál *</Label>
               <select
                 id="portal_id"
                 name="portal_id"
@@ -159,7 +159,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
                 required
                 className="w-full px-3 py-2 border rounded-md"
               >
-                <option value="">Vyberte portal</option>
+                <option value="">Vyberte portál</option>
                 {portals.map((portal) => (
                   <option key={portal.id} value={portal.id}>
                     {portal.name}
@@ -169,7 +169,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name">Nazev edice *</Label>
+              <Label htmlFor="name">Název edice *</Label>
               <Input
                 id="name"
                 name="name"
@@ -192,7 +192,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="season">Sezona</Label>
+                <Label htmlFor="season">Sezóna</Label>
                 <select
                   id="season"
                   name="season"
@@ -200,7 +200,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-md"
                 >
-                  <option value="">Bez sezony</option>
+                  <option value="">Bez sezóny</option>
                   <option value="spring">Jaro</option>
                   <option value="fall">Podzim</option>
                   <option value="winter">Zima</option>
@@ -219,7 +219,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="display_order">Poradi zobrazeni</Label>
+                <Label htmlFor="display_order">Pořadí zobrazení</Label>
                 <Input
                   type="number"
                   id="display_order"
@@ -239,7 +239,7 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
                 onChange={handleChange}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="is_active">Edice je aktivni (default zobrazeni)</Label>
+              <Label htmlFor="is_active">Edice je aktivní (výchozí zobrazení)</Label>
             </div>
 
             {error && (
@@ -248,10 +248,10 @@ export default function EditEditionPage({ params }: { params: Promise<{ id: stri
 
             <div className="flex gap-4 pt-4">
               <Button type="submit" disabled={loading}>
-                {loading ? 'Ukladam...' : 'Ulozit zmeny'}
+                {loading ? 'Ukládám...' : 'Uložit změny'}
               </Button>
               <Button asChild variant="outline">
-                <Link href="/admin/editions">Zrusit</Link>
+                <Link href="/admin/editions">Zrušit</Link>
               </Button>
             </div>
           </form>

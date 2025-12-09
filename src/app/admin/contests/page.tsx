@@ -4,16 +4,16 @@ export default function ContestsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Souteze</h1>
-        <p className="text-gray-500">Sprava soutezi a prihlasek</p>
+        <h1 className="text-3xl font-bold">Soutěže</h1>
+        <p className="text-gray-500">Správa soutěží a přihlášek</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Pripravujeme</CardTitle>
+          <CardTitle>Připravujeme</CardTitle>
         </CardHeader>
         <CardContent className="text-gray-500">
-          Sprava soutezi bude dostupna ve Fazi 2 spolu s integraci Ecomail.
+          Správa soutěží bude dostupná ve Fázi 2 spolu s integrací Ecomail.
         </CardContent>
       </Card>
     </div>
