@@ -116,15 +116,19 @@ CREATE POLICY "Admin read click_tracking" ON click_tracking
   FOR SELECT USING (auth.role() = 'authenticated');
 
 -- ============================================
--- FULL-TEXT SEARCH INDEX (volitelne)
+-- FULL-TEXT SEARCH (volitelne - pro budouci rozsireni)
 -- ============================================
--- Pro rychle fulltextove vyhledavani firem
-CREATE INDEX IF NOT EXISTS idx_companies_search ON companies
-  USING gin(to_tsvector('simple',
-    coalesce(name, '') || ' ' ||
-    coalesce(description, '') || ' ' ||
-    coalesce(array_to_string(location, ' '), '') || ' ' ||
-    coalesce(array_to_string(sectors, ' '), '') || ' ' ||
-    coalesce(array_to_string(positions, ' '), '') || ' ' ||
-    coalesce(array_to_string(opportunities, ' '), '')
-  ));
+-- Poznamka: Full-text index vyzaduje generated column nebo trigger
+-- Pro ted pouzijeme jednoduche indexy na jednotlivych polich
+
+-- Index pro vyhledavani podle nazvu firmy
+CREATE INDEX IF NOT EXISTS idx_companies_name ON companies(name);
+
+-- Index pro vyhledavani podle lokace (GIN pro pole)
+CREATE INDEX IF NOT EXISTS idx_companies_location ON companies USING gin(location);
+
+-- Index pro vyhledavani podle sektoru
+CREATE INDEX IF NOT EXISTS idx_companies_sectors ON companies USING gin(sectors);
+
+-- Index pro vyhledavani podle pozic
+CREATE INDEX IF NOT EXISTS idx_companies_positions ON companies USING gin(positions);
