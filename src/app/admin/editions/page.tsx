@@ -20,7 +20,6 @@ export default async function EditionsPage() {
       *,
       portal:portals(name, slug)
     `)
-    .order('year', { ascending: false })
     .order('display_order', { ascending: true })
 
   const seasonLabels: Record<string, string> = {

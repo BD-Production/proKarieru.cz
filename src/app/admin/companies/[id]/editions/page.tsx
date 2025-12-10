@@ -39,7 +39,7 @@ export default function CompanyEditionsPage({ params }: { params: Promise<{ id: 
       supabase
         .from('editions')
         .select('*, portal:portals(name)')
-        .order('year', { ascending: false }),
+        .order('display_order', { ascending: true }),
     ])
 
     if (companyResult.data) setCompany(companyResult.data)
