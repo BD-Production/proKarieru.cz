@@ -35,12 +35,12 @@ export default async function CompaniesPage() {
       logo_url,
       is_active,
       company_editions(
-        edition:editions(id, name)
+        edition:editions(id, name, display_order)
       )
     `)
     .order('name', { ascending: true })
 
-  // Transform data to include editions array
+  // Transform data to include editions array (sorted by display_order)
   const companiesWithEditions = companies?.map((company) => ({
     id: company.id,
     name: company.name,
@@ -49,7 +49,8 @@ export default async function CompaniesPage() {
     is_active: company.is_active,
     editions: company.company_editions
       ?.map((ce: any) => ce.edition)
-      .filter(Boolean) || [],
+      .filter(Boolean)
+      .sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0)) || [],
   })) || []
 
   return (
