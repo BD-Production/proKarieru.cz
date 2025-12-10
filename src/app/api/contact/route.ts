@@ -10,14 +10,14 @@ export async function POST(request: NextRequest) {
     // Validace
     if (!name || !email) {
       return NextResponse.json(
-        { error: 'Jmeno a email jsou povinne' },
+        { error: 'Jméno a email jsou povinné' },
         { status: 400 }
       )
     }
 
     if (!gdpr_consent) {
       return NextResponse.json(
-        { error: 'Musite souhlasit se zpracovanim osobnich udaju' },
+        { error: 'Musíte souhlasit se zpracováním osobních údajů' },
         { status: 400 }
       )
     }
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Neplatny format emailu' },
+        { error: 'Neplatný formát emailu' },
         { status: 400 }
       )
     }
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error saving contact lead:', error)
       return NextResponse.json(
-        { error: 'Nepodarilo se ulozit formular' },
+        { error: 'Nepodařilo se uložit formulář' },
         { status: 500 }
       )
     }
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error('Contact form error:', err)
     return NextResponse.json(
-      { error: 'Nastala chyba pri zpracovani' },
+      { error: 'Nastala chyba při zpracování' },
       { status: 500 }
     )
   }

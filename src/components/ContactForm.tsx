@@ -61,7 +61,7 @@ export function ContactForm({
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Nepodarilo se odeslat formular')
+        throw new Error(data.error || 'Nepodařilo se odeslat formulář')
       }
 
       setSuccess(true)
@@ -84,16 +84,16 @@ export function ContactForm({
       <Card>
         <CardContent className="py-12 text-center">
           <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500" />
-          <h3 className="font-semibold text-lg mb-2">Dekujeme za zajem!</h3>
+          <h3 className="font-semibold text-lg mb-2">Děkujeme za zájem!</h3>
           <p className="text-gray-600 text-sm">
-            Vasi zpravu jsme prijali a predame ji firme {companyName}.
+            Vaši zprávu jsme přijali a předáme ji firmě {companyName}.
           </p>
           <Button
             variant="outline"
             className="mt-4"
             onClick={() => setSuccess(false)}
           >
-            Odeslat dalsi zpravu
+            Odeslat další zprávu
           </Button>
         </CardContent>
       </Card>
@@ -103,18 +103,18 @@ export function ContactForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Mam zajem o tuto firmu</CardTitle>
+        <CardTitle className="text-lg">Mám zájem o tuto firmu</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="contact-name">Jmeno *</Label>
+            <Label htmlFor="contact-name">Jméno *</Label>
             <Input
               id="contact-name"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Jan Novak"
+              placeholder="Jan Novák"
               required
             />
           </div>
@@ -145,13 +145,13 @@ export function ContactForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contact-message">Zprava</Label>
+            <Label htmlFor="contact-message">Zpráva</Label>
             <Textarea
               id="contact-message"
               name="message"
               value={formData.message}
               onChange={handleChange}
-              placeholder="Napiste neco o sobe nebo co vas zajima..."
+              placeholder="Napište něco o sobě nebo co vás zajímá…"
               rows={4}
             />
           </div>
@@ -167,8 +167,8 @@ export function ContactForm({
               className="mt-1 rounded border-gray-300"
             />
             <Label htmlFor="contact-gdpr" className="text-sm text-gray-600">
-              Souhlasim se zpracovanim osobnich udaju za ucelem predani kontaktu
-              firmam. *
+              Souhlasím se zpracováním osobních údajů za účelem předání kontaktu
+              firmám. *
             </Label>
           </div>
 
@@ -183,12 +183,12 @@ export function ContactForm({
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Odesilam...
+                Odesílám…
               </>
             ) : (
               <>
                 <Send className="mr-2 h-4 w-4" />
-                Odeslat zajem
+                Odeslat zájem
               </>
             )}
           </Button>

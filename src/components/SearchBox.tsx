@@ -13,7 +13,7 @@ interface SearchBoxProps {
 
 export function SearchBox({
   portalSlug,
-  placeholder = 'Hledej firmu, pozici nebo obor...',
+  placeholder = 'Hledej firmu, pozici nebo obor…',
 }: SearchBoxProps) {
   const [query, setQuery] = useState('')
   const router = useRouter()
