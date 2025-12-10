@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { ArrowLeft, ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { BrochureCarousel } from '@/components/BrochureCarousel'
-import { GoogleAnalytics, GTMNoScript } from '@/components/GoogleAnalytics'
 import { EditionTabs } from '@/components/EditionTabs'
 
 type Edition = {
@@ -74,13 +73,7 @@ export default async function CompanyDetailPage({
   ) || []
 
   return (
-    <>
-      <GoogleAnalytics
-        gaMeasurementId={portal?.ga_measurement_id}
-        gtmContainerId={portal?.gtm_container_id}
-      />
-      <GTMNoScript gtmContainerId={portal?.gtm_container_id} />
-      <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
         {/* Header */}
       <header className="border-b bg-white sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -136,7 +129,6 @@ export default async function CompanyDetailPage({
           <span>{portal?.name}</span>
         </div>
       </footer>
-      </div>
-    </>
+    </div>
   )
 }
