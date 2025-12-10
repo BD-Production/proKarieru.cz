@@ -158,7 +158,7 @@ export default function CatalogPage() {
       params.delete('search')
     }
 
-    router.replace(`/catalog?${params.toString()}`, { scroll: false })
+    router.replace(`/katalog?${params.toString()}`, { scroll: false })
   }
 
   const handleEditionChange = (editionId: string | null) => {
@@ -168,7 +168,7 @@ export default function CatalogPage() {
     } else {
       params.delete('edition')
     }
-    router.replace(`/catalog?${params.toString()}`)
+    router.replace(`/katalog?${params.toString()}`)
   }
 
   if (loading) {

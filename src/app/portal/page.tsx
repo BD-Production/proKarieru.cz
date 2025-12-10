@@ -54,7 +54,7 @@ export default async function PortalPage() {
       {/* Cards */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
-          <Link href={`/catalog`}>
+          <Link href={`/katalog`}>
             <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer group">
               <CardHeader className="text-center">
                 <div

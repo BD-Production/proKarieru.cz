@@ -44,31 +44,30 @@ export default async function CompanyDetailPage({
     .limit(1)
     .single()
 
-  // Get all editions for portal
-  const { data: editions } = await supabase
-    .from('editions')
-    .select('id, name, is_active, display_order')
-    .eq('portal_id', portal?.id)
-    .order('is_active', { ascending: false })
-    .order('display_order')
-
-  // Determine active edition (from URL param or default to is_active)
-  const edition = selectedEditionId
-    ? editions?.find((e: Edition) => e.id === selectedEditionId)
-    : editions?.find((e: Edition) => e.is_active) || editions?.[0]
-
-  // Get company pages for this edition
-  const { data: companyEdition } = await supabase
+  // Get editions where this company has pages
+  const { data: companyEditions } = await supabase
     .from('company_editions')
     .select(`
       *,
+      edition:editions(id, name, is_active, display_order),
       pages:company_pages(*)
     `)
     .eq('company_id', company.id)
-    .eq('edition_id', edition?.id)
-    .single()
 
-  const pages = companyEdition?.pages?.sort(
+  // Filter to editions with pages and sort by display_order
+  const editionsWithPages = companyEditions
+    ?.filter((ce: any) => ce.edition && ce.pages && ce.pages.length > 0)
+    .map((ce: any) => ce.edition)
+    .sort((a: Edition, b: Edition) => (a.display_order || 0) - (b.display_order || 0)) || []
+
+  // Determine active edition (from URL param or default to is_active)
+  const edition = selectedEditionId
+    ? editionsWithPages.find((e: Edition) => e.id === selectedEditionId)
+    : editionsWithPages.find((e: Edition) => e.is_active) || editionsWithPages[0]
+
+  // Get pages for current edition
+  const currentCompanyEdition = companyEditions?.find((ce: any) => ce.edition_id === edition?.id)
+  const pages = currentCompanyEdition?.pages?.sort(
     (a: { page_number: number }, b: { page_number: number }) => a.page_number - b.page_number
   ) || []
 
@@ -90,10 +89,10 @@ export default async function CompanyDetailPage({
               </span>
             )}
           </div>
-          {editions && editions.length > 1 && edition && (
+          {editionsWithPages.length > 1 && edition && (
             <div className="mt-4">
               <EditionTabs
-                editions={editions}
+                editions={editionsWithPages}
                 activeEditionId={edition.id}
                 basePath={`/${companySlug}`}
                 primaryColor={portal?.primary_color}

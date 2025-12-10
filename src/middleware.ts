@@ -99,7 +99,7 @@ export async function middleware(request: NextRequest) {
       if (subdomain === 'katalog') {
         if (pathname === '/') {
           return NextResponse.rewrite(
-            new URL('/catalog', request.url),
+            new URL('/katalog', request.url),
             { headers: response.headers }
           )
         }
@@ -125,7 +125,7 @@ export async function middleware(request: NextRequest) {
         // Root path → katalog
         if (pathname === '/') {
           return NextResponse.rewrite(
-            new URL('/catalog', request.url),
+            new URL('/katalog', request.url),
             { headers: response.headers }
           )
         }
