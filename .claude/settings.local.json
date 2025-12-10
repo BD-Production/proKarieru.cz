@@ -26,7 +26,8 @@
       "Bash(tree:*)",
       "Bash(findstr:*)",
       "Bash(copy:*)",
-      "WebFetch(domain:prostavare-dev.fun)"
+      "WebFetch(domain:prostavare-dev.fun)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
