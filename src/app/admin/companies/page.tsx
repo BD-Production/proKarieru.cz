@@ -2,25 +2,55 @@ import { unstable_noStore as noStore } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
-import { Plus, Building2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { CompaniesTable } from './CompaniesTable'
 
 export default async function CompaniesPage() {
   noStore() // Disable caching to ensure fresh data and logo timestamps
   const supabase = await createClient()
-  const timestamp = Date.now() // Generate once per request for consistent cache-busting
+  const timestamp = Date.now()
+
+  // Get active portal
+  const { data: portal } = await supabase
+    .from('portals')
+    .select('id')
+    .eq('is_active', true)
+    .limit(1)
+    .single()
+
+  // Get all editions for the portal
+  const { data: editions } = await supabase
+    .from('editions')
+    .select('id, name')
+    .eq('portal_id', portal?.id)
+    .order('display_order')
+
+  // Get all companies with their editions
   const { data: companies } = await supabase
     .from('companies')
-    .select('*')
+    .select(`
+      id,
+      name,
+      slug,
+      logo_url,
+      is_active,
+      company_editions(
+        edition:editions(id, name)
+      )
+    `)
     .order('name', { ascending: true })
+
+  // Transform data to include editions array
+  const companiesWithEditions = companies?.map((company) => ({
+    id: company.id,
+    name: company.name,
+    slug: company.slug,
+    logo_url: company.logo_url,
+    is_active: company.is_active,
+    editions: company.company_editions
+      ?.map((ce: any) => ce.edition)
+      .filter(Boolean) || [],
+  })) || []
 
   return (
     <div className="space-y-6">
@@ -37,63 +67,11 @@ export default async function CompaniesPage() {
         </Button>
       </div>
 
-      <div className="bg-white rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-16">Logo</TableHead>
-              <TableHead>Název</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Akce</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {companies && companies.length > 0 ? (
-              companies.map((company) => (
-                <TableRow key={company.id}>
-                  <TableCell>
-                    {company.logo_url ? (
-                      <img
-                        src={`${company.logo_url.split('?')[0]}?v=${timestamp}`}
-                        alt={company.name}
-                        width={40}
-                        height={40}
-                        className="rounded object-contain"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                        <Building2 className="h-5 w-5 text-gray-400" />
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-medium">{company.name}</TableCell>
-                  <TableCell className="text-gray-500">{company.slug}</TableCell>
-                  <TableCell>
-                    <Badge variant={company.is_active ? 'default' : 'secondary'}>
-                      {company.is_active ? 'Aktivní' : 'Neaktivní'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button asChild variant="ghost" size="sm">
-                      <Link href={`/admin/companies/${company.id}`}>Upravit</Link>
-                    </Button>
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/admin/companies/${company.id}/editions`}>Edice</Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                  Žádné firmy. Přidejte první firmu.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <CompaniesTable
+        companies={companiesWithEditions}
+        editions={editions || []}
+        timestamp={timestamp}
+      />
     </div>
   )
 }
