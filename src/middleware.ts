@@ -122,12 +122,17 @@ export async function middleware(request: NextRequest) {
           return response
         }
 
-        // Root path → katalog
+        // Root path → portal (nová homepage)
         if (pathname === '/') {
           return NextResponse.rewrite(
-            new URL('/katalog', request.url),
+            new URL('/portal', request.url),
             { headers: response.headers }
           )
+        }
+
+        // /katalog cesta projde přímo
+        if (pathname === '/katalog' || pathname.startsWith('/katalog/')) {
+          return response
         }
 
         // Ostatní cesty (včetně /{company-slug}) projdou přímo
