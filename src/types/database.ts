@@ -29,6 +29,12 @@ export interface Edition {
   updated_at: string
 }
 
+export interface HRContact {
+  name?: string
+  email?: string
+  phone?: string
+}
+
 export interface Company {
   id: string
   name: string
@@ -38,6 +44,17 @@ export interface Company {
   is_active: boolean
   created_at: string
   updated_at: string
+
+  // Nova pole pro Homepage
+  location: string[]
+  sectors: string[]
+  opportunities: string[]
+  positions: string[]
+  description: string | null
+  employee_count: string | null
+  years_on_market: number | null
+  benefits: string[]
+  hr_contact: HRContact | null
 }
 
 export interface CompanyEdition {
@@ -100,6 +117,33 @@ export interface ContestEntry {
   email: string
   gdpr_consent: boolean
   synced_to_ecomail: boolean
+  created_at: string
+}
+
+export interface ContactLead {
+  id: string
+  company_id: string | null
+  portal_id: string | null
+  name: string
+  email: string
+  phone: string | null
+  message: string | null
+  gdpr_consent: boolean
+  source: 'contact_form' | 'fair' | string
+  status: 'new' | 'contacted' | 'converted' | 'rejected'
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ClickTracking {
+  id: string
+  company_id: string | null
+  portal_id: string | null
+  action_type: 'email' | 'phone' | 'website' | 'profile_view'
+  session_id: string | null
+  user_agent: string | null
+  referer: string | null
   created_at: string
 }
 

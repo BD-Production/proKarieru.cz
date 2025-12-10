@@ -2,35 +2,42 @@
 
 Seznam otazek, ktere potrebuji objasneni pred nebo behem implementace.
 
-**Posledni aktualizace:** 2025-12-07
+**Posledni aktualizace:** 2025-12-10
 
 ---
 
 ## Aktivni otazky (K ROZHODNUTI)
 
-### 1. Upload obrazku - implementace
-- **Otazka:** Jak presne ma fungovat upload stranek brozury?
-- **Kontext:** UI pro upload existuje, ale chybi backend (API endpoint)
+### 0. SMER PROJEKTU (KRITICKA)
+- **Otazka:** Implementovat novou homepage specifikaci nebo dokoncit puvodni MVP?
+- **Kontext:** Nova specifikace `prostavare-homepage-spec.md` meni projekt z "katalogu firem" na "karierniportal"
 - **Moznosti:**
-  a) Primy upload do Supabase Storage z klienta
-  b) Upload pres Next.js API route (lepsi kontrola, validace)
-- **Status:** VYRESENO (2025-12-07)
-- **Reseni:** Implementovano v commit ddb15bc "Company logos"
-
-### 2. Carousel implementace
-- **Otazka:** Jaka knihovna pro carousel stranek brozury?
-- **Moznosti:**
-  a) Embla Carousel (shadcn/ui doporucuje)
-  b) Swiper.js
-  c) Vlastni implementace
+  a) Dokoncit puvodni MVP (fair data), pak novou homepage
+  b) Prejit rovnou na novou specifikaci
+  c) Hybridni pristup - zachovat puvodni, pridat novou homepage
 - **Status:** K ROZHODNUTI
+- **Priorita:** KRITICKA
+- **Detaily:** Viz `roadmap/prostavare-homepage-analysis.md`
+
+### 1. DB migrace pro novou specifikaci
+- **Otazka:** Jak pridat nova pole do `companies` tabulky?
+- **Kontext:** Nova specifikace vyzaduje: location, sectors, opportunities, positions, description, employee_count, years_on_market, benefits, hr_contact
+- **Moznosti:**
+  a) ALTER TABLE prikazy v Supabase SQL editoru
+  b) Nova migrace v `supabase/` slozce
+- **Status:** K ROZHODNUTI (zavisi na otazce #0)
+- **Priorita:** VYSOKA
+
+### 2. Hero obrazek
+- **Otazka:** Je k dispozici autenticka fotka mladych stavaru pro hero sekci?
+- **Kontext:** Specifikace pozaduje "ne stock fotky"
+- **Status:** CEKA NA ODPOVED
 - **Priorita:** STREDNI
 
-### 3. Search funkcionalita
-- **Otazka:** Ma byt search real-time nebo s debounce?
-- **Kontext:** Katalog muze obsahovat desitky firem
-- **Doporuceni:** Debounce 300ms pro lepsi UX
-- **Status:** K ROZHODNUTI
+### 3. Stranky "Pro firmy" a "O projektu"
+- **Otazka:** Existuji tyto stranky nebo je vytvorit?
+- **Kontext:** Specifikace je zminuje jako soucasti homepage a footeru
+- **Status:** CEKA NA ODPOVED
 - **Priorita:** STREDNI
 
 ### 4. Lokalni vyvoj - multi-domain
@@ -58,6 +65,19 @@ Seznam otazek, ktere potrebuji objasneni pred nebo behem implementace.
 ---
 
 ## Zodpovezene otazky
+
+### Upload obrazku - implementace (2025-12-07)
+- **Odpoved:** Implementovano v commit ddb15bc "Company logos"
+- **Reseni:** Upload primo do Supabase Storage
+
+### Carousel implementace (2025-12-10)
+- **Odpoved:** Pouzit BrochureCarousel komponenta (jiz existuje)
+- **Soubor:** `src/components/BrochureCarousel.tsx`
+
+### Search funkcionalita (2025-12-10)
+- **Odpoved:** Client-side search s URL parametry
+- **Soubor:** `src/app/katalog/page.tsx`
+- **Implementace:** Funguje real-time s URL sync
 
 ### Supabase projekt
 - **Odpoved:** Existuje a je pripojen

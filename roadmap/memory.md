@@ -2,7 +2,7 @@
 
 Dulezite informace k zapamatovani mezi sessions.
 
-**Posledni aktualizace:** 2025-12-07
+**Posledni aktualizace:** 2025-12-10
 
 ---
 
@@ -34,22 +34,30 @@ Dulezite informace k zapamatovani mezi sessions.
 
 ## Aktualni stav
 
-**Stav:** AKTIVNI VYVOJ - ~70% MVP DOKONCENO
-**Datum posledni aktualizace:** 2025-12-06
+**Stav:** ROZHODNUTI O SMERU - Nova specifikace meni projekt
+**Datum posledni aktualizace:** 2025-12-10
 
 ### Co je hotove:
 - Kompletni infrastruktura (Next.js, Supabase, middleware)
 - Admin sekce (CRUD pro portaly, firmy, edice)
 - Verejne stranky (landing, katalog, detail firmy)
 - Databaze s 9 tabulkami + RLS + seed data
+- Search v katalogu (FUNGUJE!)
+- Prepinani edici (FUNGUJE!)
+- Carousel stranek (FUNGUJE - BrochureCarousel)
 
-### Co chybi do MVP:
-1. Portal detection z middleware (hardcoded data v `/portal/page.tsx`)
-2. Client-side search v katalogu (Input existuje, neni funkcni)
-3. Prepinani edici (Tabs existuji vizualne, nejsou klikaci)
-4. Funkcni carousel na detailu firmy (stranky jsou pod sebou)
+### NOVA SPECIFIKACE (2025-12-10):
+Soubor `prostavare-homepage-spec.md` definuje transformaci na jobportal:
+- Nova homepage s hero sekci a vyhledavanim
+- Karty firem s pozicemi misto gridu s logy
+- Rozsireni DB o nova pole (lokace, sektory, pozice, HR kontakt)
+- Kontaktni formular "Mam zajem"
+- Trackovani kliku na kontakty
 
-**POZOR:** Upload obrazku je uz HOTOVY - commit ddb15bc "Company logos"
+### Klicova otazka k rozhodnuti:
+Prejit na novou specifikaci nebo dokoncit puvodni MVP (pouze fair data chybi)?
+
+**Detailni analyza:** `roadmap/prostavare-homepage-analysis.md`
 
 ---
 
@@ -114,15 +122,26 @@ D:\dev\proKarieru.cz\
 
 ## Poznámky pro další session
 
-- MVP je z 70% hotove, zbyva 4 hlavni ukoly
-- Faze 2 (Veletrh) nezahajovat pred dokoncenim MVP
-- Ecomail credentials budou potreba az pro Fazi 2
+### DULEZITE - Stav k 2025-12-10:
+- Puvodni MVP je prakticky HOTOVY (search, edice, carousel funguje)
+- Jediny zbyvajici ukol z puvodniho MVP: fair data z DB
+- NOVA SPECIFIKACE meni smer projektu na jobportal
 
-### Konkretni soubory k uprave pro MVP:
-1. `src/app/portal/page.tsx` - Nahradit hardcoded portal data za DB dotaz
-2. `src/app/catalog/page.tsx` - Pridat search filtrovani + funkcni tabs
-3. `src/app/catalog/[companySlug]/page.tsx` - Implementovat carousel (Embla)
+### Klicove soubory:
+1. `roadmap/prostavare-homepage-spec.md` - Nova specifikace (PRECIST!)
+2. `roadmap/prostavare-homepage-analysis.md` - Analyza zmien
+3. `src/app/portal/page.tsx` - Aktualni homepage (rozcestnik)
+4. `src/app/katalog/page.tsx` - Aktualni katalog (grid s logy)
 
-### Tech Stack upozorneni:
-- Next.js 16 + React 19 (ne 14 jak v init.md)
-- Tailwind CSS 4 (ne 3)
+### Pro implementaci nove specifikace potreba:
+1. Rozhodnuti o smeru (prejit na novou spec?)
+2. DB migrace (nova pole pro firmy)
+3. Nova homepage komponenta
+4. Kontaktni formular
+5. Trackovani kliku
+
+### Tech Stack:
+- Next.js 16 + React 19
+- Tailwind CSS 4
+- Supabase (DB + Auth + Storage)
+- shadcn/ui komponenty

@@ -1,12 +1,14 @@
 # proKarieru - Status projektu
 
-**Posledni aktualizace:** 2025-12-07
+**Posledni aktualizace:** 2025-12-10
 
 ---
 
-## Aktualni stav: AKTIVNI VYVOJ (~70% MVP)
+## Aktualni stav: ROZHODNUTI O SMERU
 
-Projekt je v pokrocile fazi implementace. Mezi 2.12. a 6.12.2025 probehla intenzivni implementace - admin sekce je temer kompletni, verejne stranky jsou strukturalne hotove.
+Projekt je v pokrocile fazi implementace (~70% MVP), ale nova specifikace `prostavare-homepage-spec.md` meni smer projektu z "katalogu firem" na "karierniportal".
+
+**POZOR:** Pred pokracovanim v implementaci je treba rozhodnout o smeru - viz sekce "Otevrene otazky".
 
 ---
 
@@ -27,23 +29,73 @@ Projekt je v pokrocile fazi implementace. Mezi 2.12. a 6.12.2025 probehla intenz
 | Prirazeni firem k edicim | HOTOVO | UI hotove |
 | Upload UI | HOTOVO | Komponenta pripravena |
 | Landing prokarieru.cz | HOTOVO | Verejne dostupna |
-| Portal landing | HOTOVO | prostavare.cz template |
-| Katalog homepage | HOTOVO | Grid firem s UI |
-| Detail firmy | HOTOVO | Stranka s carousel UI |
+| Portal landing | HOTOVO | prostavare.cz - rozcestnik |
+| Katalog homepage | HOTOVO | Grid firem s logy, filtry funkcni |
+| Detail firmy | HOTOVO | Carousel stranek brozury |
 
 ---
 
-## Co CHYBI do MVP (Faze 1)
+## NOVA SPECIFIKACE: proStavare Homepage (2025-12-10)
 
-| Ukol | Priorita | Poznamka |
-|------|----------|----------|
-| Portal detection z middleware | VYSOKA | `/portal/page.tsx` pouziva hardcoded data |
-| Client-side search | VYSOKA | Filtrovani firem v katalogu (UI existuje, neni funkcni) |
-| Funkcni carousel | STREDNI | Detail firmy - stranky brozury jsou pod sebou, chybi swipe |
-| Prepinani edici | STREDNI | Tabs existuji vizualne, neni klikaci |
-| Fair data z databaze | NIZKA | `/fair/page.tsx` pouziva mock data |
+Nova specifikace (`roadmap/prostavare-homepage-spec.md`) definuje transformaci na jobportal.
 
-**Poznamka:** Upload do Supabase Storage je HOTOVY - posledni commit "Company logos" (ddb15bc) toto implementoval.
+### Hlavni zmeny:
+1. **Nova homepage** - Hero s poctem firem, vyhledavani, karty firem s pozicemi
+2. **Rozsireni DB** - Nova pole pro firmy (lokace, sektory, prilezitosti, HR kontakt)
+3. **Kontaktni formular** - "Mam zajem" na detailu firmy
+4. **Trackovani** - Sledovani kliku na kontakty firem
+5. **Nove stranky** - "Pro firmy", "O projektu"
+
+### Detailni analyza:
+Viz `roadmap/prostavare-homepage-analysis.md`
+
+---
+
+## Otevrene otazky (K ROZHODNUTI)
+
+### 1. Smer implementace
+**Otazka:** Implementovat novou homepage specifikaci, nebo nejprve dokoncit puvodni MVP?
+
+**Moznosti:**
+- A) Dokoncit puvodni MVP (carousel, fair data), pak implementovat novou homepage
+- B) Prejit rovnou na novou specifikaci, ignorovat puvodni TODO
+- C) Hybridni pristup - zachovat puvodni a pridat novou homepage jako novou cestu
+
+### 2. DB migrace
+**Otazka:** Jak pridat nova pole do `companies` tabulky?
+
+**Potrebna pole:**
+- `location` (array)
+- `sectors` (array)
+- `opportunities` (array)
+- `positions` (array)
+- `description` (text)
+- `employee_count` (string)
+- `years_on_market` (integer)
+- `benefits` (array)
+- `hr_contact` (jsonb)
+
+### 3. Obrazek do hero
+**Otazka:** Je k dispozici autenticka fotka mladych stavaru pro hero sekci?
+
+### 4. Stranky "Pro firmy" a "O projektu"
+**Otazka:** Existuji tyto stranky, nebo je vytvorit?
+
+---
+
+## Puvodni MVP ukoly (POZASTAVENO)
+
+Tyto ukoly byly planovany pred novou specifikaci:
+
+| Ukol | Priorita | Status |
+|------|----------|--------|
+| Portal detection z middleware | VYSOKA | HOTOVO (overeno v kodu) |
+| Client-side search | VYSOKA | HOTOVO (funguje v `/katalog`) |
+| Prepinani edici | STREDNI | HOTOVO (funguje v `/katalog`) |
+| Carousel pro stranky | STREDNI | HOTOVO (BrochureCarousel) |
+| Fair data z DB | NIZKA | NEZAHAJENO |
+
+**Poznamka:** Pri analyze jsem zjistil, ze vetsina puvodniho MVP je vlastne hotova! Search a edice filtry v katalogu fungujici, carousel existuje.
 
 ---
 
@@ -63,7 +115,7 @@ Projekt je v pokrocile fazi implementace. Mezi 2.12. a 6.12.2025 probehla intenz
 
 | Ukol | Stav |
 |------|------|
-| GA4 tracking | NEZAHAJENO |
+| GA4 tracking | ROZPRACOVANO (komponenta existuje) |
 | SEO meta tagy | NEZAHAJENO |
 | OpenGraph images | NEZAHAJENO |
 | Performance | NEZAHAJENO |
@@ -82,40 +134,25 @@ Projekt je v pokrocile fazi implementace. Mezi 2.12. a 6.12.2025 probehla intenz
 
 ---
 
-## Odhad do dokonceni MVP
+## Doporuceny dalsi postup
 
-- **Hotovo:** ~70%
-- **Zbyvajici prace:** 4 hlavni ukoly (upload, search, carousel, edice)
-- **Odhadovana narocnost:** 1-2 dny intenzivni prace
+### Pokud se rozhodnete pro NOVOU SPECIFIKACI:
+
+1. **DB migrace** - Pridat nova pole do `companies`
+2. **Admin formulare** - Aktualizovat pro nova pole
+3. **Nova homepage** - Implementovat podle specifikace
+4. **Kontaktni formular** - Na detailu firmy
+5. **Trackovani** - API pro sledovani kliku
+
+### Pokud se rozhodnete DOKONCIT PUVODNI MVP:
+
+1. Fair data z DB (jediny zbyvajici ukol)
+2. Pak prejit na novou specifikaci
 
 ---
 
-## Dalsi kroky (v poradi priority)
+## Soubory k prostudovani
 
-### Doporuceny postup pro dokonceni MVP:
-
-1. **Portal detection z middleware** (VYSOKA)
-   - Soubor: `src/app/portal/page.tsx`
-   - Aktualne: hardcoded portal data
-   - Cil: Nacitat portal z DB podle domeny/middleware headers
-
-2. **Client-side search v katalogu** (VYSOKA)
-   - Soubor: `src/app/catalog/page.tsx`
-   - Aktualne: Input existuje ale nefiltruje
-   - Cil: Real-time filtrovani firem podle nazvu (debounce 300ms)
-
-3. **Prepinani edici** (STREDNI)
-   - Soubor: `src/app/catalog/page.tsx`
-   - Aktualne: Tabs existuji ale nejsou interaktivni
-   - Cil: Kliknutim na tab se prepne edice a nacte odpovidajici firmy
-
-4. **Carousel pro stranky brozury** (STREDNI)
-   - Soubor: `src/app/catalog/[companySlug]/page.tsx`
-   - Aktualne: Stranky zobrazeny pod sebou
-   - Cil: Swipeable carousel (Embla Carousel - doporuceno shadcn/ui)
-
-5. **Fair data z databaze** (NIZKA - muze pockat na Fazi 2)
-   - Soubor: `src/app/fair/page.tsx`
-   - Aktualne: Mock data
-
-Po dokonceni MVP: Zahajit Fazi 2 (Veletrh).
+- `roadmap/prostavare-homepage-spec.md` - Nova specifikace homepage
+- `roadmap/prostavare-homepage-analysis.md` - Analyza a porovnani s aktualnim stavem
+- `roadmap/init.md` - Puvodni specifikace projektu

@@ -4,6 +4,33 @@ Chronologicky zaznam vsech provedenych praci.
 
 ---
 
+## 2025-12-10
+
+### Nova specifikace proStavare Homepage
+
+Pridana nova specifikace `prostavare-homepage-spec.md` ktera meni smer projektu:
+- Transformace z "katalogu firem" na "karierniportal"
+- Nova homepage s hero sekci, vyhledavanim, kartami firem
+- Rozsireni datoveho modelu firem
+- Kontaktni formular a trackovani kliku
+
+### Analyza a dokumentace
+- Vytvorena detailni analyza `prostavare-homepage-analysis.md`
+- Porovnani nove specifikace s aktualnim stavem implementace
+- Identifikovany potrebne zmeny v DB schema
+- Definovany otevrene otazky k rozhodnuti
+
+### Zjisteni o aktualnim stavu
+Pri analyze zjisteno, ze puvodni MVP je prakticky hotove:
+- Search v katalogu FUNGUJE (client-side filtrovani)
+- Prepinani edici FUNGUJE (URL parametry)
+- Carousel EXISTUJE (BrochureCarousel komponenta)
+- Portal detection FUNGUJE (middleware + DB dotaz)
+
+**Aktualni stav:** Ceka se na rozhodnuti o smeru - pokracovat v puvodni specifikaci nebo prejit na novou.
+
+---
+
 ## 2025-12-07
 
 ### Revize roadmapy a identifikace dalsich kroku

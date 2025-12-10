@@ -5,6 +5,7 @@ import { ArrowLeft, ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { BrochureCarousel } from '@/components/BrochureCarousel'
 import { EditionTabs } from '@/components/EditionTabs'
+import { ContactForm } from '@/components/ContactForm'
 
 type Edition = {
   id: string
@@ -103,19 +104,36 @@ export default async function CompanyDetailPage({
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
-        {pages.length > 0 ? (
-          <BrochureCarousel
-            pages={pages}
-            companyName={company.name}
-            primaryColor={portal?.primary_color}
-          />
-        ) : (
-          <div className="text-center py-20 bg-white rounded-lg">
-            <p className="text-gray-500">
-              Pro tuto firmu nejsou v aktuální edici k dispozici žádné stránky.
-            </p>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Carousel - hlavni obsah */}
+          <div className="lg:col-span-2">
+            {pages.length > 0 ? (
+              <BrochureCarousel
+                pages={pages}
+                companyName={company.name}
+                primaryColor={portal?.primary_color}
+              />
+            ) : (
+              <div className="text-center py-20 bg-white rounded-lg">
+                <p className="text-gray-500">
+                  Pro tuto firmu nejsou v aktualni edici k dispozici zadne stranky.
+                </p>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Sidebar - kontaktni formular */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24">
+              <ContactForm
+                companyId={company.id}
+                companyName={company.name}
+                portalId={portal?.id}
+                primaryColor={portal?.primary_color}
+              />
+            </div>
+          </div>
+        </div>
       </main>
 
       {/* Footer */}
