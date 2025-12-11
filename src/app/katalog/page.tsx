@@ -189,19 +189,21 @@ export default function CatalogPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b sticky top-0 bg-white z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <h1
-                className="text-xl font-bold"
-                style={{ color: portal.primary_color }}
-              >
-                {portal.name}
-              </h1>
+      <header className="border-b sticky top-0 bg-white/95 backdrop-blur-sm z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-xl font-bold" style={{ color: portal.primary_color }}>
+              {portal.name}
+            </span>
+          </Link>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="/katalog" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+              Katalog firem
             </Link>
-            <span className="text-sm text-gray-500">Katalog firem</span>
-          </div>
+            <Link href="/pro-firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+              Pro firmy
+            </Link>
+          </nav>
         </div>
       </header>
 
