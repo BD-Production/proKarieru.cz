@@ -34,7 +34,7 @@ export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions
   }
 }
 
-// Email pro admina když prijde nová firemní poptávka
+// Email pro admina když přijde nová firemní poptávka
 export async function sendCompanyInquiryNotification(inquiry: {
   companyName: string
   contactName: string
@@ -43,25 +43,25 @@ export async function sendCompanyInquiryNotification(inquiry: {
   message?: string
 }) {
   const html = `
-    <h2>Nova firemni poptavka na proKarieru</h2>
+    <h2>Nová firemní poptávka na proKariéru</h2>
     <p><strong>Firma:</strong> ${inquiry.companyName}</p>
-    <p><strong>Kontaktni osoba:</strong> ${inquiry.contactName}</p>
+    <p><strong>Kontaktní osoba:</strong> ${inquiry.contactName}</p>
     <p><strong>Email:</strong> <a href="mailto:${inquiry.email}">${inquiry.email}</a></p>
     ${inquiry.phone ? `<p><strong>Telefon:</strong> ${inquiry.phone}</p>` : ''}
-    ${inquiry.message ? `<p><strong>Zprava:</strong></p><p>${inquiry.message}</p>` : ''}
+    ${inquiry.message ? `<p><strong>Zpráva:</strong></p><p>${inquiry.message}</p>` : ''}
     <hr>
-    <p style="color: #666; font-size: 12px;">Tento email byl automaticky vygenerovan systemem proKarieru.</p>
+    <p style="color: #666; font-size: 12px;">Tento email byl automaticky vygenerován systémem proKariéru.</p>
   `
 
   return sendEmail({
     to: NOTIFICATION_EMAIL,
-    subject: `Nova poptavka: ${inquiry.companyName}`,
+    subject: `Nová poptávka: ${inquiry.companyName}`,
     html,
     replyTo: inquiry.email,
   })
 }
 
-// Email pro firmu kdyz se nekdo prihlasi pres kontaktni formular
+// Email pro firmu když se někdo přihlásí přes kontaktní formulář
 export async function sendNewLeadNotification(lead: {
   candidateName: string
   candidateEmail: string
@@ -71,26 +71,26 @@ export async function sendNewLeadNotification(lead: {
   companyEmail: string
 }) {
   const html = `
-    <h2>Novy zajemce o vasi firmu</h2>
-    <p>Nekdo projevil zajem o firmu <strong>${lead.companyName}</strong> na portalu proKarieru.</p>
+    <h2>Nový zájemce o vaši firmu</h2>
+    <p>Někdo projevil zájem o firmu <strong>${lead.companyName}</strong> na portálu proKariéru.</p>
     <hr>
-    <p><strong>Jmeno:</strong> ${lead.candidateName}</p>
+    <p><strong>Jméno:</strong> ${lead.candidateName}</p>
     <p><strong>Email:</strong> <a href="mailto:${lead.candidateEmail}">${lead.candidateEmail}</a></p>
     ${lead.candidatePhone ? `<p><strong>Telefon:</strong> ${lead.candidatePhone}</p>` : ''}
-    ${lead.message ? `<p><strong>Zprava:</strong></p><p>${lead.message}</p>` : ''}
+    ${lead.message ? `<p><strong>Zpráva:</strong></p><p>${lead.message}</p>` : ''}
     <hr>
-    <p style="color: #666; font-size: 12px;">Tento email byl automaticky vygenerovan systemem proKarieru.</p>
+    <p style="color: #666; font-size: 12px;">Tento email byl automaticky vygenerován systémem proKariéru.</p>
   `
 
   return sendEmail({
     to: lead.companyEmail,
-    subject: `Novy zajemce: ${lead.candidateName}`,
+    subject: `Nový zájemce: ${lead.candidateName}`,
     html,
     replyTo: lead.candidateEmail,
   })
 }
 
-// Email pro admina kdyz prijde novy zajemce
+// Email pro admina když přijde nový zájemce
 export async function sendLeadNotificationToAdmin(lead: {
   candidateName: string
   candidateEmail: string
@@ -99,19 +99,19 @@ export async function sendLeadNotificationToAdmin(lead: {
   companyName: string
 }) {
   const html = `
-    <h2>Novy zajemce na proKarieru</h2>
+    <h2>Nový zájemce na proKariéru</h2>
     <p><strong>Firma:</strong> ${lead.companyName}</p>
-    <p><strong>Jmeno:</strong> ${lead.candidateName}</p>
+    <p><strong>Jméno:</strong> ${lead.candidateName}</p>
     <p><strong>Email:</strong> <a href="mailto:${lead.candidateEmail}">${lead.candidateEmail}</a></p>
     ${lead.candidatePhone ? `<p><strong>Telefon:</strong> ${lead.candidatePhone}</p>` : ''}
-    ${lead.message ? `<p><strong>Zprava:</strong></p><p>${lead.message}</p>` : ''}
+    ${lead.message ? `<p><strong>Zpráva:</strong></p><p>${lead.message}</p>` : ''}
     <hr>
-    <p style="color: #666; font-size: 12px;">Tento email byl automaticky vygenerovan systemem proKarieru.</p>
+    <p style="color: #666; font-size: 12px;">Tento email byl automaticky vygenerován systémem proKariéru.</p>
   `
 
   return sendEmail({
     to: NOTIFICATION_EMAIL,
-    subject: `Novy zajemce o ${lead.companyName}: ${lead.candidateName}`,
+    subject: `Nový zájemce o ${lead.companyName}: ${lead.candidateName}`,
     html,
     replyTo: lead.candidateEmail,
   })
