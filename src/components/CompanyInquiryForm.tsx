@@ -6,18 +6,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
 import { CheckCircle, Loader2, Send } from 'lucide-react'
 
 interface CompanyInquiryFormProps {
   primaryColor?: string
 }
-
-const INTEREST_OPTIONS = [
-  { id: 'katalog', label: 'Prezentace v katalogu firem' },
-  { id: 'veletrh', label: 'Účast na kariérním veletrhu' },
-  { id: 'soutez', label: 'Sponzorování studentské soutěže' },
-]
 
 export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryFormProps) {
   const [formData, setFormData] = useState({
@@ -27,7 +20,6 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
     email: '',
     phone: '',
     message: '',
-    interest_type: [] as string[],
     gdpr_consent: false,
   })
   const [loading, setLoading] = useState(false)
@@ -42,15 +34,6 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
-    }))
-  }
-
-  const handleInterestChange = (interestId: string, checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      interest_type: checked
-        ? [...prev.interest_type, interestId]
-        : prev.interest_type.filter((id) => id !== interestId),
     }))
   }
 
@@ -79,7 +62,6 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
         email: '',
         phone: '',
         message: '',
-        interest_type: [],
         gdpr_consent: false,
       })
     } catch (err: any) {
@@ -176,27 +158,6 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
                 placeholder="+420 123 456 789"
               />
             </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>O co máte zájem?</Label>
-            {INTEREST_OPTIONS.map((option) => (
-              <div key={option.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`interest-${option.id}`}
-                  checked={formData.interest_type.includes(option.id)}
-                  onCheckedChange={(checked) =>
-                    handleInterestChange(option.id, checked as boolean)
-                  }
-                />
-                <Label
-                  htmlFor={`interest-${option.id}`}
-                  className="text-sm font-normal cursor-pointer"
-                >
-                  {option.label}
-                </Label>
-              </div>
-            ))}
           </div>
 
           <div className="space-y-2">

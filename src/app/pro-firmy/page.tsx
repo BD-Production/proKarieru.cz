@@ -5,9 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { CompanyInquiryForm } from '@/components/CompanyInquiryForm'
 import {
-  Users,
   Target,
-  TrendingUp,
   Award,
   ArrowLeft,
   CheckCircle,
@@ -68,7 +66,7 @@ export default async function ProFirmyPage() {
           <h2 className="text-2xl font-bold text-center mb-8">
             Proč inzerovat na {portal?.name || 'proKariéru'}?
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
             <Card>
               <CardContent className="pt-6 text-center">
                 <div
@@ -80,36 +78,6 @@ export default async function ProFirmyPage() {
                 <h3 className="font-semibold mb-2">Cílené oslovení</h3>
                 <p className="text-gray-600 text-sm">
                   Vaši nabídku uvidí pouze studenti stavebnictví a příbuzných oborů.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <div
-                  className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
-                  style={{ backgroundColor: `${primaryColor}20` }}
-                >
-                  <Users className="h-6 w-6" style={{ color: primaryColor }} />
-                </div>
-                <h3 className="font-semibold mb-2">Tisíce studentů</h3>
-                <p className="text-gray-600 text-sm">
-                  Propojení s kariérními centry vysokých škol po celé ČR.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <div
-                  className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
-                  style={{ backgroundColor: `${primaryColor}20` }}
-                >
-                  <TrendingUp className="h-6 w-6" style={{ color: primaryColor }} />
-                </div>
-                <h3 className="font-semibold mb-2">Měřitelné výsledky</h3>
-                <p className="text-gray-600 text-sm">
-                  Sledujte kolik studentů si prohlédlo vaši firmu a projevilo zájem.
                 </p>
               </CardContent>
             </Card>
@@ -136,7 +104,7 @@ export default async function ProFirmyPage() {
       <section className="py-12 px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-8">Co nabízíme</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
             <Card>
               <CardContent className="pt-6">
                 <h3 className="font-semibold mb-3">Prezentace v katalogu</h3>
@@ -152,26 +120,6 @@ export default async function ProFirmyPage() {
                   <li className="flex items-start gap-2">
                     <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                     Brožura/prezentace firmy
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="font-semibold mb-3">Účast na veletrzích</h3>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    Prezenční setkání se studenty
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    Stánek na kariérních dnech
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    Workshopy a přednášky
                   </li>
                 </ul>
               </CardContent>
