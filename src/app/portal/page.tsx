@@ -148,7 +148,7 @@ export default async function PortalPage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             {/* Levý sloupec - text */}
-            <div className="space-y-6 order-2 md:order-1">
+            <div className="space-y-6 order-1">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
                 <span style={{ color: portal.primary_color }}>{companyCount}</span>{' '}
                 firem hledá stavaře jako jsi ty
@@ -170,7 +170,7 @@ export default async function PortalPage() {
             </div>
 
             {/* Pravý sloupec - mřížka log firem */}
-            <div className="order-1 md:order-2">
+            <div className="order-2">
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 p-2">
                 {topCompaniesForGrid.length > 0 ? (
                   <div className="grid grid-cols-3 gap-2 h-full">
