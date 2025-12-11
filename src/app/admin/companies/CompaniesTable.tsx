@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Building2, Search } from 'lucide-react'
+import { Building2, Search, Star } from 'lucide-react'
 
 type Edition = {
   id: string
@@ -26,6 +26,7 @@ type Company = {
   slug: string
   logo_url: string | null
   is_active: boolean
+  featured: boolean
   editions: Edition[]
 }
 
@@ -128,7 +129,15 @@ export function CompaniesTable({ companies, editions, timestamp }: CompaniesTabl
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium">{company.name}</div>
+                    <div className="font-medium flex items-center gap-2">
+                      {company.name}
+                      {company.featured && (
+                        <Badge variant="outline" className="text-yellow-600 border-yellow-400 bg-yellow-50">
+                          <Star className="h-3 w-3 mr-1 fill-yellow-500" />
+                          Hero
+                        </Badge>
+                      )}
+                    </div>
                     <div className="text-sm text-gray-500">{company.slug}</div>
                   </TableCell>
                   <TableCell>

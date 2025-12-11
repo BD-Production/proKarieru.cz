@@ -19,6 +19,7 @@ type Company = {
   slug: string
   logo_url: string | null
   is_active: boolean
+  featured: boolean
   editions: Edition[]
 }
 
@@ -51,6 +52,7 @@ export function CompaniesPageClient() {
             slug,
             logo_url,
             is_active,
+            featured,
             company_editions(
               edition:editions(id, name, display_order)
             )
@@ -63,6 +65,7 @@ export function CompaniesPageClient() {
           slug: company.slug,
           logo_url: company.logo_url,
           is_active: company.is_active,
+          featured: company.featured ?? false,
           editions: company.company_editions
             ?.map((ce: any) => ce.edition)
             .filter(Boolean)
@@ -115,6 +118,7 @@ export function CompaniesPageClient() {
           slug,
           logo_url,
           is_active,
+          featured,
           company_editions(
             edition:editions(id, name, display_order)
           )
@@ -128,6 +132,7 @@ export function CompaniesPageClient() {
         slug: company.slug,
         logo_url: company.logo_url,
         is_active: company.is_active,
+        featured: company.featured ?? false,
         editions: company.company_editions
           ?.map((ce: any) => ce.edition)
           .filter(Boolean)
