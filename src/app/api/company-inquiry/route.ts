@@ -20,14 +20,14 @@ export async function POST(request: NextRequest) {
     // Validace
     if (!company_name || !contact_name || !email) {
       return NextResponse.json(
-        { error: 'Nazev firmy, kontaktni osoba a email jsou povinne' },
+        { error: 'Název firmy, kontaktní osoba a email jsou povinné' },
         { status: 400 }
       )
     }
 
     if (!gdpr_consent) {
       return NextResponse.json(
-        { error: 'Musite souhlasit se zpracovanim osobnich udaju' },
+        { error: 'Musíte souhlasit se zpracováním osobních údajů' },
         { status: 400 }
       )
     }
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Neplatny format emailu' },
+        { error: 'Neplatný formát emailu' },
         { status: 400 }
       )
     }
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error saving company inquiry:', error)
       return NextResponse.json(
-        { error: 'Nepodarilo se ulozit poptavku' },
+        { error: 'Nepodařilo se uložit poptávku' },
         { status: 500 }
       )
     }
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error('Company inquiry error:', err)
     return NextResponse.json(
-      { error: 'Nastala chyba pri zpracovani' },
+      { error: 'Nastala chyba při zpracování' },
       { status: 500 }
     )
   }

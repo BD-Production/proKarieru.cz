@@ -312,7 +312,7 @@ export default async function PortalPage() {
             Vaše nabídka se dostane k tisícům studentů stavebních oborů.
           </p>
           <Button asChild size="lg" variant="outline">
-            <Link href="/pro-firmy">
+            <Link href="/profirmy">
               Zjistit více o spolupráci
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
@@ -331,7 +331,7 @@ export default async function PortalPage() {
               <Link href="/katalog" className="text-gray-500 hover:text-gray-900">
                 Katalog
               </Link>
-              <Link href="/pro-firmy" className="text-gray-500 hover:text-gray-900">
+              <Link href="/profirmy" className="text-gray-500 hover:text-gray-900">
                 Pro firmy
               </Link>
               <Link

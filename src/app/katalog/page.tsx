@@ -200,7 +200,7 @@ export default function CatalogPage() {
             <Link href="/katalog" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               Katalog firem
             </Link>
-            <Link href="/pro-firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+            <Link href="/profirmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               Pro firmy
             </Link>
           </nav>
