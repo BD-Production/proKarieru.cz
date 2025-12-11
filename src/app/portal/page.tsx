@@ -148,25 +148,27 @@ export default async function PortalPage() {
 
             {/* Pravý sloupec - mřížka log firem */}
             <div className="order-1 md:order-2">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 p-4">
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 p-2">
                 {topCompaniesForGrid.length > 0 ? (
-                  <div className="grid grid-cols-3 gap-3 h-full">
+                  <div className="grid grid-cols-3 gap-2 h-full">
                     {topCompaniesForGrid.map((company) => (
                       <Link
                         key={company.id}
                         href={`/${company.slug}`}
-                        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow flex items-center justify-center p-3"
+                        className="relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
                       >
                         {company.logo_url ? (
                           <Image
                             src={company.logo_url}
                             alt={company.name}
-                            width={80}
-                            height={80}
-                            className="object-contain max-h-16 w-auto"
+                            fill
+                            sizes="(max-width: 768px) 30vw, 15vw"
+                            className="object-contain p-2"
                           />
                         ) : (
-                          <Building2 className="w-8 h-8 text-gray-300" />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Building2 className="w-8 h-8 text-gray-300" />
+                          </div>
                         )}
                       </Link>
                     ))}
@@ -310,7 +312,7 @@ export default async function PortalPage() {
                 Pro firmy
               </Link>
               <Link
-                href="https://instagram.com/prostavare"
+                href="https://www.instagram.com/prostavare.cz/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-500 hover:text-gray-900"

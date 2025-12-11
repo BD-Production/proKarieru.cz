@@ -15,8 +15,8 @@ interface CompanyInquiryFormProps {
 
 const INTEREST_OPTIONS = [
   { id: 'katalog', label: 'Prezentace v katalogu firem' },
-  { id: 'veletrh', label: 'Ucast na karierni veletrhu' },
-  { id: 'soutez', label: 'Sponzorovani studentske souteze' },
+  { id: 'veletrh', label: 'Účast na kariérním veletrhu' },
+  { id: 'soutez', label: 'Sponzorování studentské soutěže' },
 ]
 
 export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryFormProps) {
@@ -68,7 +68,7 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Nepodarilo se odeslat formular')
+        throw new Error(data.error || 'Nepodařilo se odeslat formulář')
       }
 
       setSuccess(true)
@@ -94,12 +94,12 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
       <Card>
         <CardContent className="py-12 text-center">
           <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500" />
-          <h3 className="font-semibold text-lg mb-2">Dekujeme za vas zajem!</h3>
+          <h3 className="font-semibold text-lg mb-2">Děkujeme za váš zájem!</h3>
           <p className="text-gray-600 text-sm mb-4">
-            Vasi poptavku jsme prijali a ozveme se vam co nejdrive.
+            Vaši poptávku jsme přijali a ozveme se vám co nejdříve.
           </p>
           <Button variant="outline" onClick={() => setSuccess(false)}>
-            Odeslat dalsi poptavku
+            Odeslat další poptávku
           </Button>
         </CardContent>
       </Card>
@@ -109,27 +109,27 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Mam zajem o spolupracy</CardTitle>
+        <CardTitle>Mám zájem o spolupráci</CardTitle>
         <CardDescription>
-          Vyplnte formular a my se vam ozveme s nabidkou na miru.
+          Vyplňte formulář a my se vám ozveme s nabídkou na míru.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="company_name">Nazev firmy *</Label>
+              <Label htmlFor="company_name">Název firmy *</Label>
               <Input
                 id="company_name"
                 name="company_name"
                 value={formData.company_name}
                 onChange={handleChange}
-                placeholder="Vase firma s.r.o."
+                placeholder="Vaše firma s.r.o."
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="ico">ICO</Label>
+              <Label htmlFor="ico">IČO</Label>
               <Input
                 id="ico"
                 name="ico"
@@ -141,13 +141,13 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contact_name">Kontaktni osoba *</Label>
+            <Label htmlFor="contact_name">Kontaktní osoba *</Label>
             <Input
               id="contact_name"
               name="contact_name"
               value={formData.contact_name}
               onChange={handleChange}
-              placeholder="Jan Novak"
+              placeholder="Jan Novák"
               required
             />
           </div>
@@ -179,7 +179,7 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
           </div>
 
           <div className="space-y-3">
-            <Label>O co mate zajem?</Label>
+            <Label>O co máte zájem?</Label>
             {INTEREST_OPTIONS.map((option) => (
               <div key={option.id} className="flex items-center space-x-2">
                 <Checkbox
@@ -200,13 +200,13 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="message">Zprava</Label>
+            <Label htmlFor="message">Zpráva</Label>
             <Textarea
               id="message"
               name="message"
               value={formData.message}
               onChange={handleChange}
-              placeholder="Napiste nam vice o vasich potrebach..."
+              placeholder="Napište nám více o vašich potřebách..."
               rows={4}
             />
           </div>
@@ -222,7 +222,7 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
               className="mt-1 rounded border-gray-300"
             />
             <Label htmlFor="gdpr_consent" className="text-sm text-gray-600">
-              Souhlasim se zpracovanim osobnich udaju za ucelem zpracovani poptavky. *
+              Souhlasím se zpracováním osobních údajů za účelem zpracování poptávky. *
             </Label>
           </div>
 
@@ -237,12 +237,12 @@ export function CompanyInquiryForm({ primaryColor = '#C34751' }: CompanyInquiryF
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Odesilam...
+                Odesílám...
               </>
             ) : (
               <>
                 <Send className="mr-2 h-4 w-4" />
-                Odeslat poptavku
+                Odeslat poptávku
               </>
             )}
           </Button>
