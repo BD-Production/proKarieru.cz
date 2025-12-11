@@ -3,7 +3,7 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const FROM_EMAIL = 'proKarieru <noreply@prokarieru.cz>'
-const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'info@prokarieru.cz'
+const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'notifikace@prokarieru.cz'
 
 interface SendEmailOptions {
   to: string | string[]
