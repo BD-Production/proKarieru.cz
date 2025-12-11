@@ -81,45 +81,57 @@ export function LogoUpload({ companyId, currentLogoUrl, onUploadComplete, onLogo
   const resizeImage = async (imageSrc: string): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const img = new Image()
+      img.crossOrigin = 'anonymous'
+
       img.onload = () => {
-        const canvas = document.createElement('canvas')
-        const ctx = canvas.getContext('2d')
-
-        if (!ctx) {
-          reject(new Error('No 2d context'))
-          return
+        // Počkat na úplné dekódování obrázku
+        if (img.decode) {
+          img.decode().then(() => processImage()).catch(() => processImage())
+        } else {
+          processImage()
         }
 
-        const maxSize = 512
-        let { width, height } = img
+        function processImage() {
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
 
-        // Scale down if larger than maxSize
-        if (width > maxSize || height > maxSize) {
-          if (width > height) {
-            height = Math.round((height / width) * maxSize)
-            width = maxSize
-          } else {
-            width = Math.round((width / height) * maxSize)
-            height = maxSize
+          if (!ctx) {
+            reject(new Error('No 2d context'))
+            return
           }
-        }
 
-        canvas.width = width
-        canvas.height = height
+          const maxSize = 512
+          let width = img.naturalWidth || img.width
+          let height = img.naturalHeight || img.height
 
-        ctx.drawImage(img, 0, 0, width, height)
-
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error('Canvas is empty'))
-              return
+          // Scale down if larger than maxSize
+          if (width > maxSize || height > maxSize) {
+            if (width > height) {
+              height = Math.round((height / width) * maxSize)
+              width = maxSize
+            } else {
+              width = Math.round((width / height) * maxSize)
+              height = maxSize
             }
-            resolve(blob)
-          },
-          'image/webp',
-          0.9
-        )
+          }
+
+          canvas.width = width
+          canvas.height = height
+
+          ctx.drawImage(img, 0, 0, width, height)
+
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error('Canvas is empty'))
+                return
+              }
+              resolve(blob)
+            },
+            'image/webp',
+            0.9
+          )
+        }
       }
       img.onerror = () => reject(new Error('Failed to load image'))
       img.src = imageSrc

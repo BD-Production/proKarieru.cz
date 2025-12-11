@@ -16,6 +16,7 @@ import {
   Briefcase
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { PortalSelector } from './PortalSelector'
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -41,9 +42,12 @@ export function AdminSidebar() {
 
   return (
     <aside className="w-64 bg-white border-r min-h-screen flex flex-col">
-      <div className="p-6 border-b">
-        <h1 className="text-xl font-bold">proKarieru</h1>
-        <p className="text-sm text-gray-500">Administrace</p>
+      <div className="p-6 border-b space-y-4">
+        <div>
+          <h1 className="text-xl font-bold">proKarieru</h1>
+          <p className="text-sm text-gray-500">Administrace</p>
+        </div>
+        <PortalSelector />
       </div>
 
       <nav className="flex-1 p-4">

@@ -65,34 +65,52 @@ export default async function PortalPage() {
 
       companies = (data || []) as Company[]
 
-      // Pro hero grid: firmy s nejvíce edicemi (s logem), náhodně zamíchané
-      const { data: companiesWithEditionCount } = await supabase
+      // Pro hero grid: firmy s featured flag (s logem), náhodně zamíchané
+      const { data: featuredCompanies } = await supabase
         .from('companies')
-        .select(`
-          *,
-          company_editions(count)
-        `)
+        .select('*')
         .in('id', companyIds)
         .eq('is_active', true)
+        .eq('featured', true)
         .not('logo_url', 'is', null)
+        .limit(9)
 
-      if (companiesWithEditionCount) {
-        // Seřadit podle počtu edicí (sestupně)
-        const sorted = companiesWithEditionCount
-          .map((c: any) => ({
-            ...c,
-            editionCount: c.company_editions?.[0]?.count || 0
-          }))
-          .sort((a: any, b: any) => b.editionCount - a.editionCount)
-          .slice(0, 9)
-
+      if (featuredCompanies && featuredCompanies.length > 0) {
         // Náhodně zamíchat
-        for (let i = sorted.length - 1; i > 0; i--) {
+        const shuffled = [...featuredCompanies]
+        for (let i = shuffled.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1))
-          ;[sorted[i], sorted[j]] = [sorted[j], sorted[i]]
+          ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
         }
+        topCompaniesForGrid = shuffled as Company[]
+      } else {
+        // Fallback: pokud žádné featured firmy, vezmi top 9 podle počtu edicí
+        const { data: companiesWithEditionCount } = await supabase
+          .from('companies')
+          .select(`
+            *,
+            company_editions(count)
+          `)
+          .in('id', companyIds)
+          .eq('is_active', true)
+          .not('logo_url', 'is', null)
 
-        topCompaniesForGrid = sorted as Company[]
+        if (companiesWithEditionCount) {
+          const sorted = companiesWithEditionCount
+            .map((c: any) => ({
+              ...c,
+              editionCount: c.company_editions?.[0]?.count || 0
+            }))
+            .sort((a: any, b: any) => b.editionCount - a.editionCount)
+            .slice(0, 9)
+
+          for (let i = sorted.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1))
+            ;[sorted[i], sorted[j]] = [sorted[j], sorted[i]]
+          }
+
+          topCompaniesForGrid = sorted as Company[]
+        }
       }
     }
   }

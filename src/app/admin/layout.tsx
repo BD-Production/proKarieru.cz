@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { AdminSidebar } from '@/components/admin/Sidebar'
+import { AdminLayoutClient } from '@/components/admin/AdminLayoutClient'
 
 export default async function AdminLayout({
   children,
@@ -14,12 +14,5 @@ export default async function AdminLayout({
     redirect('/login')
   }
 
-  return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
-      <main className="flex-1 p-8 bg-gray-50">
-        {children}
-      </main>
-    </div>
-  )
+  return <AdminLayoutClient>{children}</AdminLayoutClient>
 }

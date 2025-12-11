@@ -42,6 +42,7 @@ export interface Company {
   logo_url: string | null
   og_image_url: string | null
   is_active: boolean
+  featured: boolean
   created_at: string
   updated_at: string
 

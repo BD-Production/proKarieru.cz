@@ -28,6 +28,7 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
     logo_url: '',
     og_image_url: '',
     is_active: true,
+    featured: false,
     // Nova pole
     description: '',
     employee_count: '',
@@ -62,6 +63,7 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
         logo_url: data.logo_url || '',
         og_image_url: data.og_image_url || '',
         is_active: data.is_active,
+        featured: data.featured || false,
         // Nova pole
         description: data.description || '',
         employee_count: data.employee_count || '',
@@ -101,6 +103,7 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
         logo_url: formData.logo_url || null,
         og_image_url: formData.og_image_url || null,
         is_active: formData.is_active,
+        featured: formData.featured,
         // Nova pole
         description: formData.description || null,
         employee_count: formData.employee_count || null,
@@ -330,6 +333,21 @@ export default function EditCompanyPage({ params }: { params: Promise<{ id: stri
                 className="rounded border-gray-300"
               />
               <Label htmlFor="is_active">Firma je aktivní</Label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="featured"
+                name="featured"
+                checked={formData.featured}
+                onChange={handleChange}
+                className="rounded border-gray-300"
+              />
+              <Label htmlFor="featured">
+                Zobrazit v Hero sekci
+                <span className="text-gray-500 font-normal ml-1">(featured)</span>
+              </Label>
             </div>
           </form>
         </CardContent>
