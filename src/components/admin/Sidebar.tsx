@@ -11,7 +11,8 @@ import {
   Building2,
   CalendarDays,
   Trophy,
-  LogOut
+  LogOut,
+  Users
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'Portály', href: '/admin/portals', icon: Globe },
   { name: 'Edice', href: '/admin/editions', icon: BookOpen },
   { name: 'Firmy', href: '/admin/companies', icon: Building2 },
+  { name: 'Zájemci', href: '/admin/leads', icon: Users },
   { name: 'Veletrhy', href: '/admin/fairs', icon: CalendarDays },
   { name: 'Soutěže', href: '/admin/contests', icon: Trophy },
 ]
