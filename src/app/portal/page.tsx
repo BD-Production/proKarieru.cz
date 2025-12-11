@@ -45,6 +45,8 @@ export default async function PortalPage() {
 
   // Načíst firmy pro tyto edice (s novými poli)
   let companies: Company[] = []
+  let topCompaniesForGrid: Company[] = []
+
   if (editionIds.length > 0) {
     const { data: companyEditions } = await supabase
       .from('company_editions')
@@ -62,6 +64,36 @@ export default async function PortalPage() {
         .order('name')
 
       companies = (data || []) as Company[]
+
+      // Pro hero grid: firmy s nejvíce edicemi (s logem), náhodně zamíchané
+      const { data: companiesWithEditionCount } = await supabase
+        .from('companies')
+        .select(`
+          *,
+          company_editions(count)
+        `)
+        .in('id', companyIds)
+        .eq('is_active', true)
+        .not('logo_url', 'is', null)
+
+      if (companiesWithEditionCount) {
+        // Seřadit podle počtu edicí (sestupně)
+        const sorted = companiesWithEditionCount
+          .map((c: any) => ({
+            ...c,
+            editionCount: c.company_editions?.[0]?.count || 0
+          }))
+          .sort((a: any, b: any) => b.editionCount - a.editionCount)
+          .slice(0, 9)
+
+        // Náhodně zamíchat
+        for (let i = sorted.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1))
+          ;[sorted[i], sorted[j]] = [sorted[j], sorted[i]]
+        }
+
+        topCompaniesForGrid = sorted as Company[]
+      }
     }
   }
 
@@ -114,16 +146,39 @@ export default async function PortalPage() {
               </Button>
             </div>
 
-            {/* Pravý sloupec - obrázek */}
+            {/* Pravý sloupec - mřížka log firem */}
             <div className="order-1 md:order-2">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100">
-                {/* Placeholder pro autentickou fotku */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                  <div className="text-center text-gray-400">
-                    <Building2 className="w-16 h-16 mx-auto mb-2" />
-                    <p className="text-sm">Fotka mladých stavařů</p>
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 p-4">
+                {topCompaniesForGrid.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-3 h-full">
+                    {topCompaniesForGrid.map((company) => (
+                      <Link
+                        key={company.id}
+                        href={`/${company.slug}`}
+                        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow flex items-center justify-center p-3"
+                      >
+                        {company.logo_url ? (
+                          <Image
+                            src={company.logo_url}
+                            alt={company.name}
+                            width={80}
+                            height={80}
+                            className="object-contain max-h-16 w-auto"
+                          />
+                        ) : (
+                          <Building2 className="w-8 h-8 text-gray-300" />
+                        )}
+                      </Link>
+                    ))}
                   </div>
-                </div>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-gray-400">
+                      <Building2 className="w-16 h-16 mx-auto mb-2" />
+                      <p className="text-sm">Firmy v katalogu</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
