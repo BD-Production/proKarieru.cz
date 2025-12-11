@@ -9,6 +9,16 @@ import { CompanyCard } from '@/components/CompanyCard'
 import { SearchBox } from '@/components/SearchBox'
 import type { Company } from '@/types/database'
 
+// Fisher-Yates shuffle algoritmus
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 export default async function PortalPage() {
   const headersList = await headers()
   const portalSlug = headersList.get('x-portal-slug')
@@ -65,7 +75,10 @@ export default async function PortalPage() {
 
       companies = (data || []) as Company[]
 
-      // Pro hero grid: firmy s featured flag (s logem), náhodně zamíchané
+      // Pro hero grid: kombinace featured firem a doplnění z ostatních
+      const HERO_GRID_COUNT = 9
+
+      // 1. Načíst VŠECHNY featured firmy (bez limitu)
       const { data: featuredCompanies } = await supabase
         .from('companies')
         .select('*')
@@ -73,45 +86,37 @@ export default async function PortalPage() {
         .eq('is_active', true)
         .eq('featured', true)
         .not('logo_url', 'is', null)
-        .limit(9)
 
-      if (featuredCompanies && featuredCompanies.length > 0) {
-        // Náhodně zamíchat
-        const shuffled = [...featuredCompanies]
-        for (let i = shuffled.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1))
-          ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-        }
-        topCompaniesForGrid = shuffled as Company[]
+      const featured = (featuredCompanies || []) as Company[]
+      let selectedCompanies: Company[] = []
+
+      if (featured.length >= HERO_GRID_COUNT) {
+        // Více než 9 featured → náhodně vybrat 9
+        selectedCompanies = shuffleArray(featured).slice(0, HERO_GRID_COUNT)
       } else {
-        // Fallback: pokud žádné featured firmy, vezmi top 9 podle počtu edicí
-        const { data: companiesWithEditionCount } = await supabase
+        // Méně než 9 featured → doplnit z ostatních firem s logem
+        selectedCompanies = [...featured]
+        const neededCount = HERO_GRID_COUNT - featured.length
+
+        // Načíst ostatní firmy (ne-featured, s logem)
+        const { data: otherCompanies } = await supabase
           .from('companies')
-          .select(`
-            *,
-            company_editions(count)
-          `)
+          .select('*')
           .in('id', companyIds)
           .eq('is_active', true)
           .not('logo_url', 'is', null)
 
-        if (companiesWithEditionCount) {
-          const sorted = companiesWithEditionCount
-            .map((c: any) => ({
-              ...c,
-              editionCount: c.company_editions?.[0]?.count || 0
-            }))
-            .sort((a: any, b: any) => b.editionCount - a.editionCount)
-            .slice(0, 9)
-
-          for (let i = sorted.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1))
-            ;[sorted[i], sorted[j]] = [sorted[j], sorted[i]]
-          }
-
-          topCompaniesForGrid = sorted as Company[]
+        if (otherCompanies && otherCompanies.length > 0) {
+          // Vyfiltrovat featured firmy a náhodně vybrat potřebný počet
+          const featuredIds = new Set(featured.map(f => f.id))
+          const nonFeatured = otherCompanies.filter(c => !featuredIds.has(c.id))
+          const shuffledOthers = shuffleArray(nonFeatured)
+          selectedCompanies.push(...shuffledOthers.slice(0, neededCount))
         }
       }
+
+      // Finální shuffle pro náhodné pořadí v mřížce
+      topCompaniesForGrid = shuffleArray(selectedCompanies) as Company[]
     }
   }
 
