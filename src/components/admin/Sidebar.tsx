@@ -36,16 +36,24 @@ export function AdminSidebar() {
   const router = useRouter()
   const supabase = createClient()
   const [newLeadsCount, setNewLeadsCount] = useState(0)
+  const [newInquiriesCount, setNewInquiriesCount] = useState(0)
 
   useEffect(() => {
-    const loadNewLeadsCount = async () => {
-      const { count } = await supabase
-        .from('contact_leads')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'new')
-      setNewLeadsCount(count || 0)
+    const loadCounts = async () => {
+      const [leadsResult, inquiriesResult] = await Promise.all([
+        supabase
+          .from('contact_leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'new'),
+        supabase
+          .from('company_inquiries')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'new'),
+      ])
+      setNewLeadsCount(leadsResult.count || 0)
+      setNewInquiriesCount(inquiriesResult.count || 0)
     }
-    loadNewLeadsCount()
+    loadCounts()
   }, [supabase])
 
   const handleLogout = async () => {
@@ -86,6 +94,11 @@ export function AdminSidebar() {
                   {item.name === 'Zájemci' && newLeadsCount > 0 && (
                     <Badge variant="destructive" className="ml-auto text-xs">
                       {newLeadsCount}
+                    </Badge>
+                  )}
+                  {item.name === 'Poptávky firem' && newInquiriesCount > 0 && (
+                    <Badge variant="destructive" className="ml-auto text-xs">
+                      {newInquiriesCount}
                     </Badge>
                   )}
                 </Link>
