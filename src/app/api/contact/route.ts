@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { sendLeadNotificationToAdmin } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,6 +53,34 @@ export async function POST(request: NextRequest) {
         { error: 'Nepodařilo se uložit formulář' },
         { status: 500 }
       )
+    }
+
+    // Odeslat email notifikaci adminovi
+    try {
+      let companyName = 'Neznámá firma'
+
+      if (company_id) {
+        const { data: company } = await supabase
+          .from('companies')
+          .select('name')
+          .eq('id', company_id)
+          .single()
+
+        if (company) {
+          companyName = company.name
+        }
+      }
+
+      await sendLeadNotificationToAdmin({
+        candidateName: name,
+        candidateEmail: email,
+        candidatePhone: phone,
+        message,
+        companyName,
+      })
+    } catch (emailError) {
+      // Loggujeme, ale neblokujeme - data jsou ulozena
+      console.error('Failed to send email notification:', emailError)
     }
 
     return NextResponse.json({ success: true, id: data.id })
