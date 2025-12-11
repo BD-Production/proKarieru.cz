@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -16,6 +17,7 @@ import {
   Briefcase
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { PortalSelector } from './PortalSelector'
 
 const navigation = [
@@ -33,6 +35,18 @@ export function AdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const [newLeadsCount, setNewLeadsCount] = useState(0)
+
+  useEffect(() => {
+    const loadNewLeadsCount = async () => {
+      const { count } = await supabase
+        .from('contact_leads')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'new')
+      setNewLeadsCount(count || 0)
+    }
+    loadNewLeadsCount()
+  }, [supabase])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -69,6 +83,11 @@ export function AdminSidebar() {
                 >
                   <item.icon className="h-5 w-5" />
                   {item.name}
+                  {item.name === 'Zájemci' && newLeadsCount > 0 && (
+                    <Badge variant="destructive" className="ml-auto text-xs">
+                      {newLeadsCount}
+                    </Badge>
+                  )}
                 </Link>
               </li>
             )

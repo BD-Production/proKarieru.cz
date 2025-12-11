@@ -12,7 +12,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Mail, Phone, Building2, Calendar, MessageSquare, Loader2 } from 'lucide-react'
+import { Mail, Phone, Building2, Calendar, MessageSquare, Loader2, Check, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { useAdminPortal } from '@/contexts/AdminPortalContext'
 
 type Lead = {
@@ -56,33 +57,50 @@ export function LeadsPageClient() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (portalLoading) return
+  const loadData = async () => {
+    if (portalLoading) return
 
-      setLoading(true)
+    setLoading(true)
 
-      let query = supabase
-        .from('contact_leads')
-        .select(`
-          *,
-          company:companies(id, name, slug),
-          portal:portals(id, name)
-        `)
-        .order('created_at', { ascending: false })
+    let query = supabase
+      .from('contact_leads')
+      .select(`
+        *,
+        company:companies(id, name, slug),
+        portal:portals(id, name)
+      `)
+      .order('created_at', { ascending: false })
 
-      if (selectedPortalId) {
-        query = query.eq('portal_id', selectedPortalId)
-      }
-
-      const { data } = await query
-
-      setLeads((data as Lead[]) || [])
-      setLoading(false)
+    if (selectedPortalId) {
+      query = query.eq('portal_id', selectedPortalId)
     }
 
+    const { data } = await query
+
+    setLeads((data as Lead[]) || [])
+    setLoading(false)
+  }
+
+  const handleResolve = async (id: string) => {
+    await supabase
+      .from('contact_leads')
+      .update({ status: 'closed' })
+      .eq('id', id)
     loadData()
-  }, [selectedPortalId, portalLoading, supabase])
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Opravdu chcete smazat tohoto zájemce?')) return
+    await supabase
+      .from('contact_leads')
+      .delete()
+      .eq('id', id)
+    loadData()
+  }
+
+  useEffect(() => {
+    loadData()
+  }, [selectedPortalId, portalLoading])
 
   if (loading || portalLoading) {
     return (
@@ -143,6 +161,7 @@ export function LeadsPageClient() {
                 {!selectedPortalId && <TableHead>Portál</TableHead>}
                 <TableHead>Zpráva</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Akce</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -211,6 +230,28 @@ export function LeadsPageClient() {
                     )}
                   </TableCell>
                   <TableCell>{getStatusBadge(lead.status)}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      {lead.status !== 'closed' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleResolve(lead.id)}
+                          title="Označit jako vyřešené"
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDelete(lead.id)}
+                        title="Smazat"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
