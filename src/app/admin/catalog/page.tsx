@@ -375,7 +375,7 @@ export default function AdminCatalogPage() {
         {uploading === type ? 'Nahravani...' : 'Pretahnete obrazky sem nebo kliknete'}
       </p>
       <p className="text-xs text-gray-500 mt-1">
-        PNG, JPG nebo WebP • Max 10MB • Automaticky optimalizovano
+        PNG, JPG nebo WebP • Max 10MB • Format A5 (148×210 mm)
       </p>
       <input
         ref={inputRef}
@@ -402,7 +402,7 @@ export default function AdminCatalogPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {pages.sort((a, b) => a.page_order - b.page_order).map((page, index) => (
           <div key={page.id} className="relative group border rounded-lg overflow-hidden bg-gray-50">
-            <div className="aspect-[3/4]">
+            <div className="aspect-[148/210]"> {/* A5 format */}
               <img
                 src={`${page.image_url}?v=${Date.now()}`}
                 alt={`${type === 'intro' ? 'Intro' : 'Outro'} strana ${index + 1}`}

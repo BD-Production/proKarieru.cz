@@ -269,14 +269,15 @@ export function CatalogBrowser({
       <div className="flex-1 flex items-center justify-center p-4 pt-20 pb-24">
         <div
           className={cn(
-            "relative max-w-4xl w-full h-full transition-opacity duration-300",
+            "relative h-full max-h-full transition-opacity duration-300",
             isAnimating && "opacity-0"
           )}
+          style={{ aspectRatio: '148 / 210' }} // A5 format
         >
           <img
             src={currentPage?.image_url}
             alt={`Strana ${currentIndex + 1}`}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain rounded-sm shadow-2xl"
           />
 
           {/* Click to open company detail */}
