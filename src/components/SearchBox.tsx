@@ -78,9 +78,9 @@ export function SearchBox({
     e.preventDefault()
     setIsOpen(false)
     if (query.trim()) {
-      router.push(`/katalog?search=${encodeURIComponent(query.trim())}`)
+      router.push(`/firmy?search=${encodeURIComponent(query.trim())}`)
     } else {
-      router.push('/katalog')
+      router.push('/firmy')
     }
   }
 

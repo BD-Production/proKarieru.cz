@@ -132,7 +132,7 @@ export default function CatalogOnlinePage() {
   }, [portalParam, editionParam])
 
   const handleClose = () => {
-    router.push('/katalog')
+    router.push('/firmy')
   }
 
   if (loading) {
@@ -147,7 +147,7 @@ export default function CatalogOnlinePage() {
             {error || 'Katalog neni k dispozici'}
           </h1>
           <Button asChild>
-            <Link href="/katalog">Zpet na katalog</Link>
+            <Link href="/firmy">Zpět na firmy</Link>
           </Button>
         </div>
       </div>

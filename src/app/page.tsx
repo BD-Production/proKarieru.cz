@@ -2,7 +2,7 @@ export default function RootPage() {
   // This page should not be reached in production due to middleware rewrites
   // prokarieru.cz → /landing
   // prostavare.cz → /portal
-  // katalog.prostavare.cz → /katalog
+  // katalog.prostavare.cz → /firmy
   // etc.
 
   return (

@@ -141,8 +141,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/katalog" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-              Katalog firem
+            <Link href="/firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+              Firmy
             </Link>
             <Link href="/clanky" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               Články
@@ -247,8 +247,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               &copy; {new Date().getFullYear()} proKariéru
             </p>
             <nav className="flex items-center gap-6 text-sm">
-              <Link href="/katalog" className="text-gray-500 hover:text-gray-900">
-                Katalog
+              <Link href="/firmy" className="text-gray-500 hover:text-gray-900">
+                Firmy
               </Link>
               <Link href="/clanky" className="text-gray-500 hover:text-gray-900">
                 Články

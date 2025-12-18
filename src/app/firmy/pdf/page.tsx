@@ -84,7 +84,7 @@ export default function CatalogPdfPage() {
   const handleEditionChange = (editionId: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set('edition', editionId)
-    router.replace(`/katalog/pdf?${params.toString()}`)
+    router.replace(`/firmy/pdf?${params.toString()}`)
   }
 
   const activeEdition = selectedEditionId
@@ -128,11 +128,11 @@ export default function CatalogPdfPage() {
       <main className="max-w-6xl mx-auto px-4 py-8 flex-1">
         {/* Back link */}
         <Link
-          href="/katalog"
+          href="/firmy"
           className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
-          Zpět na katalog firem
+          Zpět na firmy
         </Link>
 
         {/* Edition tabs */}
@@ -186,8 +186,8 @@ export default function CatalogPdfPage() {
       <footer className="border-t py-6 px-4 mt-auto">
         <div className="max-w-6xl mx-auto flex items-center justify-between text-sm text-gray-500">
           <span>&copy; {new Date().getFullYear()} {portal.name}</span>
-          <Link href="/katalog" className="hover:underline">
-            ← Zpět na katalog
+          <Link href="/firmy" className="hover:underline">
+            ← Zpět na firmy
           </Link>
         </div>
       </footer>

@@ -170,8 +170,8 @@ export default async function PortalPage() {
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/katalog" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-              Katalog firem
+            <Link href="/firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+              Firmy
             </Link>
             {articles.length > 0 && (
               <Link href="/clanky" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
@@ -204,7 +204,7 @@ export default async function PortalPage() {
               <SearchBox portalSlug={portalSlug || ''} />
 
               <Button asChild size="lg" className="w-full md:w-auto" style={{ backgroundColor: portal.primary_color }}>
-                <Link href="/katalog">
+                <Link href="/firmy">
                   Prohlížet všechny firmy
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -311,7 +311,7 @@ export default async function PortalPage() {
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold">Firmy, které hledají stavaře</h2>
             <Link
-              href="/katalog"
+              href="/firmy"
               className="text-sm font-medium hidden md:flex items-center gap-1 hover:underline"
               style={{ color: portal.primary_color }}
             >
@@ -330,7 +330,7 @@ export default async function PortalPage() {
 
               <div className="mt-8 text-center md:hidden">
                 <Button asChild variant="outline">
-                  <Link href="/katalog">
+                  <Link href="/firmy">
                     Zobrazit všechny firmy
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -378,8 +378,8 @@ export default async function PortalPage() {
               &copy; {new Date().getFullYear()} proKariéru
             </p>
             <nav className="flex items-center gap-6 text-sm">
-              <Link href="/katalog" className="text-gray-500 hover:text-gray-900">
-                Katalog
+              <Link href="/firmy" className="text-gray-500 hover:text-gray-900">
+                Firmy
               </Link>
               {articles.length > 0 && (
                 <Link href="/clanky" className="text-gray-500 hover:text-gray-900">

@@ -95,7 +95,7 @@ export async function middleware(request: NextRequest) {
       response.headers.set('x-portal-slug', portalSlug)
       response.headers.set('x-subdomain', subdomain || '')
 
-      // katalog.prostavare.cz nebo katalog.prostavare-dev.fun → pouze root path
+      // katalog.prostavare.cz nebo katalog.prostavare-dev.fun → /katalog (knihovnička)
       if (subdomain === 'katalog') {
         if (pathname === '/') {
           return NextResponse.rewrite(
@@ -103,8 +103,8 @@ export async function middleware(request: NextRequest) {
             { headers: response.headers }
           )
         }
-        // Ostatní cesty na katalog subdoméně nejsou povoleny
-        return NextResponse.next()
+        // Ostatní cesty na katalog subdoméně projdou přímo
+        return response
       }
 
       // veletrh.prostavare.cz nebo veletrh.prostavare-dev.fun → /fair
@@ -130,8 +130,9 @@ export async function middleware(request: NextRequest) {
           )
         }
 
-        // /katalog cesta projde přímo
-        if (pathname === '/katalog' || pathname.startsWith('/katalog/')) {
+        // /firmy a /katalog cesty projdou přímo
+        if (pathname === '/firmy' || pathname.startsWith('/firmy/') ||
+            pathname === '/katalog' || pathname.startsWith('/katalog/')) {
           return response
         }
 

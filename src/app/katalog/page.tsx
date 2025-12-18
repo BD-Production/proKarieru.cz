@@ -3,12 +3,9 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Building2, Search, BookOpen } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { Loader } from '@/components/Loader'
 import { CatalogBrowser } from '@/components/CatalogBrowser'
+import { createClient } from '@/lib/supabase/client'
 
 type Portal = {
   id: string
@@ -20,178 +17,162 @@ type Portal = {
 type Edition = {
   id: string
   name: string
+  year: number
+  season: 'spring' | 'winter' | 'fall' | null
+  location: string | null
   is_active: boolean
+  display_order: number
 }
 
-type Company = {
+type CatalogPage = {
   id: string
-  name: string
-  slug: string
-  logo_url: string | null
+  edition_id: string
+  type: 'intro' | 'outro'
+  page_order: number
+  image_url: string
 }
 
-export default function CatalogPage() {
+export default function KatalogPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [portal, setPortal] = useState<Portal | null>(null)
   const [editions, setEditions] = useState<Edition[]>([])
-  const [companies, setCompanies] = useState<Company[]>([])
-  const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([])
+  const [coversByEdition, setCoversByEdition] = useState<Map<string, string>>(new Map())
   const [loading, setLoading] = useState(true)
-  const [showCatalogBrowser, setShowCatalogBrowser] = useState(false)
 
-  // Cache-busting timestamp (generated once per page load)
-  const timestamp = useMemo(() => Date.now(), [])
-
-  const searchQuery = searchParams.get('search') || ''
   const selectedEditionId = searchParams.get('edition')
+  const selectedEdition = editions.find(e => e.id === selectedEditionId)
+
+  // Cache-busting timestamp
+  const timestamp = useMemo(() => Date.now(), [])
 
   useEffect(() => {
     async function loadData() {
       const supabase = createClient()
 
-      // Get portal from headers (set by middleware)
+      // Načíst portál z headeru
       const portalSlug = document.querySelector('meta[name="x-portal-slug"]')?.getAttribute('content')
+        || window.location.hostname.split('.')[0].replace('-dev', '')
 
-      // Load portal
-      const { data: portalData } = await supabase
+      // Fallback - zkusit získat portál podle domény
+      let portalQuery = supabase
         .from('portals')
-        .select('id, name, slug, primary_color')
+        .select('*')
         .eq('is_active', true)
-        .limit(1)
-        .single()
+
+      if (portalSlug && portalSlug !== 'localhost' && portalSlug !== 'prokarieru') {
+        portalQuery = portalQuery.eq('slug', portalSlug)
+      }
+
+      const { data: portalData } = await portalQuery.single()
 
       if (!portalData) {
+        // Zkusit první aktivní portál jako fallback
+        const { data: fallbackPortal } = await supabase
+          .from('portals')
+          .select('*')
+          .eq('is_active', true)
+          .neq('slug', 'prokarieru')
+          .limit(1)
+          .single()
+
+        if (fallbackPortal) {
+          setPortal(fallbackPortal)
+        } else {
+          setLoading(false)
+          return
+        }
+      } else {
+        setPortal(portalData)
+      }
+
+      const currentPortal = portalData || portal
+      if (!currentPortal) {
         setLoading(false)
         return
       }
 
-      setPortal(portalData)
-
-      // Load editions
+      // Načíst edice
       const { data: editionsData } = await supabase
         .from('editions')
-        .select('id, name, is_active')
-        .eq('portal_id', portalData.id)
-        .order('is_active', { ascending: false })
-        .order('display_order')
+        .select('*')
+        .eq('portal_id', currentPortal.id)
+        .eq('is_active', true)
+        .order('display_order', { ascending: true })
 
       setEditions(editionsData || [])
 
-      if (!editionsData || editionsData.length === 0) {
-        setLoading(false)
-        return
-      }
+      // Načíst obálky (první intro stránka každé edice)
+      if (editionsData && editionsData.length > 0) {
+        const editionIds = editionsData.map(e => e.id)
 
-      // Load companies based on filter
-      let companiesData: Company[] = []
-
-      if (selectedEditionId) {
-        // Filter by specific edition - sort alphabetically
-        const { data: companyEditions } = await supabase
-          .from('company_editions')
-          .select(`
-            *,
-            company:companies(id, name, slug, logo_url)
-          `)
-          .eq('edition_id', selectedEditionId)
-
-        companiesData = companyEditions?.map((ce: any) => ce.company).filter(Boolean) || []
-        // Sort alphabetically by name
-        companiesData.sort((a, b) => a.name.localeCompare(b.name, 'cs'))
-      } else {
-        // Load all companies from all editions
-        const editionIds = editionsData.map((e) => e.id)
-        const { data: companyEditions } = await supabase
-          .from('company_editions')
-          .select(`
-            *,
-            company:companies(id, name, slug, logo_url)
-          `)
+        const { data: introPages } = await supabase
+          .from('catalog_pages')
+          .select('*')
           .in('edition_id', editionIds)
+          .eq('type', 'intro')
+          .order('page_order', { ascending: true })
 
-        // Count editions per company and deduplicate
-        const companyEditionCount = new Map<string, number>()
-        const companyMap = new Map<string, Company>()
-        companyEditions?.forEach((ce: any) => {
-          if (ce.company) {
-            companyEditionCount.set(ce.company.id, (companyEditionCount.get(ce.company.id) || 0) + 1)
-            if (!companyMap.has(ce.company.id)) {
-              companyMap.set(ce.company.id, ce.company)
-            }
+        // Mapovat první intro stránku jako obálku pro každou edici
+        const covers = new Map<string, string>()
+        introPages?.forEach((page: CatalogPage) => {
+          if (!covers.has(page.edition_id)) {
+            covers.set(page.edition_id, page.image_url)
           }
         })
-        companiesData = Array.from(companyMap.values())
-        // Sort by edition count (desc), then alphabetically
-        companiesData.sort((a, b) => {
-          const countDiff = (companyEditionCount.get(b.id) || 0) - (companyEditionCount.get(a.id) || 0)
-          if (countDiff !== 0) return countDiff
-          return a.name.localeCompare(b.name, 'cs')
-        })
+        setCoversByEdition(covers)
       }
 
-      setCompanies(companiesData)
-      setFilteredCompanies(companiesData)
       setLoading(false)
     }
 
     loadData()
-  }, [selectedEditionId])
+  }, [])
 
-  // Filter companies based on search query
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredCompanies(companies)
-    } else {
-      const query = searchQuery.toLowerCase()
-      setFilteredCompanies(
-        companies.filter((company) =>
-          company.name.toLowerCase().includes(query)
-        )
-      )
-    }
-  }, [searchQuery, companies])
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    const params = new URLSearchParams(searchParams.toString())
-
-    if (value) {
-      params.set('search', value)
-    } else {
-      params.delete('search')
-    }
-
-    router.replace(`/katalog?${params.toString()}`, { scroll: false })
+  const handleClose = () => {
+    router.push('/katalog')
   }
 
-  const handleEditionChange = (editionId: string | null) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (editionId) {
-      params.set('edition', editionId)
-    } else {
-      params.delete('edition')
+  const getSeasonLabel = (season: string | null) => {
+    switch (season) {
+      case 'spring': return 'Jaro'
+      case 'fall': return 'Podzim'
+      case 'winter': return 'Zima'
+      default: return ''
     }
-    router.replace(`/katalog?${params.toString()}`)
   }
 
   if (loading) {
-    return <Loader text="Načítání katalogu..." />
+    return <Loader text="Načítám katalog..." />
   }
 
   if (!portal) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">Katalog nenalezen</h1>
-          <p className="text-gray-500">Portál není dostupný.</p>
+          <h1 className="text-2xl font-bold mb-2">Portál nenalezen</h1>
+          <p className="text-gray-500">Tento portál neexistuje nebo není aktivní.</p>
         </div>
       </div>
     )
   }
 
+  // Pokud je vybraná edice, zobrazit CatalogBrowser
+  if (selectedEditionId && selectedEdition) {
+    return (
+      <CatalogBrowser
+        portalSlug={portal.slug}
+        editionId={selectedEditionId}
+        editionName={selectedEdition.name}
+        primaryColor={portal.primary_color}
+        onClose={handleClose}
+      />
+    )
+  }
+
+  // Jinak zobrazit knihovničku
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="border-b sticky top-0 bg-white/95 backdrop-blur-sm z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -201,8 +182,8 @@ export default function CatalogPage() {
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/katalog" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-              Katalog firem
+            <Link href="/firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+              Firmy
             </Link>
             <Link href="/profirmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               Pro firmy
@@ -211,138 +192,122 @@ export default function CatalogPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Edition filters */}
-        {editions.length > 1 && (
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-            <button
-              onClick={() => handleEditionChange(null)}
-              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors ${
-                !selectedEditionId
-                  ? 'text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-              style={
-                !selectedEditionId
-                  ? { backgroundColor: portal.primary_color }
-                  : {}
-              }
-            >
-              Vše
-            </button>
-            {editions.map((edition) => (
-              <button
-                key={edition.id}
-                onClick={() => handleEditionChange(edition.id)}
-                className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors ${
-                  edition.id === selectedEditionId
-                    ? 'text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-                style={
-                  edition.id === selectedEditionId
-                    ? { backgroundColor: portal.primary_color }
-                    : {}
-                }
-              >
-                {edition.name}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Search and Read Online button */}
-        <div className="flex gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input
-              placeholder="Hledat firmu..."
-              className="pl-10"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-          </div>
-          {selectedEditionId && (
-            <Button
-              onClick={() => setShowCatalogBrowser(true)}
-              style={{ backgroundColor: portal.primary_color }}
-              className="whitespace-nowrap"
-            >
-              <BookOpen className="h-4 w-4 mr-2" />
-              Cist online
-            </Button>
-          )}
+      {/* Main content */}
+      <main className="flex-1 max-w-6xl mx-auto px-4 py-12 w-full">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Katalog</h1>
+          <p className="text-gray-600 text-lg">
+            Prohlédněte si naše katalogy firem online
+          </p>
         </div>
 
-        {/* Companies grid */}
-        {filteredCompanies.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredCompanies.map((company) => (
-              <Link
-                key={company.id}
-                href={selectedEditionId ? `/${company.slug}?edition=${selectedEditionId}` : `/${company.slug}`}
-                className="group"
-              >
-                <div className="aspect-square border rounded-lg overflow-hidden bg-white hover:shadow-lg transition-shadow flex items-center justify-center p-4">
-                  {company.logo_url ? (
-                    <img
-                      src={`${company.logo_url.split('?')[0]}?v=${timestamp}`}
-                      alt={company.name}
-                      width={160}
-                      height={160}
-                      className="object-contain group-hover:scale-105 transition-transform max-w-full max-h-full"
-                    />
-                  ) : (
-                    <div className="text-center">
-                      <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                      <span className="text-sm text-gray-500">{company.name}</span>
+        {editions.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {editions.map((edition) => {
+              const coverUrl = coversByEdition.get(edition.id)
+
+              return (
+                <Link
+                  key={edition.id}
+                  href={`/katalog?edition=${edition.id}`}
+                  className="group"
+                >
+                  <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1">
+                    {/* Obálka */}
+                    <div className="aspect-[148/210] bg-gray-100 relative overflow-hidden">
+                      {coverUrl ? (
+                        <img
+                          src={`${coverUrl}?v=${timestamp}`}
+                          alt={edition.name}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ backgroundColor: portal.primary_color + '20' }}
+                        >
+                          <div className="text-center p-4">
+                            <span
+                              className="text-4xl font-bold"
+                              style={{ color: portal.primary_color }}
+                            >
+                              {edition.name}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Overlay při hoveru */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-gray-900 px-4 py-2 rounded-full font-medium shadow-lg">
+                          Číst online
+                        </span>
+                      </div>
                     </div>
-                  )}
-                </div>
-                <p className="text-sm text-center mt-2 text-gray-600 group-hover:text-gray-900">
-                  {company.name}
-                </p>
-              </Link>
-            ))}
+
+                    {/* Info */}
+                    <div className="p-4">
+                      <h3 className="font-semibold text-lg mb-1">{edition.name}</h3>
+                      <p className="text-sm text-gray-500">
+                        {edition.year}
+                        {edition.season && ` • ${getSeasonLabel(edition.season)}`}
+                        {edition.location && ` • ${edition.location}`}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         ) : (
-          <div className="text-center py-20 text-gray-500">
-            <Building2 className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-            {searchQuery ? (
-              <>
-                <p>Žádné firmy nenalezeny pro &quot;{searchQuery}&quot;</p>
-                <p className="text-sm mt-2">Zkuste jiné klíčové slovo.</p>
-              </>
-            ) : (
-              <>
-                <p>Žádné firmy v této edici.</p>
-                <p className="text-sm mt-2">Přidejte firmy v administraci.</p>
-              </>
-            )}
+          <div className="text-center py-16">
+            <div
+              className="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: portal.primary_color + '20' }}
+            >
+              <svg
+                className="w-12 h-12"
+                fill="none"
+                stroke={portal.primary_color}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold mb-2">Zatím žádné katalogy</h2>
+            <p className="text-gray-500">
+              Katalogy budou brzy k dispozici.
+            </p>
           </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-6 px-4 mt-auto">
-        <div className="max-w-6xl mx-auto flex items-center justify-between text-sm text-gray-500">
-          <span>&copy; {new Date().getFullYear()} {portal.name}</span>
-          <Link href="/" className="hover:underline">
-            ← Zpět na hlavní stránku
-          </Link>
+      <footer className="border-t py-8 px-4 mt-auto bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-500 text-sm">
+              &copy; {new Date().getFullYear()} proKariéru
+            </p>
+            <nav className="flex items-center gap-6 text-sm">
+              <Link href="/firmy" className="text-gray-500 hover:text-gray-900">
+                Firmy
+              </Link>
+              <Link href="/profirmy" className="text-gray-500 hover:text-gray-900">
+                Pro firmy
+              </Link>
+              <Link href="/" className="text-gray-500 hover:text-gray-900">
+                Hlavní stránka
+              </Link>
+            </nav>
+          </div>
         </div>
       </footer>
-
-      {/* Catalog Browser Modal */}
-      {showCatalogBrowser && selectedEditionId && (
-        <CatalogBrowser
-          portalSlug={portal.slug}
-          editionId={selectedEditionId}
-          editionName={editions.find(e => e.id === selectedEditionId)?.name || 'Katalog'}
-          primaryColor={portal.primary_color}
-          onClose={() => setShowCatalogBrowser(false)}
-        />
-      )}
     </div>
   )
 }

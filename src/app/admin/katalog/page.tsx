@@ -478,7 +478,7 @@ export default function AdminCatalogPage() {
         {selectedEdition && currentPortal && (
           <Button asChild variant="outline">
             <a
-              href={`https://${currentPortal.domain}/katalog?edition=${selectedEdition.id}`}
+              href={`https://${currentPortal.domain}/firmy?edition=${selectedEdition.id}`}
               target="_blank"
               rel="noopener noreferrer"
             >
