@@ -195,7 +195,7 @@ export function CatalogBrowser({
       <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
         <div className="text-center text-white">
           <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4" />
-          <p>Nacitam katalog...</p>
+          <p>Načítám katalog...</p>
         </div>
       </div>
     )
@@ -205,9 +205,9 @@ export function CatalogBrowser({
     return (
       <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
         <div className="text-center text-white">
-          <p className="mb-4">Katalog je prazdny</p>
+          <p className="mb-4">Katalog je prázdný</p>
           <Button onClick={onClose} variant="outline">
-            Zavrit
+            Zavřít
           </Button>
         </div>
       </div>
@@ -266,18 +266,15 @@ export function CatalogBrowser({
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex items-center justify-center p-4 pt-20 pb-24">
-        <div
-          className={cn(
-            "relative max-h-full transition-opacity duration-300",
-            isAnimating && "opacity-0"
-          )}
-          style={{ aspectRatio: '148 / 210', height: '100%' }} // A5 portrait (148mm šířka × 210mm výška)
-        >
+      <div className="flex-1 flex items-center justify-center p-4 pt-16 pb-20 overflow-hidden">
+        <div className="relative max-h-full max-w-full">
           <img
             src={currentPage?.image_url}
             alt={`Strana ${currentIndex + 1}`}
-            className="w-full h-full object-contain rounded-sm shadow-2xl"
+            className={cn(
+              "max-h-[calc(100vh-12rem)] w-auto object-contain rounded-sm shadow-2xl transition-opacity duration-300",
+              isAnimating && "opacity-0"
+            )}
           />
 
           {/* Click to open company detail */}
@@ -287,7 +284,7 @@ export function CatalogBrowser({
               target="_blank"
               rel="noopener noreferrer"
               className="absolute inset-0"
-              title={`Otevrit detail ${currentPage.companyName}`}
+              title={`Otevřít detail ${currentPage.companyName}`}
             />
           )}
         </div>
@@ -331,8 +328,8 @@ export function CatalogBrowser({
 
           <div className="flex items-center justify-between text-white">
             <div className="text-sm text-white/80">
-              {currentPage?.type === 'intro' && 'Uvod'}
-              {currentPage?.type === 'outro' && 'Zaver'}
+              {currentPage?.type === 'intro' && 'Úvod'}
+              {currentPage?.type === 'outro' && 'Závěr'}
               {currentPage?.type === 'company' && currentPage.companyName}
             </div>
 
@@ -379,8 +376,8 @@ export function CatalogBrowser({
                   backgroundColor: index === currentIndex ? primaryColor : '#fff'
                 }}
                 title={
-                  page.type === 'intro' ? `Uvod ${index + 1}` :
-                  page.type === 'outro' ? `Zaver` :
+                  page.type === 'intro' ? `Úvod ${index + 1}` :
+                  page.type === 'outro' ? `Závěr` :
                   page.companyName || `Firma ${index + 1}`
                 }
               />
