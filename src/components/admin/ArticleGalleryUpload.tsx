@@ -369,7 +369,10 @@ export function ArticleGalleryUpload({
               {uploading ? 'Nahrávám...' : 'Přetáhněte obrázky sem'}
             </p>
             <p className="text-xs text-gray-500">
-              PNG, JPG nebo WebP • Max 5MB
+              PNG, JPG nebo WebP • Max 5MB • Automaticky optimalizováno
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              Doporučeno: 1200×800 px (poměr 3:2) nebo 1200×675 px (16:9)
             </p>
           </div>
           <Button
