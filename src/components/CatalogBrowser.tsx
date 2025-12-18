@@ -269,10 +269,10 @@ export function CatalogBrowser({
       <div className="flex-1 flex items-center justify-center p-4 pt-20 pb-24">
         <div
           className={cn(
-            "relative h-full max-h-full transition-opacity duration-300",
+            "relative max-h-full transition-opacity duration-300",
             isAnimating && "opacity-0"
           )}
-          style={{ aspectRatio: '148 / 210' }} // A5 format
+          style={{ aspectRatio: '148 / 210', height: '100%' }} // A5 portrait (148mm šířka × 210mm výška)
         >
           <img
             src={currentPage?.image_url}

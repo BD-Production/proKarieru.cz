@@ -402,7 +402,7 @@ export default function AdminCatalogPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {pages.sort((a, b) => a.page_order - b.page_order).map((page, index) => (
           <div key={page.id} className="relative group border rounded-lg overflow-hidden bg-gray-50">
-            <div className="aspect-[148/210]"> {/* A5 format */}
+            <div className="aspect-[148/210]"> {/* A5 portrait (148mm šířka × 210mm výška) */}
               <img
                 src={`${page.image_url}?v=${Date.now()}`}
                 alt={`${type === 'intro' ? 'Intro' : 'Outro'} strana ${index + 1}`}
