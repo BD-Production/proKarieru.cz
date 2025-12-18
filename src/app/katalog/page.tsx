@@ -4,13 +4,16 @@ import { useEffect, useState, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/input'
-import { Building2, Search } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Building2, Search, BookOpen } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Loader } from '@/components/Loader'
+import { CatalogBrowser } from '@/components/CatalogBrowser'
 
 type Portal = {
   id: string
   name: string
+  slug: string
   primary_color: string
 }
 
@@ -35,6 +38,7 @@ export default function CatalogPage() {
   const [companies, setCompanies] = useState<Company[]>([])
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
+  const [showCatalogBrowser, setShowCatalogBrowser] = useState(false)
 
   // Cache-busting timestamp (generated once per page load)
   const timestamp = useMemo(() => Date.now(), [])
@@ -52,7 +56,7 @@ export default function CatalogPage() {
       // Load portal
       const { data: portalData } = await supabase
         .from('portals')
-        .select('id, name, primary_color')
+        .select('id, name, slug, primary_color')
         .eq('is_active', true)
         .limit(1)
         .single()
@@ -247,15 +251,27 @@ export default function CatalogPage() {
           </div>
         )}
 
-        {/* Search */}
-        <div className="relative mb-8">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <Input
-            placeholder="Hledat firmu..."
-            className="pl-10"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
+        {/* Search and Read Online button */}
+        <div className="flex gap-4 mb-8">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input
+              placeholder="Hledat firmu..."
+              className="pl-10"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+          {selectedEditionId && (
+            <Button
+              onClick={() => setShowCatalogBrowser(true)}
+              style={{ backgroundColor: portal.primary_color }}
+              className="whitespace-nowrap"
+            >
+              <BookOpen className="h-4 w-4 mr-2" />
+              Cist online
+            </Button>
+          )}
         </div>
 
         {/* Companies grid */}
@@ -316,6 +332,17 @@ export default function CatalogPage() {
           </Link>
         </div>
       </footer>
+
+      {/* Catalog Browser Modal */}
+      {showCatalogBrowser && selectedEditionId && (
+        <CatalogBrowser
+          portalSlug={portal.slug}
+          editionId={selectedEditionId}
+          editionName={editions.find(e => e.id === selectedEditionId)?.name || 'Katalog'}
+          primaryColor={portal.primary_color}
+          onClose={() => setShowCatalogBrowser(false)}
+        />
+      )}
     </div>
   )
 }

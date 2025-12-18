@@ -226,3 +226,41 @@ export interface ArticleWithDetails extends Article {
 export interface ArticleTagWithCount extends ArticleTag {
   article_count?: number
 }
+
+// ============================================
+// PROHLÍŽEČ KATALOGU
+// ============================================
+
+export interface CatalogPage {
+  id: string
+  portal_id: string
+  edition_id: string
+  type: 'intro' | 'outro'
+  page_order: number
+  image_url: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CatalogCompanyOrder {
+  id: string
+  portal_id: string
+  edition_id: string
+  company_id: string
+  order_position: number
+  is_visible: boolean
+  created_at: string
+  updated_at: string
+}
+
+// Joined types pro katalog
+export interface CatalogCompanyOrderWithCompany extends CatalogCompanyOrder {
+  company?: Company
+  pages?: CompanyPage[]
+}
+
+export interface CatalogData {
+  introPages: CatalogPage[]
+  companies: CatalogCompanyOrderWithCompany[]
+  outroPages: CatalogPage[]
+}

@@ -28,7 +28,8 @@
       "Bash(copy:*)",
       "WebFetch(domain:prostavare-dev.fun)",
       "Bash(git merge:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(npx shadcn@latest add tabs -y)"
     ],
     "deny": [],
     "ask": []
