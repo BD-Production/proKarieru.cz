@@ -436,6 +436,12 @@ export function CatalogBrowser({
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="text-white">
             <h2 className="font-semibold">{editionName}</h2>
+            {currentPageInfo.type === 'intro' && (
+              <p className="text-sm text-white/80">Úvod</p>
+            )}
+            {currentPageInfo.type === 'outro' && (
+              <p className="text-sm text-white/80">Závěr</p>
+            )}
             {currentPageInfo.type === 'company' && currentPageInfo.companyName && (
               <p className="text-sm text-white/80">{currentPageInfo.companyName}</p>
             )}
@@ -478,19 +484,11 @@ export function CatalogBrowser({
               "transition-opacity duration-300"
             )}
           >
-            {/* Obálka (první strana) - sama vpravo */}
-            {currentSpread.leftPage === null && currentSpread.rightPage !== null && (
-              <div className="flex h-full">
-                <div className="w-[calc((100vh-12rem)*0.7)] bg-gray-900/50" /> {/* Placeholder pro levou stranu */}
-                {renderPage(currentSpread.rightPage, 'right')}
-              </div>
-            )}
-
-            {/* Zadní obálka (poslední strana) - sama vlevo */}
-            {currentSpread.leftPage !== null && currentSpread.rightPage === null && (
-              <div className="flex h-full">
-                {renderPage(currentSpread.leftPage, 'left')}
-                <div className="w-[calc((100vh-12rem)*0.7)] bg-gray-900/50" /> {/* Placeholder pro pravou stranu */}
+            {/* Obálka (první strana) nebo zadní obálka (poslední strana) - na střed */}
+            {(currentSpread.leftPage === null || currentSpread.rightPage === null) &&
+             !(currentSpread.leftPage !== null && currentSpread.rightPage !== null) && (
+              <div className="flex h-full justify-center">
+                {renderPage(currentSpread.leftPage || currentSpread.rightPage, 'single')}
               </div>
             )}
 
