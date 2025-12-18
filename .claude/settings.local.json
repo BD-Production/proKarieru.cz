@@ -27,8 +27,8 @@
       "Bash(findstr:*)",
       "Bash(copy:*)",
       "WebFetch(domain:prostavare-dev.fun)",
-      "Bash(git checkout:*)",
-      "Bash(npx shadcn@latest add checkbox -y)"
+      "Bash(git merge:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
