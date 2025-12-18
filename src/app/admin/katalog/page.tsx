@@ -47,7 +47,7 @@ export default function AdminCatalogPage() {
 
   const currentPortal = portals.find(p => p.id === selectedPortalId)
 
-  // Nacist edice pro vybrany portal
+  // Načíst edice pro vybraný portál
   useEffect(() => {
     const loadEditions = async () => {
       if (portalLoading || !selectedPortalId) {
@@ -65,7 +65,7 @@ export default function AdminCatalogPage() {
 
       setEditions(data || [])
 
-      // Automaticky vybrat aktivni edici nebo prvni
+      // Automaticky vybrat aktivní edici nebo první
       const activeEdition = data?.find(e => e.is_active) || data?.[0]
       setSelectedEdition(activeEdition || null)
 
@@ -75,7 +75,7 @@ export default function AdminCatalogPage() {
     loadEditions()
   }, [selectedPortalId, portalLoading, supabase])
 
-  // Nacist data katalogu pro vybranou edici
+  // Načíst data katalogu pro vybranou edici
   const loadCatalogData = useCallback(async () => {
     if (!selectedEdition) {
       setIntroPages([])
@@ -84,13 +84,13 @@ export default function AdminCatalogPage() {
       return
     }
 
-    // Nacist stranky
+    // Načíst stránky
     const pagesResponse = await fetch(`/api/admin/catalog/pages?edition_id=${selectedEdition.id}`)
     const pagesData = await pagesResponse.json()
     setIntroPages(pagesData.introPages || [])
     setOutroPages(pagesData.outroPages || [])
 
-    // Nacist poradi firem
+    // Načíst pořadí firem
     const orderResponse = await fetch(`/api/admin/catalog/order?edition_id=${selectedEdition.id}`)
     const orderData = await orderResponse.json()
     setCompanies(orderData.companies || [])
@@ -163,12 +163,12 @@ export default function AdminCatalogPage() {
         const file = files[i]
 
         if (!file.type.startsWith('image/')) {
-          toast.error(`${file.name}: Soubor musi byt obrazek`)
+          toast.error(`${file.name}: Soubor musí být obrázek`)
           continue
         }
 
         if (file.size > 10 * 1024 * 1024) {
-          toast.error(`${file.name}: Soubor je prilis velky (max 10MB)`)
+          toast.error(`${file.name}: Soubor je příliš velký (max 10MB)`)
           continue
         }
 
@@ -185,7 +185,7 @@ export default function AdminCatalogPage() {
 
         if (uploadError) {
           console.error('Upload error:', uploadError)
-          toast.error(`Chyba pri nahravani ${file.name}`)
+          toast.error(`Chyba při nahrávání ${file.name}`)
           continue
         }
 
@@ -193,7 +193,7 @@ export default function AdminCatalogPage() {
           .from('catalog-pages')
           .getPublicUrl(fileName)
 
-        // Pridat do databaze
+        // Přidat do databáze
         const response = await fetch('/api/admin/catalog/pages', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -206,23 +206,23 @@ export default function AdminCatalogPage() {
         })
 
         if (!response.ok) {
-          toast.error(`Chyba pri ukladani ${file.name}`)
+          toast.error(`Chyba při ukládání ${file.name}`)
         }
       }
 
-      toast.success(`Nahrano ${files.length} stranek`)
+      toast.success(`Nahráno ${files.length} stránek`)
       loadCatalogData()
     } catch (error) {
       console.error('Upload error:', error)
-      toast.error('Chyba pri nahravani')
+      toast.error('Chyba při nahrávání')
     } finally {
       setUploading(null)
     }
   }
 
-  // Smazat stranku
+  // Smazat stránku
   const handleDeletePage = async (pageId: string, type: 'intro' | 'outro') => {
-    if (!confirm('Opravdu chcete smazat tuto stranku?')) return
+    if (!confirm('Opravdu chcete smazat tuto stránku?')) return
 
     try {
       const response = await fetch(`/api/admin/catalog/pages/${pageId}`, {
@@ -235,17 +235,17 @@ export default function AdminCatalogPage() {
         } else {
           setOutroPages(prev => prev.filter(p => p.id !== pageId))
         }
-        toast.success('Stranka byla smazana')
+        toast.success('Stránka byla smazána')
       } else {
-        toast.error('Nepodarilo se smazat stranku')
+        toast.error('Nepodařilo se smazat stránku')
       }
     } catch (error) {
       console.error('Delete error:', error)
-      toast.error('Chyba pri mazani')
+      toast.error('Chyba při mazání')
     }
   }
 
-  // Presunout stranku
+  // Přesunout stránku
   const handleMovePage = async (pages: CatalogPage[], setPages: React.Dispatch<React.SetStateAction<CatalogPage[]>>, fromIndex: number, direction: 'up' | 'down') => {
     const toIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1
     if (toIndex < 0 || toIndex >= pages.length) return
@@ -258,7 +258,7 @@ export default function AdminCatalogPage() {
     const updatedPages = newPages.map((p, idx) => ({ ...p, page_order: idx }))
     setPages(updatedPages)
 
-    // Ulozit na server
+    // Uložit na server
     try {
       await fetch('/api/admin/catalog/pages', {
         method: 'PUT',
@@ -272,7 +272,7 @@ export default function AdminCatalogPage() {
     }
   }
 
-  // Presunout firmu
+  // Přesunout firmu
   const handleMoveCompany = (fromIndex: number, direction: 'up' | 'down') => {
     const toIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1
     if (toIndex < 0 || toIndex >= companies.length) return
@@ -291,7 +291,7 @@ export default function AdminCatalogPage() {
     setHasCustomOrder(true)
   }
 
-  // Prepnout viditelnost firmy
+  // Přepnout viditelnost firmy
   const handleToggleVisibility = (companyId: string) => {
     setCompanies(prev => prev.map(c =>
       c.company_id === companyId
@@ -301,7 +301,7 @@ export default function AdminCatalogPage() {
     setHasCustomOrder(true)
   }
 
-  // Ulozit poradi firem
+  // Uložit pořadí firem
   const handleSaveOrder = async () => {
     if (!selectedEdition || !selectedPortalId) return
 
@@ -322,23 +322,23 @@ export default function AdminCatalogPage() {
       })
 
       if (response.ok) {
-        toast.success('Poradi bylo ulozeno')
+        toast.success('Pořadí bylo uloženo')
         setCompanies(prev => prev.map(c => ({ ...c, has_custom_order: true })))
       } else {
-        toast.error('Nepodarilo se ulozit poradi')
+        toast.error('Nepodařilo se uložit pořadí')
       }
     } catch (error) {
       console.error('Save order error:', error)
-      toast.error('Chyba pri ukladani')
+      toast.error('Chyba při ukládání')
     } finally {
       setSaving(false)
     }
   }
 
-  // Resetovat poradi na abecedni
+  // Resetovat pořadí na abecední
   const handleResetOrder = async () => {
     if (!selectedEdition) return
-    if (!confirm('Opravdu chcete resetovat poradi na abecedni?')) return
+    if (!confirm('Opravdu chcete resetovat pořadí na abecední?')) return
 
     setSaving(true)
     try {
@@ -347,14 +347,14 @@ export default function AdminCatalogPage() {
       })
 
       if (response.ok) {
-        toast.success('Poradi bylo resetovano')
+        toast.success('Pořadí bylo resetováno')
         loadCatalogData()
       } else {
-        toast.error('Nepodarilo se resetovat poradi')
+        toast.error('Nepodařilo se resetovat pořadí')
       }
     } catch (error) {
       console.error('Reset order error:', error)
-      toast.error('Chyba pri resetovani')
+      toast.error('Chyba při resetování')
     } finally {
       setSaving(false)
     }
@@ -372,10 +372,10 @@ export default function AdminCatalogPage() {
         <Upload className="w-8 h-8 mx-auto text-gray-400" />
       )}
       <p className="text-sm font-medium mt-2">
-        {uploading === type ? 'Nahravani...' : 'Pretahnete obrazky sem nebo kliknete'}
+        {uploading === type ? 'Nahrávání...' : 'Přetáhněte obrázky sem nebo klikněte'}
       </p>
       <p className="text-xs text-gray-500 mt-1">
-        PNG, JPG nebo WebP • Max 10MB • Format A5 (148×210 mm)
+        PNG, JPG nebo WebP • Max 10MB • Formát A5 (148×210 mm)
       </p>
       <input
         ref={inputRef}
@@ -395,7 +395,7 @@ export default function AdminCatalogPage() {
     type: 'intro' | 'outro'
   ) => {
     if (pages.length === 0) {
-      return <p className="text-sm text-gray-500 text-center py-4">Zadne stranky</p>
+      return <p className="text-sm text-gray-500 text-center py-4">Žádné stránky</p>
     }
 
     return (
@@ -442,7 +442,7 @@ export default function AdminCatalogPage() {
               <span className="text-white text-xs">Strana {index + 1}</span>
             </div>
 
-            {/* Cislo stranky */}
+            {/* Číslo stránky */}
             <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
               {index + 1}
             </div>
@@ -463,7 +463,7 @@ export default function AdminCatalogPage() {
   if (!selectedPortalId) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Vyberte portal v postrannim menu</p>
+        <p className="text-gray-500">Vyberte portál v postranním menu</p>
       </div>
     )
   }
@@ -473,7 +473,7 @@ export default function AdminCatalogPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Katalog online</h1>
-          <p className="text-gray-500">Sprava intro/outro stranek a poradi firem v online katalogu</p>
+          <p className="text-gray-500">Správa intro/outro stránek a pořadí firem v online katalogu</p>
         </div>
         {selectedEdition && currentPortal && (
           <Button asChild variant="outline">
@@ -483,13 +483,13 @@ export default function AdminCatalogPage() {
               rel="noopener noreferrer"
             >
               <ExternalLink className="mr-2 h-4 w-4" />
-              Nahled katalogu
+              Náhled katalogu
             </a>
           </Button>
         )}
       </div>
 
-      {/* Vyber edice */}
+      {/* Výběr edice */}
       {editions.length > 0 ? (
         <Card>
           <CardHeader>
@@ -505,7 +505,7 @@ export default function AdminCatalogPage() {
                 >
                   {edition.name}
                   {edition.is_active && (
-                    <Badge variant="secondary" className="ml-2">Aktivni</Badge>
+                    <Badge variant="secondary" className="ml-2">Aktivní</Badge>
                   )}
                 </Button>
               ))}
@@ -515,7 +515,7 @@ export default function AdminCatalogPage() {
       ) : (
         <Card>
           <CardContent className="text-center py-8">
-            <p className="text-gray-500">Zadne edice. Nejdriv vytvorte edici v sekci Edice.</p>
+            <p className="text-gray-500">Žádné edice. Nejdříve vytvořte edici v sekci Edice.</p>
           </CardContent>
         </Card>
       )}
@@ -524,23 +524,23 @@ export default function AdminCatalogPage() {
         <Tabs defaultValue="intro" className="space-y-6">
           <TabsList>
             <TabsTrigger value="intro">
-              Intro stranky ({introPages.length})
+              Intro stránky ({introPages.length})
             </TabsTrigger>
             <TabsTrigger value="companies">
-              Poradi firem ({companies.length})
+              Pořadí firem ({companies.length})
             </TabsTrigger>
             <TabsTrigger value="outro">
-              Outro stranky ({outroPages.length})
+              Outro stránky ({outroPages.length})
             </TabsTrigger>
           </TabsList>
 
-          {/* Intro stranky */}
+          {/* Intro stránky */}
           <TabsContent value="intro">
             <Card>
               <CardHeader>
-                <CardTitle>Intro stranky</CardTitle>
+                <CardTitle>Intro stránky</CardTitle>
                 <CardDescription>
-                  Uvodni stranky katalogu zobrazene pred firmami (napr. titulni strana, obsah, uvod)
+                  Úvodní stránky katalogu zobrazené před firmami (např. titulní strana, obsah, úvod)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -550,16 +550,16 @@ export default function AdminCatalogPage() {
             </Card>
           </TabsContent>
 
-          {/* Poradi firem */}
+          {/* Pořadí firem */}
           <TabsContent value="companies">
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Poradi firem v katalogu</CardTitle>
+                    <CardTitle>Pořadí firem v katalogu</CardTitle>
                     <CardDescription>
-                      Nastavte poradi firem a jejich viditelnost v online katalogu.
-                      Firmy skryte v katalogu zustanou viditelne na hlavni strance.
+                      Nastavte pořadí firem a jejich viditelnost v online katalogu.
+                      Firmy skryté v katalogu zůstanou viditelné na hlavní stránce.
                     </CardDescription>
                   </div>
                   <div className="flex gap-2">
@@ -570,12 +570,12 @@ export default function AdminCatalogPage() {
                         disabled={saving}
                       >
                         <RotateCcw className="mr-2 h-4 w-4" />
-                        Resetovat na abecedni
+                        Resetovat na abecední
                       </Button>
                     )}
                     <Button onClick={handleSaveOrder} disabled={saving}>
                       {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Ulozit poradi
+                      Uložit pořadí
                     </Button>
                   </div>
                 </div>
@@ -583,7 +583,7 @@ export default function AdminCatalogPage() {
               <CardContent>
                 {companies.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-8">
-                    Zadne firmy v teto edici. Priradte firmy k edici v sekci Firmy.
+                    Žádné firmy v této edici. Přiřaďte firmy k edici v sekci Firmy.
                   </p>
                 ) : (
                   <div className="space-y-2">
@@ -609,7 +609,7 @@ export default function AdminCatalogPage() {
                         )}
 
                         <span className="flex-1 font-medium">
-                          {company.company?.name || 'Neznama firma'}
+                          {company.company?.name || 'Neznámá firma'}
                         </span>
 
                         <div className="flex items-center gap-2">
@@ -617,7 +617,7 @@ export default function AdminCatalogPage() {
                             size="sm"
                             variant="ghost"
                             onClick={() => handleToggleVisibility(company.company_id)}
-                            title={company.is_visible ? 'Skryt v katalogu' : 'Zobrazit v katalogu'}
+                            title={company.is_visible ? 'Skrýt v katalogu' : 'Zobrazit v katalogu'}
                           >
                             {company.is_visible ? (
                               <Eye className="h-4 w-4" />
@@ -652,13 +652,13 @@ export default function AdminCatalogPage() {
             </Card>
           </TabsContent>
 
-          {/* Outro stranky */}
+          {/* Outro stránky */}
           <TabsContent value="outro">
             <Card>
               <CardHeader>
-                <CardTitle>Outro stranky</CardTitle>
+                <CardTitle>Outro stránky</CardTitle>
                 <CardDescription>
-                  Zaverecne stranky katalogu zobrazene za firmami (napr. partneri, kontakty, tiraz)
+                  Závěrečné stránky katalogu zobrazené za firmami (např. partneři, kontakty, tiráž)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">

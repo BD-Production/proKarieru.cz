@@ -27,7 +27,7 @@ const navigation = [
   { name: 'Portály', href: '/admin/portals', icon: Globe },
   { name: 'Edice', href: '/admin/editions', icon: BookOpen },
   { name: 'Firmy', href: '/admin/companies', icon: Building2 },
-  { name: 'Katalog online', href: '/admin/catalog', icon: BookOpenCheck },
+  { name: 'Katalog online', href: '/admin/katalog', icon: BookOpenCheck },
   { name: 'Články', href: '/admin/articles', icon: FileText },
   { name: 'Zájemci', href: '/admin/leads', icon: Users },
   { name: 'Poptávky firem', href: '/admin/inquiries', icon: Briefcase },

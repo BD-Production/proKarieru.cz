@@ -29,7 +29,9 @@
       "WebFetch(domain:prostavare-dev.fun)",
       "Bash(git merge:*)",
       "Bash(git stash:*)",
-      "Bash(npx shadcn@latest add tabs -y)"
+      "Bash(npx shadcn@latest add tabs -y)",
+      "Bash(move \"D:\\dev\\proKarieru.cz\\src\\app\\admin\\catalog\" \"D:\\dev\\proKarieru.cz\\src\\app\\admin\\katalog\")",
+      "Bash(ren:*)"
     ],
     "deny": [],
     "ask": []
