@@ -100,17 +100,21 @@ export default function NewArticlePage() {
 
   const handleSubmit = async (e: React.FormEvent, publish: boolean = false) => {
     e.preventDefault()
+    console.log('handleSubmit called', { publish, formData })
 
     if (!formData.portal_id) {
+      console.log('Missing portal_id')
       toast.error('Vyberte portál')
       return
     }
 
     if (!formData.featured_image_url) {
+      console.log('Missing featured_image_url')
       toast.error('Nahrajte hlavní obrázek')
       return
     }
 
+    console.log('Starting fetch...')
     setLoading(true)
 
     try {
