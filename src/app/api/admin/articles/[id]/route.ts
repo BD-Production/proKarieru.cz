@@ -93,9 +93,19 @@ export async function PUT(
     } = body
 
     // Validace povinných polí
-    if (!portal_id || !title || !slug || !perex || !content || !featured_image_url || !author_name) {
+    const missingFields = []
+    if (!portal_id) missingFields.push('portal_id')
+    if (!title) missingFields.push('title')
+    if (!slug) missingFields.push('slug')
+    if (!perex) missingFields.push('perex')
+    if (!content) missingFields.push('content')
+    if (!featured_image_url) missingFields.push('featured_image_url')
+    if (!author_name) missingFields.push('author_name')
+
+    if (missingFields.length > 0) {
+      console.error('Missing fields:', missingFields, 'Body:', body)
       return NextResponse.json(
-        { error: 'Všechna povinná pole musí být vyplněna' },
+        { error: `Chybí povinná pole: ${missingFields.join(', ')}` },
         { status: 400 }
       )
     }

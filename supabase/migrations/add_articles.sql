@@ -95,10 +95,10 @@ CREATE POLICY "Public read article_gallery" ON article_gallery FOR SELECT USING 
 CREATE POLICY "Public read article_tag_relations" ON article_tag_relations FOR SELECT USING (true);
 
 -- Admin full access (authenticated users)
-CREATE POLICY "Admin full access article_tags" ON article_tags FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin full access articles" ON articles FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin full access article_gallery" ON article_gallery FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin full access article_tag_relations" ON article_tag_relations FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Admin full access article_tags" ON article_tags FOR ALL USING (auth.uid() IS NOT NULL);
+CREATE POLICY "Admin full access articles" ON articles FOR ALL USING (auth.uid() IS NOT NULL);
+CREATE POLICY "Admin full access article_gallery" ON article_gallery FOR ALL USING (auth.uid() IS NOT NULL);
+CREATE POLICY "Admin full access article_tag_relations" ON article_tag_relations FOR ALL USING (auth.uid() IS NOT NULL);
 
 -- ============================================
 -- STORAGE BUCKET PRO OBRÁZKY ČLÁNKŮ
@@ -112,10 +112,10 @@ CREATE POLICY "Public read article-images" ON storage.objects
   FOR SELECT USING (bucket_id = 'article-images');
 
 CREATE POLICY "Authenticated upload article-images" ON storage.objects
-  FOR INSERT WITH CHECK (bucket_id = 'article-images' AND auth.role() = 'authenticated');
+  FOR INSERT WITH CHECK (bucket_id = 'article-images' AND auth.uid() IS NOT NULL);
 
 CREATE POLICY "Authenticated update article-images" ON storage.objects
-  FOR UPDATE USING (bucket_id = 'article-images' AND auth.role() = 'authenticated');
+  FOR UPDATE USING (bucket_id = 'article-images' AND auth.uid() IS NOT NULL);
 
 CREATE POLICY "Authenticated delete article-images" ON storage.objects
-  FOR DELETE USING (bucket_id = 'article-images' AND auth.role() = 'authenticated');
+  FOR DELETE USING (bucket_id = 'article-images' AND auth.uid() IS NOT NULL);
