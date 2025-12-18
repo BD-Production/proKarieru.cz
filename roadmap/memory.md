@@ -2,7 +2,7 @@
 
 Dulezite informace k zapamatovani mezi sessions.
 
-**Posledni aktualizace:** 2025-12-10
+**Posledni aktualizace:** 2025-12-16
 
 ---
 
@@ -15,6 +15,7 @@ Dulezite informace k zapamatovani mezi sessions.
 - **Prvni portal:** prostavare.cz
   - katalog.prostavare.cz - Katalog firem (digitalni verze tistene brozury)
   - veletrh.prostavare.cz - Informace o veletrhu prace
+  - /clanky - Blog/clanky pro portal
 
 **Klicovy princip:** Jeden Vercel deploy + jedna Supabase instance = neomezeny pocet portalu.
 
@@ -34,30 +35,31 @@ Dulezite informace k zapamatovani mezi sessions.
 
 ## Aktualni stav
 
-**Stav:** ROZHODNUTI O SMERU - Nova specifikace meni projekt
-**Datum posledni aktualizace:** 2025-12-10
+**Stav:** AKTIVNI VYVOJ - MVP skoro hotove
+**Datum posledni aktualizace:** 2025-12-16
 
 ### Co je hotove:
 - Kompletni infrastruktura (Next.js, Supabase, middleware)
-- Admin sekce (CRUD pro portaly, firmy, edice)
-- Verejne stranky (landing, katalog, detail firmy)
-- Databaze s 9 tabulkami + RLS + seed data
+- Admin sekce (CRUD pro portaly, firmy, edice, CLANKY)
+- Verejne stranky (landing, katalog, detail firmy, CLANKY)
+- Databaze s 13 tabulkami + RLS + seed data
 - Search v katalogu (FUNGUJE!)
 - Prepinani edici (FUNGUJE!)
 - Carousel stranek (FUNGUJE - BrochureCarousel)
+- **NOVE (2025-12-16): Blog/Clanky system**
 
-### NOVA SPECIFIKACE (2025-12-10):
-Soubor `prostavare-homepage-spec.md` definuje transformaci na jobportal:
-- Nova homepage s hero sekci a vyhledavanim
-- Karty firem s pozicemi misto gridu s logy
-- Rozsireni DB o nova pole (lokace, sektory, pozice, HR kontakt)
-- Kontaktni formular "Mam zajem"
-- Trackovani kliku na kontakty
+### Posledni implementace - Blog/Clanky (2025-12-16):
+- 4 nove DB tabulky: `article_tags`, `articles`, `article_gallery`, `article_tag_relations`
+- Storage bucket `article-images`
+- Admin: `/admin/articles` (seznam, new, edit, tags)
+- Frontend: `/clanky`, `/clanky/[slug]`
+- Komponenty: ArticleContent (Markdown + YouTube), ArticleGallery (lightbox)
+- **STAV:** Kod hotovy, ceka na DB migraci
 
-### Klicova otazka k rozhodnuti:
-Prejit na novou specifikaci nebo dokoncit puvodni MVP (pouze fair data chybi)?
-
-**Detailni analyza:** `roadmap/prostavare-homepage-analysis.md`
+### Dalsi kroky:
+1. Spustit SQL migraci `add_articles.sql` v Supabase Dashboard
+2. Otestovat funkcnost lokalne
+3. Deploy na Vercel
 
 ---
 
@@ -122,26 +124,32 @@ D:\dev\proKarieru.cz\
 
 ## Poznámky pro další session
 
-### DULEZITE - Stav k 2025-12-10:
-- Puvodni MVP je prakticky HOTOVY (search, edice, carousel funguje)
-- Jediny zbyvajici ukol z puvodniho MVP: fair data z DB
-- NOVA SPECIFIKACE meni smer projektu na jobportal
+### DULEZITE - Stav k 2025-12-16:
+- MVP je prakticky HOTOVY (katalog, search, edice, carousel, CLANKY)
+- Blog/Clanky system IMPLEMENTOVAN - ceka na DB migraci
+- Fair data z DB zustava jako budouci ukol (Faze 2)
 
-### Klicove soubory:
-1. `roadmap/prostavare-homepage-spec.md` - Nova specifikace (PRECIST!)
-2. `roadmap/prostavare-homepage-analysis.md` - Analyza zmien
-3. `src/app/portal/page.tsx` - Aktualni homepage (rozcestnik)
-4. `src/app/katalog/page.tsx` - Aktualni katalog (grid s logy)
+### Klicove soubory pro Blog/Clanky:
+1. `supabase/migrations/add_articles.sql` - DB migrace (SPUSTIT!)
+2. `src/types/database.ts` - TypeScript typy (Article*, ArticleTag*, atd.)
+3. `src/app/admin/articles/` - Admin CRUD pro clanky
+4. `src/app/clanky/` - Frontend stranky
+5. `src/components/ArticleContent.tsx` - Markdown rendering
+6. `src/components/ArticleGallery.tsx` - Lightbox galerie
 
-### Pro implementaci nove specifikace potreba:
-1. Rozhodnuti o smeru (prejit na novou spec?)
-2. DB migrace (nova pole pro firmy)
-3. Nova homepage komponenta
-4. Kontaktni formular
-5. Trackovani kliku
+### API Endpointy pro clanky:
+**Public:**
+- `GET /api/articles` - seznam clanku
+- `GET /api/articles/[slug]` - detail clanku
+
+**Admin:**
+- `/api/admin/articles` - CRUD clanku
+- `/api/admin/article-tags` - CRUD tagu
+- `/api/admin/article-gallery` - sprava galerie
 
 ### Tech Stack:
 - Next.js 16 + React 19
 - Tailwind CSS 4
 - Supabase (DB + Auth + Storage)
 - shadcn/ui komponenty
+- react-markdown + remark-gfm (pro clanky)

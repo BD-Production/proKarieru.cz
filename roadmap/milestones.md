@@ -2,30 +2,33 @@
 
 Prehled hlavnich milniku a jejich stavu.
 
-**Posledni aktualizace:** 2025-12-06
+**Posledni aktualizace:** 2025-12-16
 
 ---
 
-## Faze 1 - MVP (Katalog firem) - 70% DOKONCENO
+## Faze 1 - MVP (Katalog firem + Blog) - 85% DOKONCENO
 
-**Cil:** Funkcni katalog firem na katalog.prostavare.cz s admin rozhranim.
+**Cil:** Funkcni katalog firem a blog na prostavare.cz s admin rozhranim.
 
 | # | Ukol | Stav | Poznamka |
 |---|------|------|----------|
 | 1 | Setup Next.js projektu | DOKONCENO | Next.js 16, TypeScript, Tailwind CSS 4 |
-| 2 | Supabase setup + DB schema | DOKONCENO | 9 tabulek, RLS, Storage bucket |
+| 2 | Supabase setup + DB schema | DOKONCENO | 13 tabulek, RLS, Storage buckets |
 | 3 | Middleware pro domain routing | DOKONCENO | Multi-tenant funkcni |
 | 4 | Admin login (Supabase Auth) | DOKONCENO | Login stranka hotova |
 | 5 | Admin: CRUD portalu | DOKONCENO | List + New + Edit |
 | 6 | Admin: CRUD edici | DOKONCENO | List + New + Edit |
 | 7 | Admin: CRUD firem + prirazeni k edicim | DOKONCENO | List + New + Edit + prirazeni |
-| 8 | Admin: Upload stranek brozury | ROZPRACOVANO | UI hotove, API endpoint chybi |
-| 9 | Katalog homepage (grid s logy + search) | ROZPRACOVANO | Grid hotovy, search chybi |
-| 10 | Detail firmy (carousel stranek) | ROZPRACOVANO | UI hotove, carousel nefunkcni |
-| 11 | Prepinac edici | NEZAHAJENO | |
+| 8 | Admin: Upload stranek brozury | DOKONCENO | Drag&drop, resize na WebP |
+| 9 | Katalog homepage (grid s logy + search) | DOKONCENO | Grid + filtry + search |
+| 10 | Detail firmy (carousel stranek) | DOKONCENO | BrochureCarousel komponenta |
+| 11 | Prepinac edici | DOKONCENO | URL parametry, filtry |
 | 12 | Landing page prokarieru.cz | DOKONCENO | Plne funkcni |
+| 13 | Blog/Clanky - DB schema | DOKONCENO | 4 tabulky, migrace pripravena |
+| 14 | Blog/Clanky - Admin CRUD | DOKONCENO | Clanky + tagy + galerie |
+| 15 | Blog/Clanky - Frontend | DOKONCENO | Seznam + detail + homepage sekce |
 
-**Zbyva:** 4 ukoly (upload API, search, carousel, prepinac edici)
+**Zbyva:** Spustit DB migraci pro clanky, otestovat, deploy
 
 ---
 
@@ -78,11 +81,13 @@ Prehled hlavnich milniku a jejich stavu.
 
 | Faze | Dokonceno | Celkem | Procenta |
 |------|-----------|--------|----------|
-| Faze 1 - MVP | 8 | 12 | 67% |
+| Faze 1 - MVP + Blog | 15 | 15 | 100%* |
 | Faze 2 - Veletrh | 0 | 8 | 0% |
 | Faze 3 - Polish | 0 | 5 | 0% |
 | Faze 4 - Budoucnost | 0 | 3 | 0% |
-| **Celkem** | **8** | **28** | **29%** |
+| **Celkem** | **15** | **31** | **48%** |
+
+*Pozn: Kod hotovy, ceka na spusteni DB migrace a testovani
 
 ---
 

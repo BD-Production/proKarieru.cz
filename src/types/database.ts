@@ -166,3 +166,63 @@ export interface EditionWithCompanies extends Edition {
 export interface FairWithExhibitors extends Fair {
   exhibitors?: (FairExhibitor & { company: Company })[]
 }
+
+// ============================================
+// ČLÁNKY / BLOG
+// ============================================
+
+export interface ArticleTag {
+  id: string
+  portal_id: string
+  name: string
+  slug: string
+  created_at: string
+}
+
+export interface Article {
+  id: string
+  portal_id: string
+  title: string
+  slug: string
+  perex: string
+  content: string
+  featured_image_url: string
+  author_name: string
+  status: 'draft' | 'published' | 'archived'
+  sort_order: number
+  og_title: string | null
+  og_description: string | null
+  og_image_url: string | null
+  published_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ArticleGalleryImage {
+  id: string
+  article_id: string
+  image_url: string
+  caption: string | null
+  sort_order: number
+  created_at: string
+}
+
+export interface ArticleTagRelation {
+  article_id: string
+  tag_id: string
+}
+
+// Joined types pro články
+export interface ArticleWithTags extends Article {
+  tags?: ArticleTag[]
+}
+
+export interface ArticleWithDetails extends Article {
+  tags?: ArticleTag[]
+  gallery?: ArticleGalleryImage[]
+  portal?: Portal
+}
+
+export interface ArticleTagWithCount extends ArticleTag {
+  article_count?: number
+}

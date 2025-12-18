@@ -14,7 +14,8 @@ import {
   Trophy,
   LogOut,
   Users,
-  Briefcase
+  Briefcase,
+  FileText
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +26,7 @@ const navigation = [
   { name: 'Portály', href: '/admin/portals', icon: Globe },
   { name: 'Edice', href: '/admin/editions', icon: BookOpen },
   { name: 'Firmy', href: '/admin/companies', icon: Building2 },
+  { name: 'Články', href: '/admin/articles', icon: FileText },
   { name: 'Zájemci', href: '/admin/leads', icon: Users },
   { name: 'Poptávky firem', href: '/admin/inquiries', icon: Briefcase },
   { name: 'Veletrhy', href: '/admin/fairs', icon: CalendarDays },

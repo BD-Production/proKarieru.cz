@@ -7,7 +7,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Search, Target, GraduationCap, Building2, MapPin, ArrowRight, Instagram } from 'lucide-react'
 import { CompanyCard } from '@/components/CompanyCard'
 import { SearchBox } from '@/components/SearchBox'
-import type { Company } from '@/types/database'
+import { ArticlesSection } from '@/components/ArticlesSection'
+import type { Company, ArticleTag } from '@/types/database'
 
 // Fisher-Yates shuffle algoritmus
 function shuffleArray<T>(array: T[]): T[] {
@@ -122,6 +123,42 @@ export default async function PortalPage() {
 
   const companyCount = companies.length
 
+  // Load published articles (max 3 for homepage)
+  const { data: articlesData } = await supabase
+    .from('articles')
+    .select(`
+      id,
+      title,
+      slug,
+      perex,
+      featured_image_url,
+      author_name,
+      published_at,
+      article_tag_relations(
+        tag:article_tags(id, name, slug)
+      )
+    `)
+    .eq('portal_id', portal.id)
+    .eq('status', 'published')
+    .order('sort_order', { ascending: true })
+    .limit(3)
+
+  // Get total count of published articles
+  const { count: articlesCount } = await supabase
+    .from('articles')
+    .select('id', { count: 'exact', head: true })
+    .eq('portal_id', portal.id)
+    .eq('status', 'published')
+
+  // Transform articles data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const articles = (articlesData || []).map((article: any) => ({
+    ...article,
+    tags: article.article_tag_relations
+      ?.map((r: { tag: ArticleTag }) => r.tag)
+      .filter(Boolean) || []
+  }))
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header / Navbar */}
@@ -136,6 +173,11 @@ export default async function PortalPage() {
             <Link href="/katalog" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               Katalog firem
             </Link>
+            {articles.length > 0 && (
+              <Link href="/clanky" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+                Články
+              </Link>
+            )}
             <Link href="#pro-firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               Pro firmy
             </Link>
@@ -304,6 +346,14 @@ export default async function PortalPage() {
         </div>
       </section>
 
+      {/* Articles Section - only rendered if there are articles */}
+      <ArticlesSection
+        articles={articles}
+        portalName={portal.name}
+        primaryColor={portal.primary_color}
+        totalCount={articlesCount || 0}
+      />
+
       {/* Pro firmy */}
       <section id="pro-firmy" className="py-12 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
@@ -331,6 +381,11 @@ export default async function PortalPage() {
               <Link href="/katalog" className="text-gray-500 hover:text-gray-900">
                 Katalog
               </Link>
+              {articles.length > 0 && (
+                <Link href="/clanky" className="text-gray-500 hover:text-gray-900">
+                  Články
+                </Link>
+              )}
               <Link href="/profirmy" className="text-gray-500 hover:text-gray-900">
                 Pro firmy
               </Link>

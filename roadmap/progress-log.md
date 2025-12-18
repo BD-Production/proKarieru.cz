@@ -4,6 +4,92 @@ Chronologicky zaznam vsech provedenych praci.
 
 ---
 
+## 2025-12-16
+
+### Implementace Blog/Clanky systemu
+
+Kompletni implementace blogove sekce pro portaly.
+
+#### 1. Databazove schema (SQL migrace)
+- Vytvorena migrace `supabase/migrations/add_articles.sql`
+- **Nove tabulky:**
+  - `article_tags` - tagy pro clanky (per portal, s unique slug)
+  - `articles` - hlavni tabulka clanku (title, slug, perex, content v Markdown, featured_image, author, status, OG metadata)
+  - `article_gallery` - galerie obrazku k clanku (s caption a razenim)
+  - `article_tag_relations` - M:N vazba clanku a tagu
+- **Indexy pro vykon:**
+  - `idx_articles_portal_status`, `idx_articles_sort`, `idx_articles_published`
+  - `idx_article_gallery_article`, `idx_article_tags_portal`
+  - `idx_article_tag_relations_article`, `idx_article_tag_relations_tag`
+- **RLS policies:**
+  - Public read pro publikovane clanky
+  - Admin full access pro authenticated users
+- **Storage bucket:** `article-images` pro obrazky clanku
+
+#### 2. TypeScript typy
+- Rozsiren `src/types/database.ts`:
+  - `ArticleTag` - tag clanku
+  - `Article` - clanek s vsemi poli
+  - `ArticleGalleryImage` - obrazek galerie
+  - `ArticleTagRelation` - vazba clanek-tag
+  - `ArticleWithTags` - clanek s tagy (joined)
+  - `ArticleWithDetails` - clanek s tagy, galerii a portalem
+  - `ArticleTagWithCount` - tag s poctem clanku
+
+#### 3. API Endpointy
+
+**Public API (portal):**
+- `GET /api/articles` - seznam publikovanych clanku s filtrem podle portalu a tagu
+- `GET /api/articles/[slug]` - detail clanku podle slug
+
+**Admin API:**
+- `GET/POST /api/admin/articles` - seznam a vytvoreni clanku
+- `GET/PUT/DELETE /api/admin/articles/[id]` - CRUD operace pro konkretni clanek
+- `POST/PUT /api/admin/articles/[id]/gallery` - upload a aktualizace galerie
+- `GET/POST /api/admin/article-tags` - seznam a vytvoreni tagu
+- `PUT/DELETE /api/admin/article-tags/[id]` - editace a smazani tagu
+- `DELETE /api/admin/article-gallery/[id]` - smazani obrazku z galerie
+
+#### 4. Admin rozhrani
+- `/admin/articles` - seznam clanku s filtry podle portalu a statusu (`ArticlesPageClient.tsx`)
+- `/admin/articles/new` - formular pro novy clanek
+- `/admin/articles/[id]` - editace clanku vcetne galerie
+- `/admin/articles/tags` - sprava tagu clanku (`ArticleTagsPageClient.tsx`)
+- Pridano "Clanky" do navigace v `Sidebar.tsx`
+
+#### 5. Frontend stranky (portal)
+- `/clanky` - seznam clanku s filtrovanim podle tagu
+- `/clanky/[slug]` - detail clanku s:
+  - OpenGraph metadaty
+  - SEO optimalizaci
+  - Sdilenim na socialni site
+- **Homepage sekce** - max 3 clanky, zobrazi se pouze pokud existuji publikovane clanky
+
+#### 6. React komponenty
+- `ArticleImageUpload.tsx` - upload hlavniho obrazku (drag&drop, resize na WebP)
+- `ArticleGalleryUpload.tsx` - sprava galerie s drag&drop, caption editace, razeni
+- `ArticleContent.tsx` - Markdown rendering s podporou:
+  - GitHub Flavored Markdown (remark-gfm)
+  - YouTube embed (`::youtube[VIDEO_ID]`)
+  - Externi linky v novem tabu
+  - Lazy loading obrazku
+- `ArticleGallery.tsx` - lightbox galerie s klavesnicovou navigaci a swipe gesty
+- `ArticlesSection.tsx` - sekce clanku pro homepage
+
+#### 7. Zavislosti
+- `react-markdown` - rendering Markdown obsahu
+- `remark-gfm` - podpora GitHub Flavored Markdown
+
+#### 8. Stav implementace
+- Build prochazi bez chyb
+- Vsechny routes jsou spravne zaregistrovany
+- **ZBYVAJICI KROKY:**
+  1. Spustit SQL migraci v Supabase Dashboard
+  2. Otestovat funkcnost lokalne
+  3. Deploy na Vercel
+
+---
+
 ## 2025-12-10
 
 ### Nova specifikace proStavare Homepage

@@ -1,14 +1,26 @@
 # proKarieru - Status projektu
 
-**Posledni aktualizace:** 2025-12-10
+**Posledni aktualizace:** 2025-12-16
 
 ---
 
-## Aktualni stav: ROZHODNUTI O SMERU
+## Aktualni stav: AKTIVNI VYVOJ
 
-Projekt je v pokrocile fazi implementace (~70% MVP), ale nova specifikace `prostavare-homepage-spec.md` meni smer projektu z "katalogu firem" na "karierniportal".
+Projekt je v pokrocile fazi implementace (~80% MVP). Prave byla dokoncena implementace blogove sekce (clanky).
 
-**POZOR:** Pred pokracovanim v implementaci je treba rozhodnout o smeru - viz sekce "Otevrene otazky".
+---
+
+## Posledni dokoncena feature: Blog/Clanky (2025-12-16)
+
+Kompletni blogovy system pro portaly:
+- 4 nove DB tabulky: `article_tags`, `articles`, `article_gallery`, `article_tag_relations`
+- Storage bucket `article-images`
+- Admin CRUD pro clanky a tagy
+- Public stranky `/clanky` a `/clanky/[slug]`
+- Markdown obsah s YouTube embed podporou
+- Galerie s lightboxem
+
+**Stav:** Kod hotovy, ceka na DB migraci a testovani
 
 ---
 
@@ -17,21 +29,23 @@ Projekt je v pokrocile fazi implementace (~70% MVP), ale nova specifikace `prost
 | Oblast | Stav | Detail |
 |--------|------|--------|
 | Next.js 16 projekt | HOTOVO | Plne nakonfigurovany s TypeScript, Tailwind CSS 4, shadcn/ui |
-| Supabase databaze | HOTOVO | 9 tabulek, RLS policies, Storage bucket, seed data |
+| Supabase databaze | HOTOVO | 13 tabulek, RLS policies, Storage buckets, seed data |
 | Middleware routing | HOTOVO | Multi-domain architektura funkcni |
 | Supabase klienti | HOTOVO | Client + Server komponenty |
-| TypeScript typy | HOTOVO | Typy pro celou databazi |
+| TypeScript typy | HOTOVO | Typy pro celou databazi vcetne clanku |
 | Admin layout | HOTOVO | Sidebar, dashboard, navigace |
 | Admin login | HOTOVO | Supabase Auth integrace |
 | CRUD portalu | HOTOVO | List + New + Edit |
 | CRUD firem | HOTOVO | List + New + Edit |
 | CRUD edici | HOTOVO | List + New + Edit |
+| CRUD clanku | HOTOVO | List + New + Edit + Tags + Gallery |
 | Prirazeni firem k edicim | HOTOVO | UI hotove |
-| Upload UI | HOTOVO | Komponenta pripravena |
+| Upload UI | HOTOVO | Komponenty pro loga, brozury, clanky |
 | Landing prokarieru.cz | HOTOVO | Verejne dostupna |
 | Portal landing | HOTOVO | prostavare.cz - rozcestnik |
 | Katalog homepage | HOTOVO | Grid firem s logy, filtry funkcni |
 | Detail firmy | HOTOVO | Carousel stranek brozury |
+| Blog/Clanky | HOTOVO* | Seznam + detail + tagy (*ceka na DB migraci) |
 
 ---
 
