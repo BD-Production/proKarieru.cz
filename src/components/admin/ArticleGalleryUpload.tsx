@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Upload, X, Trash2, GripVertical, Loader2 } from 'lucide-react'
+import { Upload, X, Trash2, GripVertical, Loader2, Copy, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { ArticleGalleryImage } from '@/types/database'
@@ -22,8 +22,17 @@ export function ArticleGalleryUpload({
   const [dragActive, setDragActive] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [editingCaption, setEditingCaption] = useState<string | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
+
+  const copyMarkdown = async (image: ArticleGalleryImage) => {
+    const markdown = `![${image.caption || 'Obrázek'}](${image.image_url})`
+    await navigator.clipboard.writeText(markdown)
+    setCopiedId(image.id)
+    toast.success('Markdown zkopírován do schránky')
+    setTimeout(() => setCopiedId(null), 2000)
+  }
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -273,35 +282,51 @@ export function ArticleGalleryUpload({
               </div>
 
               {/* Controls overlay */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                {index > 0 && (
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                <div className="flex gap-2">
+                  {index > 0 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => moveImage(index, index - 1)}
+                    >
+                      ←
+                    </Button>
+                  )}
                   <Button
                     type="button"
                     size="sm"
                     variant="secondary"
-                    onClick={() => moveImage(index, index - 1)}
+                    onClick={() => copyMarkdown(image)}
+                    title="Kopírovat Markdown pro vložení do textu"
                   >
-                    ←
+                    {copiedId === image.id ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
                   </Button>
-                )}
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => handleDeleteImage(image.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-                {index < gallery.length - 1 && (
                   <Button
                     type="button"
                     size="sm"
-                    variant="secondary"
-                    onClick={() => moveImage(index, index + 1)}
+                    variant="destructive"
+                    onClick={() => handleDeleteImage(image.id)}
                   >
-                    →
+                    <Trash2 className="h-4 w-4" />
                   </Button>
-                )}
+                  {index < gallery.length - 1 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => moveImage(index, index + 1)}
+                    >
+                      →
+                    </Button>
+                  )}
+                </div>
+                <p className="text-xs text-white/80">Klikni na kopírovat pro vložení do textu</p>
               </div>
 
               {/* Caption input */}

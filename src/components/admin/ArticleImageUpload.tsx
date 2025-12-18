@@ -277,6 +277,9 @@ export function ArticleImageUpload({
               <p className="text-xs text-gray-500">
                 PNG, JPG nebo WebP • Max 5MB • Automaticky optimalizováno
               </p>
+              <p className="text-xs text-gray-400 mt-1">
+                Doporučeno: 1200×630 px (poměr 1.91:1)
+              </p>
             </div>
             <Button
               type="button"

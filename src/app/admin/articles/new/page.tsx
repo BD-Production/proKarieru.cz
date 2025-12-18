@@ -332,7 +332,8 @@ Pro YouTube video použijte:
                       maxSize={1200}
                     />
                     <p className="text-xs text-gray-500">
-                      Ponechte prázdné pro použití hlavního obrázku
+                      Ponechte prázdné pro použití hlavního obrázku.
+                      Ideální rozměr: 1200×630 px pro Facebook/LinkedIn.
                     </p>
                   </div>
                 </CardContent>

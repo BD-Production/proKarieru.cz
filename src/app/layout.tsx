@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { Toaster } from "sonner";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -96,6 +97,7 @@ export default async function RootLayout({
           </noscript>
         )}
         {children}
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );
