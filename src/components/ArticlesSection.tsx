@@ -56,7 +56,7 @@ export function ArticlesSection({
           <div>
             <h2 className="text-2xl font-bold">Články</h2>
             <p className="text-gray-600 text-sm mt-1">
-              Tipy a informace ze světa {portalName.toLowerCase().replace('pro', '')}
+              Tipy a informace ze světa {portalName}.cz
             </p>
           </div>
           {totalCount > 3 && (

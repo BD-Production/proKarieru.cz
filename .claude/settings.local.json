@@ -32,7 +32,9 @@
       "Bash(npx shadcn@latest add tabs -y)",
       "Bash(move \"D:\\dev\\proKarieru.cz\\src\\app\\admin\\catalog\" \"D:\\dev\\proKarieru.cz\\src\\app\\admin\\katalog\")",
       "Bash(ren:*)",
-      "Bash(move \"D:\\dev\\proKarieru.cz\\src\\app\\katalog\" \"D:\\dev\\proKarieru.cz\\src\\app\\firmy\")"
+      "Bash(move \"D:\\dev\\proKarieru.cz\\src\\app\\katalog\" \"D:\\dev\\proKarieru.cz\\src\\app\\firmy\")",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
