@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { X, ChevronLeft, ChevronRight, ExternalLink, Loader2 } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -356,10 +356,21 @@ export function CatalogBrowser({
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
-        <div className="text-center text-white">
-          <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4" />
-          <p>Načítám katalog...</p>
+      <div className="fixed inset-0 z-50 bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          {/* Animated spinner */}
+          <div className="relative mx-auto mb-6" style={{ width: 64, height: 64 }}>
+            <div
+              className="h-16 w-16 rounded-full border-4 border-gray-700 animate-spin"
+              style={{ borderTopColor: primaryColor }}
+            />
+          </div>
+          <p
+            className="text-lg font-medium tracking-tight"
+            style={{ color: primaryColor }}
+          >
+            Načítám katalog...
+          </p>
         </div>
       </div>
     )
