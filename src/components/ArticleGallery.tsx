@@ -85,7 +85,7 @@ export function ArticleGallery({ images }: ArticleGalleryProps) {
     <>
       {/* Gallery Grid */}
       <div className="mt-10">
-        <h2 className="text-xl font-bold mb-4">Galerie</h2>
+        <h2 className="text-2xl font-bold mb-4">Galerie</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {sortedImages.map((image, index) => (
             <button

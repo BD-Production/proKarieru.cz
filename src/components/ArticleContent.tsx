@@ -48,26 +48,7 @@ function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; vid
 }
 
 export function ArticleContent({ content }: ArticleContentProps) {
-  // Test: try raw content first to see if markdown works at all
-  const testContent = `## Test Heading
-
-This is a paragraph.
-
-## Another Heading
-
-Another paragraph.`
-
-  // Debug: find what's around the ##
-  const hashIndex = content.indexOf('## ')
-  if (hashIndex >= 0) {
-    const before = content.slice(Math.max(0, hashIndex - 20), hashIndex)
-    const after = content.slice(hashIndex, hashIndex + 40)
-    console.log('Before ##:', JSON.stringify(before))
-    console.log('## and after:', JSON.stringify(after))
-    console.log('Char codes before ##:', [...before].map(c => c.charCodeAt(0)))
-  }
-
-  // Use actual content, just normalize line endings
+  // Normalize line endings
   const normalizedContent = content
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
