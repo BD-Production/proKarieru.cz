@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         published_at,
         created_at,
         updated_at,
-        portal:portals(id, name, slug),
+        portal:portals(id, name, slug, domain),
         article_tag_relations(
           tag:article_tags(id, name, slug)
         )
