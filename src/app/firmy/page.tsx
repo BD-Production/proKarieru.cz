@@ -4,10 +4,11 @@ import { useEffect, useState, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Building2, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Loader } from '@/components/Loader'
+import { PortalHeader } from '@/components/PortalHeader'
+import { PortalFooter } from '@/components/PortalFooter'
 
 type Portal = {
   id: string
@@ -189,25 +190,13 @@ export default function CatalogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
-      <header className="border-b sticky top-0 bg-white/95 backdrop-blur-sm z-50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold" style={{ color: portal.primary_color }}>
-              {portal.name}
-            </span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-              Firmy
-            </Link>
-            <Link href="/profirmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-              Pro firmy
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <PortalHeader
+        portalName={portal.name}
+        primaryColor={portal.primary_color}
+        currentPage="firmy"
+      />
 
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Edition filters */}
@@ -312,14 +301,7 @@ export default function CatalogPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-6 px-4 mt-auto">
-        <div className="max-w-6xl mx-auto flex items-center justify-between text-sm text-gray-500">
-          <span>&copy; {new Date().getFullYear()} {portal.name}</span>
-          <Link href="/" className="hover:underline">
-            ← Zpět na hlavní stránku
-          </Link>
-        </div>
-      </footer>
+      <PortalFooter />
     </div>
   )
 }

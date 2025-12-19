@@ -4,10 +4,11 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { CompanyInquiryForm } from '@/components/CompanyInquiryForm'
+import { PortalHeader } from '@/components/PortalHeader'
+import { PortalFooter } from '@/components/PortalFooter'
 import {
   Target,
   Award,
-  ArrowLeft,
   CheckCircle,
 } from 'lucide-react'
 
@@ -28,23 +29,13 @@ export default async function ProFirmyPage() {
   const primaryColor = portal?.primary_color || '#C34751'
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
-      <header className="border-b sticky top-0 bg-white/95 backdrop-blur-sm z-50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold" style={{ color: primaryColor }}>
-              {portal?.name || 'proKarieru'}
-            </span>
-          </Link>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Zpět na portál
-            </Link>
-          </Button>
-        </div>
-      </header>
+      <PortalHeader
+        portalName={portal?.name || 'proKariéru'}
+        primaryColor={primaryColor}
+        currentPage="profirmy"
+      />
 
       {/* Hero */}
       <section className="py-12 md:py-20 px-4">
@@ -162,11 +153,7 @@ export default async function ProFirmyPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8 px-4">
-        <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} proKarieru
-        </div>
-      </footer>
+      <PortalFooter />
     </div>
   )
 }

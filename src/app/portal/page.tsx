@@ -4,10 +4,12 @@ import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, Target, GraduationCap, Building2, MapPin, ArrowRight, Instagram } from 'lucide-react'
+import { Target, GraduationCap, Building2, ArrowRight, BookOpen } from 'lucide-react'
 import { CompanyCard } from '@/components/CompanyCard'
 import { SearchBox } from '@/components/SearchBox'
 import { ArticlesSection } from '@/components/ArticlesSection'
+import { PortalHeader } from '@/components/PortalHeader'
+import { PortalFooter } from '@/components/PortalFooter'
 import type { Company, ArticleTag } from '@/types/database'
 
 // Fisher-Yates shuffle algoritmus
@@ -162,28 +164,11 @@ export default async function PortalPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header / Navbar */}
-      <header className="border-b sticky top-0 bg-white/95 backdrop-blur-sm z-50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold" style={{ color: portal.primary_color }}>
-              {portal.name}
-            </span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-              Firmy
-            </Link>
-            {articles.length > 0 && (
-              <Link href="/clanky" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-                Články
-              </Link>
-            )}
-            <Link href="#pro-firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-              Pro firmy
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <PortalHeader
+        portalName={portal.name}
+        primaryColor={portal.primary_color}
+        hasArticles={articles.length > 0}
+      />
 
       {/* Hero sekce */}
       <section className="py-12 md:py-20 px-4">
@@ -203,12 +188,20 @@ export default async function PortalPage() {
               {/* Vyhledávání */}
               <SearchBox portalSlug={portalSlug || ''} />
 
-              <Button asChild size="lg" className="w-full md:w-auto" style={{ backgroundColor: portal.primary_color }}>
-                <Link href="/firmy">
-                  Prohlížet všechny firmy
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button asChild size="lg" className="w-full sm:w-auto" style={{ backgroundColor: portal.primary_color }}>
+                  <Link href="/firmy">
+                    Prohlížet všechny firmy
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
+                  <a href={`https://katalog.${portal.domain}`} target="_blank" rel="noopener noreferrer">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    Číst online
+                  </a>
+                </Button>
+              </div>
             </div>
 
             {/* Pravý sloupec - mřížka log firem */}
@@ -371,36 +364,7 @@ export default async function PortalPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8 px-4 mt-auto">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-500 text-sm">
-              &copy; {new Date().getFullYear()} proKariéru
-            </p>
-            <nav className="flex items-center gap-6 text-sm">
-              <Link href="/firmy" className="text-gray-500 hover:text-gray-900">
-                Firmy
-              </Link>
-              {articles.length > 0 && (
-                <Link href="/clanky" className="text-gray-500 hover:text-gray-900">
-                  Články
-                </Link>
-              )}
-              <Link href="/profirmy" className="text-gray-500 hover:text-gray-900">
-                Pro firmy
-              </Link>
-              <Link
-                href="https://www.instagram.com/prostavare.cz/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-500 hover:text-gray-900"
-              >
-                <Instagram className="h-5 w-5" />
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </footer>
+      <PortalFooter hasArticles={articles.length > 0} />
     </div>
   )
 }

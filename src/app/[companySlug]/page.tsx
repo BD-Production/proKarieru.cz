@@ -1,11 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, ChevronLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { BrochureCarousel } from '@/components/BrochureCarousel'
 import { EditionTabs } from '@/components/EditionTabs'
 import { ContactForm } from '@/components/ContactForm'
+import { PortalHeader } from '@/components/PortalHeader'
+import { PortalFooter } from '@/components/PortalFooter'
 
 type Edition = {
   id: string
@@ -73,13 +75,19 @@ export default async function CompanyDetailPage({
   ) || []
 
   return (
-    <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-      <header className="border-b bg-white sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <PortalHeader
+        portalName={portal?.name || 'proKariéru'}
+        primaryColor={portal?.primary_color || '#C34751'}
+      />
+
+      {/* Company subheader */}
+      <div className="border-b bg-white">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <Button asChild variant="ghost" size="icon">
-              <Link href="/">
+              <Link href="/firmy">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </Button>
@@ -101,7 +109,7 @@ export default async function CompanyDetailPage({
             </div>
           )}
         </div>
-      </header>
+      </div>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
@@ -137,15 +145,7 @@ export default async function CompanyDetailPage({
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-white py-6 px-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between text-sm text-gray-500">
-          <Link href="/" className="hover:underline flex items-center gap-1">
-            <ChevronLeft className="h-4 w-4" />
-            Zpět do katalogu
-          </Link>
-          <span>{portal?.name}</span>
-        </div>
-      </footer>
+      <PortalFooter />
     </div>
   )
 }

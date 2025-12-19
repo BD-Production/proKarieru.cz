@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { Loader } from '@/components/Loader'
 import { CatalogBrowser } from '@/components/CatalogBrowser'
 import { createClient } from '@/lib/supabase/client'
+import { PortalHeader } from '@/components/PortalHeader'
+import { PortalFooter } from '@/components/PortalFooter'
 
 type Portal = {
   id: string
@@ -174,23 +176,10 @@ export default function KatalogPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="border-b sticky top-0 bg-white/95 backdrop-blur-sm z-50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold" style={{ color: portal.primary_color }}>
-              {portal.name}
-            </span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/firmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-              Firmy
-            </Link>
-            <Link href="/profirmy" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-              Pro firmy
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <PortalHeader
+        portalName={portal.name}
+        primaryColor={portal.primary_color}
+      />
 
       {/* Main content */}
       <main className="flex-1 max-w-6xl mx-auto px-4 py-12 w-full">
@@ -288,26 +277,7 @@ export default function KatalogPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-8 px-4 mt-auto bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-500 text-sm">
-              &copy; {new Date().getFullYear()} proKariéru
-            </p>
-            <nav className="flex items-center gap-6 text-sm">
-              <Link href="/firmy" className="text-gray-500 hover:text-gray-900">
-                Firmy
-              </Link>
-              <Link href="/profirmy" className="text-gray-500 hover:text-gray-900">
-                Pro firmy
-              </Link>
-              <Link href="/" className="text-gray-500 hover:text-gray-900">
-                Hlavní stránka
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </footer>
+      <PortalFooter />
     </div>
   )
 }
