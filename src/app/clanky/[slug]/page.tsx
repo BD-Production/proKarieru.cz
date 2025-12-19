@@ -200,7 +200,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             )}
 
             {/* Perex */}
-            <p className="text-lg text-gray-600 leading-relaxed">
+            <p className="text-gray-600 leading-relaxed border-l-4 pl-4" style={{ borderColor: portal.primary_color }}>
               {article.perex}
             </p>
           </div>

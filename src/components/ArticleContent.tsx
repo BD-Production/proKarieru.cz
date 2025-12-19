@@ -49,11 +49,13 @@ function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; vid
 
 export function ArticleContent({ content }: ArticleContentProps) {
   // Convert single line breaks to double for proper paragraph handling
-  // But preserve existing double line breaks
+  // Split by any line break, filter empty, rejoin with double breaks
   const normalizedContent = content
     .replace(/\r\n/g, '\n')  // Normalize Windows line endings
-    .replace(/\n{3,}/g, '\n\n')  // Collapse multiple line breaks to double
-    .replace(/(?<!\n)\n(?!\n)/g, '\n\n')  // Convert single line breaks to double
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .join('\n\n')
 
   const parts = processYouTubeEmbeds(normalizedContent)
 

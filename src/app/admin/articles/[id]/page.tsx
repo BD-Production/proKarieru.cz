@@ -212,8 +212,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   }
 
   const getPreviewUrl = () => {
-    if (!articlePortal) return '#'
-    return `https://${articlePortal.domain}/clanky/${formData.slug}`
+    if (!articlePortal?.slug) return '#'
+    // Detect dev environment based on current admin URL
+    const isDev = typeof window !== 'undefined' && window.location.hostname.includes('-dev.fun')
+    const domain = isDev
+      ? `${articlePortal.slug}-dev.fun`
+      : `${articlePortal.slug}.cz`
+    return `https://${domain}/clanky/${formData.slug}`
   }
 
   if (initialLoading) {
