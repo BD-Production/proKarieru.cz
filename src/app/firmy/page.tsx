@@ -198,7 +198,7 @@ export default function CatalogPage() {
         currentPage="firmy"
       />
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-8 min-h-[60vh]">
         {/* Edition filters */}
         {editions.length > 1 && (
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
@@ -253,14 +253,14 @@ export default function CatalogPage() {
 
         {/* Companies grid */}
         {filteredCompanies.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3">
             {filteredCompanies.map((company) => (
               <Link
                 key={company.id}
                 href={selectedEditionId ? `/${company.slug}?edition=${selectedEditionId}` : `/${company.slug}`}
                 className="group"
               >
-                <div className="aspect-square border rounded-lg overflow-hidden bg-white hover:shadow-lg transition-shadow flex items-center justify-center p-4">
+                <div className="aspect-square border rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow flex items-center justify-center p-2 md:p-3">
                   {company.logo_url ? (
                     <img
                       src={`${company.logo_url.split('?')[0]}?v=${timestamp}`}
@@ -271,12 +271,12 @@ export default function CatalogPage() {
                     />
                   ) : (
                     <div className="text-center">
-                      <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                      <span className="text-sm text-gray-500">{company.name}</span>
+                      <Building2 className="h-8 w-8 md:h-10 md:w-10 text-gray-300 mx-auto mb-1" />
+                      <span className="text-xs text-gray-500 line-clamp-2">{company.name}</span>
                     </div>
                   )}
                 </div>
-                <p className="text-sm text-center mt-2 text-gray-600 group-hover:text-gray-900">
+                <p className="text-xs text-center mt-1 text-gray-600 group-hover:text-gray-900 line-clamp-1">
                   {company.name}
                 </p>
               </Link>
