@@ -48,23 +48,27 @@ function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; vid
 }
 
 export function ArticleContent({ content }: ArticleContentProps) {
-  // Process content for proper markdown rendering:
-  // 1. Normalize line endings
-  // 2. Ensure blank lines before headings (##)
-  // 3. Convert single newlines between paragraphs to double newlines
-  const normalizedContent = content
+  // Debug: log raw content to see what we're getting
+  console.log('Raw content:', JSON.stringify(content?.slice(0, 500)))
+
+  // Process content for proper markdown rendering
+  // Split all lines and rejoin with double newlines for proper paragraph separation
+  const lines = content
     .replace(/\r\n/g, '\n')
-    // Ensure blank line before headings
-    .replace(/([^\n])\n(#{1,6}\s)/g, '$1\n\n$2')
-    // Convert single newlines to double (for paragraphs) but preserve existing doubles
-    .replace(/\n(?!\n)/g, '\n\n')
-    // Clean up excessive newlines (more than 2)
-    .replace(/\n{3,}/g, '\n\n')
+    .replace(/\r/g, '\n')
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+
+  // Rejoin with double newlines - each non-empty line becomes its own paragraph
+  const normalizedContent = lines.join('\n\n')
+
+  console.log('Normalized content:', JSON.stringify(normalizedContent?.slice(0, 500)))
 
   const parts = processYouTubeEmbeds(normalizedContent)
 
   return (
-    <div className="prose prose-lg max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic">
+    <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-p:mb-4 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic [&>*]:mb-4">
       {parts.map((part, index) => {
         if (typeof part === 'string') {
           return (
