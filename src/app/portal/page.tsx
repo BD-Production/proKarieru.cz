@@ -196,10 +196,10 @@ export default async function PortalPage() {
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-                  <a href={`https://katalog.${portal.domain}`} target="_blank" rel="noopener noreferrer">
+                  <Link href="/katalog">
                     <BookOpen className="mr-2 h-4 w-4" />
                     Číst online
-                  </a>
+                  </Link>
                 </Button>
               </div>
             </div>

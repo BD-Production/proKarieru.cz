@@ -95,16 +95,12 @@ export async function middleware(request: NextRequest) {
       response.headers.set('x-portal-slug', portalSlug)
       response.headers.set('x-subdomain', subdomain || '')
 
-      // katalog.prostavare.cz nebo katalog.prostavare-dev.fun → /katalog (knihovnička)
+      // katalog.prostavare.cz nebo katalog.prostavare-dev.fun → redirect na /katalog
       if (subdomain === 'katalog') {
-        if (pathname === '/') {
-          return NextResponse.rewrite(
-            new URL('/katalog', request.url),
-            { headers: response.headers }
-          )
-        }
-        // Ostatní cesty na katalog subdoméně projdou přímo
-        return response
+        // Construct the main portal domain
+        const portalDomain = isDev ? `${portalSlug}-dev.fun` : `${portalSlug}.cz`
+        const redirectUrl = `https://${portalDomain}/katalog${pathname === '/' ? '' : pathname}`
+        return NextResponse.redirect(redirectUrl, 301)
       }
 
       // veletrh.prostavare.cz nebo veletrh.prostavare-dev.fun → /fair
