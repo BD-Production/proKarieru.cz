@@ -48,7 +48,14 @@ function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; vid
 }
 
 export function ArticleContent({ content }: ArticleContentProps) {
-  const parts = processYouTubeEmbeds(content)
+  // Convert single line breaks to double for proper paragraph handling
+  // But preserve existing double line breaks
+  const normalizedContent = content
+    .replace(/\r\n/g, '\n')  // Normalize Windows line endings
+    .replace(/\n{3,}/g, '\n\n')  // Collapse multiple line breaks to double
+    .replace(/(?<!\n)\n(?!\n)/g, '\n\n')  // Convert single line breaks to double
+
+  const parts = processYouTubeEmbeds(normalizedContent)
 
   return (
     <div className="prose prose-lg max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic">
