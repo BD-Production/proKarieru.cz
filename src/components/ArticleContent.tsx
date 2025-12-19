@@ -48,21 +48,21 @@ function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; vid
 }
 
 export function ArticleContent({ content }: ArticleContentProps) {
-  // Process content for proper markdown rendering
-  // Split all lines and rejoin with double newlines for proper paragraph separation
-  const lines = content
+  // Test: try raw content first to see if markdown works at all
+  const testContent = `## Test Heading
+
+This is a paragraph.
+
+## Another Heading
+
+Another paragraph.`
+
+  console.log('Testing with:', content.includes('## ') ? 'Content has ##' : 'No ## found')
+
+  // Use actual content, just normalize line endings
+  const normalizedContent = content
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-
-  // Debug: find heading lines
-  const headingLines = lines.filter(line => line.startsWith('#'))
-  console.log('Heading lines found:', headingLines)
-
-  // Rejoin with double newlines - each non-empty line becomes its own paragraph
-  const normalizedContent = lines.join('\n\n')
 
   const parts = processYouTubeEmbeds(normalizedContent)
 
