@@ -48,9 +48,6 @@ function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; vid
 }
 
 export function ArticleContent({ content }: ArticleContentProps) {
-  // Debug: log raw content to see what we're getting
-  console.log('Raw content:', JSON.stringify(content?.slice(0, 500)))
-
   // Process content for proper markdown rendering
   // Split all lines and rejoin with double newlines for proper paragraph separation
   const lines = content
@@ -60,10 +57,12 @@ export function ArticleContent({ content }: ArticleContentProps) {
     .map(line => line.trim())
     .filter(line => line.length > 0)
 
+  // Debug: find heading lines
+  const headingLines = lines.filter(line => line.startsWith('#'))
+  console.log('Heading lines found:', headingLines)
+
   // Rejoin with double newlines - each non-empty line becomes its own paragraph
   const normalizedContent = lines.join('\n\n')
-
-  console.log('Normalized content:', JSON.stringify(normalizedContent?.slice(0, 500)))
 
   const parts = processYouTubeEmbeds(normalizedContent)
 
