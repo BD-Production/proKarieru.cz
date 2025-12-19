@@ -2,7 +2,6 @@
 
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import remarkBreaks from 'remark-breaks'
 
 interface ArticleContentProps {
   content: string
@@ -49,7 +48,20 @@ function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; vid
 }
 
 export function ArticleContent({ content }: ArticleContentProps) {
-  const parts = processYouTubeEmbeds(content)
+  // Process content for proper markdown rendering:
+  // 1. Normalize line endings
+  // 2. Ensure blank lines before headings (##)
+  // 3. Convert single newlines between paragraphs to double newlines
+  const normalizedContent = content
+    .replace(/\r\n/g, '\n')
+    // Ensure blank line before headings
+    .replace(/([^\n])\n(#{1,6}\s)/g, '$1\n\n$2')
+    // Convert single newlines to double (for paragraphs) but preserve existing doubles
+    .replace(/\n(?!\n)/g, '\n\n')
+    // Clean up excessive newlines (more than 2)
+    .replace(/\n{3,}/g, '\n\n')
+
+  const parts = processYouTubeEmbeds(normalizedContent)
 
   return (
     <div className="prose prose-lg max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic">
@@ -58,7 +70,7 @@ export function ArticleContent({ content }: ArticleContentProps) {
           return (
             <ReactMarkdown
               key={index}
-              remarkPlugins={[remarkGfm, remarkBreaks]}
+              remarkPlugins={[remarkGfm]}
               components={{
                 // Custom link handling - open external links in new tab
                 a: ({ href, children, ...props }) => {

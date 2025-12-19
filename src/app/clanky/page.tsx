@@ -243,8 +243,8 @@ function ArticleCard({
 }) {
   return (
     <Link href={`/clanky/${article.slug}`}>
-      <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow group">
-        <div className="relative aspect-[16/10] bg-gray-100">
+      <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow group p-0">
+        <div className="relative aspect-[16/10] bg-gray-100 -m-px">
           <Image
             src={article.featured_image_url}
             alt={article.title}
