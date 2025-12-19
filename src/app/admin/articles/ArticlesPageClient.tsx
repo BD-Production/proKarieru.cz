@@ -119,7 +119,11 @@ export function ArticlesPageClient() {
 
   const getArticleUrl = (article: Article) => {
     if (!article.portal) return '#'
-    const domain = article.portal.domain
+    // Detect dev environment based on current admin URL
+    const isDev = typeof window !== 'undefined' && window.location.hostname.includes('-dev.fun')
+    const domain = isDev
+      ? `${article.portal.slug}-dev.fun`
+      : `${article.portal.slug}.cz`
     return `https://${domain}/clanky/${article.slug}`
   }
 
