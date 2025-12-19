@@ -57,7 +57,15 @@ This is a paragraph.
 
 Another paragraph.`
 
-  console.log('Testing with:', content.includes('## ') ? 'Content has ##' : 'No ## found')
+  // Debug: find what's around the ##
+  const hashIndex = content.indexOf('## ')
+  if (hashIndex >= 0) {
+    const before = content.slice(Math.max(0, hashIndex - 20), hashIndex)
+    const after = content.slice(hashIndex, hashIndex + 40)
+    console.log('Before ##:', JSON.stringify(before))
+    console.log('## and after:', JSON.stringify(after))
+    console.log('Char codes before ##:', [...before].map(c => c.charCodeAt(0)))
+  }
 
   // Use actual content, just normalize line endings
   const normalizedContent = content
@@ -67,7 +75,7 @@ Another paragraph.`
   const parts = processYouTubeEmbeds(normalizedContent)
 
   return (
-    <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-p:mb-4 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic [&>*]:mb-4">
+    <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-p:text-gray-700 prose-p:mb-4 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold">
       {parts.map((part, index) => {
         if (typeof part === 'string') {
           return (
