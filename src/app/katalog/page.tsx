@@ -186,7 +186,7 @@ export default function KatalogPage() {
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">Katalog</h1>
           <p className="text-gray-600 text-lg">
-            Prohlédněte si naše katalogy firem online
+            Prolistujte katalogy a najděte svého budoucího zaměstnavatele
           </p>
         </div>
 
