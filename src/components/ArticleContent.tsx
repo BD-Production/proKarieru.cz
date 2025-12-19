@@ -48,10 +48,16 @@ function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; vid
 }
 
 export function ArticleContent({ content }: ArticleContentProps) {
-  // Normalize line endings
-  const normalizedContent = content
+  // Normalize line endings and ensure proper paragraph breaks
+  const lines = content
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+
+  // Join with double newlines for proper paragraph separation
+  const normalizedContent = lines.join('\n\n')
 
   const parts = processYouTubeEmbeds(normalizedContent)
 
