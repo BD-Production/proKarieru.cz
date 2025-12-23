@@ -28,11 +28,27 @@ export async function POST(
     }
 
     const body = await request.json()
-    const { image_url, caption, sort_order = 0 } = body
+    const {
+      image_url,
+      thumbnail_url,
+      caption,
+      sort_order = 0,
+      media_type = 'image',
+      duration,
+      file_size
+    } = body
 
     if (!image_url) {
       return NextResponse.json(
-        { error: 'URL obrázku je povinná' },
+        { error: 'URL média je povinná' },
+        { status: 400 }
+      )
+    }
+
+    // Validace media_type
+    if (!['image', 'video'].includes(media_type)) {
+      return NextResponse.json(
+        { error: 'Neplatný typ média' },
         { status: 400 }
       )
     }
@@ -56,8 +72,12 @@ export async function POST(
       .insert({
         article_id: articleId,
         image_url,
+        thumbnail_url: thumbnail_url || null,
         caption: caption || null,
-        sort_order
+        sort_order,
+        media_type,
+        duration: duration || null,
+        file_size: file_size || null
       })
       .select()
       .single()
@@ -65,7 +85,7 @@ export async function POST(
     if (error) {
       console.error('Error adding gallery image:', error)
       return NextResponse.json(
-        { error: 'Nepodařilo se přidat obrázek' },
+        { error: 'Nepodařilo se přidat médium' },
         { status: 500 }
       )
     }

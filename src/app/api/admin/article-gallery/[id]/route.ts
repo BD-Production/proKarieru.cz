@@ -27,16 +27,16 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Získat URL obrázku pro případné smazání ze storage
-    const { data: image } = await supabase
+    // Získat informace o položce pro případné smazání ze storage
+    const { data: item } = await supabase
       .from('article_gallery')
-      .select('image_url')
+      .select('image_url, thumbnail_url, media_type')
       .eq('id', id)
       .single()
 
-    if (!image) {
+    if (!item) {
       return NextResponse.json(
-        { error: 'Obrázek nenalezen' },
+        { error: 'Položka nenalezena' },
         { status: 404 }
       )
     }
@@ -48,22 +48,45 @@ export async function DELETE(
       .eq('id', id)
 
     if (error) {
-      console.error('Error deleting gallery image:', error)
+      console.error('Error deleting gallery item:', error)
       return NextResponse.json(
-        { error: 'Nepodařilo se smazat obrázek' },
+        { error: 'Nepodařilo se smazat položku' },
         { status: 500 }
       )
     }
 
     // Pokusit se smazat ze storage pokud je to Supabase URL
     try {
-      if (image.image_url.includes('supabase')) {
-        const url = new URL(image.image_url)
-        const pathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/article-images\/(.+)/)
-        if (pathMatch) {
-          await supabase.storage
-            .from('article-images')
-            .remove([pathMatch[1]])
+      if (item.image_url.includes('supabase')) {
+        const url = new URL(item.image_url)
+
+        if (item.media_type === 'video') {
+          // Smazat video z article-videos bucket
+          const videoPathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/article-videos\/(.+)/)
+          if (videoPathMatch) {
+            await supabase.storage
+              .from('article-videos')
+              .remove([videoPathMatch[1]])
+          }
+        } else {
+          // Smazat obrázek z article-images bucket
+          const imagePathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/article-images\/(.+)/)
+          if (imagePathMatch) {
+            await supabase.storage
+              .from('article-images')
+              .remove([imagePathMatch[1]])
+          }
+        }
+
+        // Smazat thumbnail pokud existuje
+        if (item.thumbnail_url) {
+          const thumbUrl = new URL(item.thumbnail_url)
+          const thumbPathMatch = thumbUrl.pathname.match(/\/storage\/v1\/object\/public\/article-images\/(.+)/)
+          if (thumbPathMatch) {
+            await supabase.storage
+              .from('article-images')
+              .remove([thumbPathMatch[1]])
+          }
         }
       }
     } catch (storageError) {

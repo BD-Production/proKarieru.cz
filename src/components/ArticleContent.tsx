@@ -2,6 +2,7 @@
 
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { VideoPlayer } from './VideoPlayer'
 
 interface ArticleContentProps {
   content: string
@@ -22,10 +23,25 @@ function YouTubeEmbed({ videoId }: { videoId: string }) {
   )
 }
 
-// Process content to handle custom YouTube syntax ::youtube[VIDEO_ID]
-function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; videoId: string })[] {
-  const parts: (string | { type: 'youtube'; videoId: string })[] = []
-  const regex = /::youtube\[([^\]]+)\]/g
+// Custom component for hosted video embeds
+function HostedVideoEmbed({ url }: { url: string }) {
+  return (
+    <div className="my-6">
+      <VideoPlayer src={url} />
+    </div>
+  )
+}
+
+type ContentPart =
+  | string
+  | { type: 'youtube'; videoId: string }
+  | { type: 'video'; url: string }
+
+// Process content to handle custom syntax ::youtube[VIDEO_ID] and ::video[URL]
+function processCustomEmbeds(content: string): ContentPart[] {
+  const parts: ContentPart[] = []
+  // Combined regex for YouTube and video embeds
+  const regex = /::youtube\[([^\]]+)\]|::video\[([^\]]+)\]/g
   let lastIndex = 0
   let match
 
@@ -34,8 +50,16 @@ function processYouTubeEmbeds(content: string): (string | { type: 'youtube'; vid
     if (match.index > lastIndex) {
       parts.push(content.slice(lastIndex, match.index))
     }
-    // Add YouTube embed marker
-    parts.push({ type: 'youtube', videoId: match[1] })
+
+    // Determine which type of embed
+    if (match[1]) {
+      // YouTube embed
+      parts.push({ type: 'youtube', videoId: match[1] })
+    } else if (match[2]) {
+      // Hosted video embed
+      parts.push({ type: 'video', url: match[2] })
+    }
+
     lastIndex = match.index + match[0].length
   }
 
@@ -59,7 +83,7 @@ export function ArticleContent({ content }: ArticleContentProps) {
   // Join with double newlines for proper paragraph separation
   const normalizedContent = lines.join('\n\n')
 
-  const parts = processYouTubeEmbeds(normalizedContent)
+  const parts = processCustomEmbeds(normalizedContent)
 
   return (
     <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_p]:mb-8">
@@ -99,9 +123,12 @@ export function ArticleContent({ content }: ArticleContentProps) {
               {part}
             </ReactMarkdown>
           )
-        } else {
+        } else if (part.type === 'youtube') {
           return <YouTubeEmbed key={index} videoId={part.videoId} />
+        } else if (part.type === 'video') {
+          return <HostedVideoEmbed key={index} url={part.url} />
         }
+        return null
       })}
     </div>
   )

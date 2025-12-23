@@ -1,18 +1,26 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { VideoPlayer } from './VideoPlayer'
 import type { ArticleGalleryImage } from '@/types/database'
 
 interface ArticleGalleryProps {
   images: ArticleGalleryImage[]
 }
 
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins}:${secs.toString().padStart(2, '0')}`
+}
+
 export function ArticleGallery({ images }: ArticleGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  const sortedImages = [...images].sort((a, b) => a.sort_order - b.sort_order)
+  const sortedMedia = [...images].sort((a, b) => a.sort_order - b.sort_order)
+  const currentItem = sortedMedia[currentIndex]
 
   const openLightbox = (index: number) => {
     setCurrentIndex(index)
@@ -24,12 +32,12 @@ export function ArticleGallery({ images }: ArticleGalleryProps) {
   }
 
   const goToPrevious = useCallback(() => {
-    setCurrentIndex((prev) => (prev === 0 ? sortedImages.length - 1 : prev - 1))
-  }, [sortedImages.length])
+    setCurrentIndex((prev) => (prev === 0 ? sortedMedia.length - 1 : prev - 1))
+  }, [sortedMedia.length])
 
   const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev === sortedImages.length - 1 ? 0 : prev + 1))
-  }, [sortedImages.length])
+    setCurrentIndex((prev) => (prev === sortedMedia.length - 1 ? 0 : prev + 1))
+  }, [sortedMedia.length])
 
   // Keyboard navigation
   useEffect(() => {
@@ -79,7 +87,7 @@ export function ArticleGallery({ images }: ArticleGalleryProps) {
     setTouchStart(null)
   }
 
-  if (sortedImages.length === 0) return null
+  if (sortedMedia.length === 0) return null
 
   return (
     <>
@@ -87,25 +95,48 @@ export function ArticleGallery({ images }: ArticleGalleryProps) {
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-4">Galerie</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {sortedImages.map((image, index) => (
+          {sortedMedia.map((media, index) => (
             <button
-              key={image.id}
+              key={media.id}
               onClick={() => openLightbox(index)}
-              className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 relative"
             >
-              <img
-                src={image.image_url}
-                alt={image.caption || `Obrázek ${index + 1}`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
+              {media.media_type === 'video' ? (
+                <>
+                  <img
+                    src={media.thumbnail_url || '/video-placeholder.png'}
+                    alt={media.caption || `Video ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  {/* Video indicator */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center">
+                      <Play className="w-6 h-6 text-white ml-1" />
+                    </div>
+                  </div>
+                  {/* Duration badge */}
+                  {media.duration && (
+                    <span className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      {formatDuration(media.duration)}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <img
+                  src={media.image_url}
+                  alt={media.caption || `Obrázek ${index + 1}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              )}
             </button>
           ))}
         </div>
       </div>
 
       {/* Lightbox */}
-      {lightboxOpen && (
+      {lightboxOpen && currentItem && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
           onClick={closeLightbox}
@@ -122,7 +153,7 @@ export function ArticleGallery({ images }: ArticleGalleryProps) {
           </button>
 
           {/* Navigation - Previous */}
-          {sortedImages.length > 1 && (
+          {sortedMedia.length > 1 && (
             <button
               onClick={(e) => {
                 e.stopPropagation()
@@ -135,28 +166,37 @@ export function ArticleGallery({ images }: ArticleGalleryProps) {
             </button>
           )}
 
-          {/* Image */}
+          {/* Media content */}
           <div
             className="max-w-[90vw] max-h-[90vh] flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={sortedImages[currentIndex].image_url}
-              alt={sortedImages[currentIndex].caption || `Obrázek ${currentIndex + 1}`}
-              className="max-w-full max-h-[80vh] object-contain"
-            />
-            {sortedImages[currentIndex].caption && (
+            {currentItem.media_type === 'video' ? (
+              <div className="w-full max-w-4xl">
+                <VideoPlayer
+                  src={currentItem.image_url}
+                  poster={currentItem.thumbnail_url || undefined}
+                />
+              </div>
+            ) : (
+              <img
+                src={currentItem.image_url}
+                alt={currentItem.caption || `Obrázek ${currentIndex + 1}`}
+                className="max-w-full max-h-[80vh] object-contain"
+              />
+            )}
+            {currentItem.caption && (
               <p className="text-white text-center mt-4 px-4">
-                {sortedImages[currentIndex].caption}
+                {currentItem.caption}
               </p>
             )}
             <p className="text-gray-400 text-sm mt-2">
-              {currentIndex + 1} / {sortedImages.length}
+              {currentIndex + 1} / {sortedMedia.length}
             </p>
           </div>
 
           {/* Navigation - Next */}
-          {sortedImages.length > 1 && (
+          {sortedMedia.length > 1 && (
             <button
               onClick={(e) => {
                 e.stopPropagation()

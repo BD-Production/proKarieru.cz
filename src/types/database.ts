@@ -202,8 +202,12 @@ export interface ArticleGalleryImage {
   id: string
   article_id: string
   image_url: string
+  thumbnail_url: string | null
   caption: string | null
   sort_order: number
+  media_type: 'image' | 'video'
+  duration: number | null
+  file_size: number | null
   created_at: string
 }
 

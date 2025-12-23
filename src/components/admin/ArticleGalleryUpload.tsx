@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Upload, X, Trash2, GripVertical, Loader2, Copy, Check } from 'lucide-react'
+import { Upload, Trash2, Loader2, Copy, Check, Play } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { ArticleGalleryImage } from '@/types/database'
@@ -12,6 +12,23 @@ interface ArticleGalleryUploadProps {
   articleId: string
   gallery: ArticleGalleryImage[]
   onGalleryChange: (gallery: ArticleGalleryImage[]) => void
+}
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5 MB
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024 // 100 MB
+const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm']
+
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins}:${secs.toString().padStart(2, '0')}`
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
 export function ArticleGalleryUpload({
@@ -26,32 +43,22 @@ export function ArticleGalleryUpload({
   const inputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
-  const copyMarkdown = async (image: ArticleGalleryImage) => {
-    const markdown = `![${image.caption || 'Obrázek'}](${image.image_url})`
-    await navigator.clipboard.writeText(markdown)
-    setCopiedId(image.id)
-    toast.success('Markdown zkopírován do schránky')
-    setTimeout(() => setCopiedId(null), 2000)
-  }
+  const validateFile = (file: File): { valid: boolean; error?: string; type: 'image' | 'video' } => {
+    if (ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      if (file.size > MAX_IMAGE_SIZE) {
+        return { valid: false, error: 'Obrázek je příliš velký (max 5MB)', type: 'image' }
+      }
+      return { valid: true, type: 'image' }
+    }
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true)
-    } else if (e.type === 'dragleave') {
-      setDragActive(false)
+    if (ALLOWED_VIDEO_TYPES.includes(file.type)) {
+      if (file.size > MAX_VIDEO_SIZE) {
+        return { valid: false, error: 'Video je příliš velké (max 100MB)', type: 'video' }
+      }
+      return { valid: true, type: 'video' }
     }
-  }
 
-  const validateFile = (file: File): string | null => {
-    if (!file.type.startsWith('image/')) {
-      return 'Soubor musí být obrázek'
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      return 'Soubor je příliš velký (max 5MB)'
-    }
-    return null
+    return { valid: false, error: 'Nepodporovaný formát souboru', type: 'image' }
   }
 
   const resizeImage = async (file: File): Promise<Blob> => {
@@ -104,48 +111,183 @@ export function ArticleGalleryUpload({
     })
   }
 
+  const generateVideoThumbnail = (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video')
+      video.preload = 'metadata'
+      video.muted = true
+      video.playsInline = true
+
+      video.onloadeddata = () => {
+        video.currentTime = 1 // Seek na 1 sekundu
+      }
+
+      video.onseeked = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Cannot get canvas context'))
+          return
+        }
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        canvas.toBlob(
+          (blob) => {
+            if (blob) resolve(blob)
+            else reject(new Error('Failed to create thumbnail'))
+          },
+          'image/webp',
+          0.8
+        )
+        URL.revokeObjectURL(video.src)
+      }
+
+      video.onerror = () => reject(new Error('Failed to load video'))
+      video.src = URL.createObjectURL(file)
+    })
+  }
+
+  const getVideoDuration = (file: File): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video')
+      video.preload = 'metadata'
+      video.onloadedmetadata = () => {
+        resolve(Math.round(video.duration))
+        URL.revokeObjectURL(video.src)
+      }
+      video.onerror = () => reject(new Error('Failed to load video metadata'))
+      video.src = URL.createObjectURL(file)
+    })
+  }
+
+  const copyMarkdown = async (media: ArticleGalleryImage) => {
+    let markdown: string
+    if (media.media_type === 'video') {
+      markdown = `::video[${media.image_url}]`
+    } else {
+      markdown = `![${media.caption || 'Obrázek'}](${media.image_url})`
+    }
+    await navigator.clipboard.writeText(markdown)
+    setCopiedId(media.id)
+    toast.success('Markdown zkopírován do schránky')
+    setTimeout(() => setCopiedId(null), 2000)
+  }
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true)
+    } else if (e.type === 'dragleave') {
+      setDragActive(false)
+    }
+  }
+
   const uploadFiles = async (files: FileList) => {
     setUploading(true)
 
     try {
-      const newImages: ArticleGalleryImage[] = []
+      const newMedia: ArticleGalleryImage[] = []
       const maxSortOrder = gallery.length > 0
         ? Math.max(...gallery.map(img => img.sort_order))
         : -1
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
-        const error = validateFile(file)
-        if (error) {
-          toast.error(`${file.name}: ${error}`)
+        const validation = validateFile(file)
+
+        if (!validation.valid) {
+          toast.error(`${file.name}: ${validation.error}`)
           continue
         }
 
-        const resizedBlob = await resizeImage(file)
+        let mediaUrl: string
+        let thumbnailUrl: string | null = null
+        let duration: number | null = null
         const timestamp = Date.now()
-        const fileName = `${articleId}/gallery-${timestamp}-${i}.webp`
 
-        const { error: uploadError } = await supabase.storage
-          .from('article-images')
-          .upload(fileName, resizedBlob, {
-            contentType: 'image/webp'
-          })
+        if (validation.type === 'image') {
+          // Upload obrázku
+          const resizedBlob = await resizeImage(file)
+          const fileName = `${articleId}/gallery-${timestamp}-${i}.webp`
 
-        if (uploadError) {
-          toast.error(`Chyba při nahrávání ${file.name}`)
-          continue
+          const { error: uploadError } = await supabase.storage
+            .from('article-images')
+            .upload(fileName, resizedBlob, {
+              contentType: 'image/webp'
+            })
+
+          if (uploadError) {
+            toast.error(`Chyba při nahrávání ${file.name}`)
+            continue
+          }
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('article-images')
+            .getPublicUrl(fileName)
+
+          mediaUrl = publicUrl
+        } else {
+          // Upload videa
+          const extension = file.type === 'video/mp4' ? 'mp4' : 'webm'
+          const videoFileName = `${articleId}/video-${timestamp}-${i}.${extension}`
+
+          const { error: uploadError } = await supabase.storage
+            .from('article-videos')
+            .upload(videoFileName, file, {
+              contentType: file.type
+            })
+
+          if (uploadError) {
+            toast.error(`Chyba při nahrávání ${file.name}`)
+            continue
+          }
+
+          const { data: { publicUrl: videoPublicUrl } } = supabase.storage
+            .from('article-videos')
+            .getPublicUrl(videoFileName)
+
+          mediaUrl = videoPublicUrl
+
+          // Generovat a nahrát thumbnail
+          try {
+            const thumbnailBlob = await generateVideoThumbnail(file)
+            const thumbnailFileName = `${articleId}/thumb-${timestamp}-${i}.webp`
+
+            await supabase.storage
+              .from('article-images')
+              .upload(thumbnailFileName, thumbnailBlob, {
+                contentType: 'image/webp'
+              })
+
+            const { data: { publicUrl: thumbUrl } } = supabase.storage
+              .from('article-images')
+              .getPublicUrl(thumbnailFileName)
+
+            thumbnailUrl = thumbUrl
+          } catch (thumbError) {
+            console.warn('Failed to generate thumbnail:', thumbError)
+          }
+
+          // Získat délku videa
+          try {
+            duration = await getVideoDuration(file)
+          } catch (durationError) {
+            console.warn('Failed to get video duration:', durationError)
+          }
         }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('article-images')
-          .getPublicUrl(fileName)
-
-        // Add to gallery in database
+        // Přidat do galerie v databázi
         const response = await fetch(`/api/admin/articles/${articleId}/gallery`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            image_url: publicUrl,
+            image_url: mediaUrl,
+            thumbnail_url: thumbnailUrl,
+            media_type: validation.type,
+            duration: duration,
+            file_size: file.size,
             sort_order: maxSortOrder + 1 + i
           })
         })
@@ -153,13 +295,18 @@ export function ArticleGalleryUpload({
         const data = await response.json()
 
         if (response.ok && data.image) {
-          newImages.push(data.image)
+          newMedia.push(data.image)
         }
       }
 
-      if (newImages.length > 0) {
-        onGalleryChange([...gallery, ...newImages])
-        toast.success(`Nahráno ${newImages.length} obrázků`)
+      if (newMedia.length > 0) {
+        onGalleryChange([...gallery, ...newMedia])
+        const imageCount = newMedia.filter(m => m.media_type === 'image').length
+        const videoCount = newMedia.filter(m => m.media_type === 'video').length
+        const parts = []
+        if (imageCount > 0) parts.push(`${imageCount} obrázků`)
+        if (videoCount > 0) parts.push(`${videoCount} videí`)
+        toast.success(`Nahráno ${parts.join(' a ')}`)
       }
     } catch (error) {
       console.error('Upload error:', error)
@@ -185,27 +332,27 @@ export function ArticleGalleryUpload({
     }
   }
 
-  const handleDeleteImage = async (imageId: string) => {
+  const handleDeleteMedia = async (mediaId: string) => {
     try {
-      const response = await fetch(`/api/admin/article-gallery/${imageId}`, {
+      const response = await fetch(`/api/admin/article-gallery/${mediaId}`, {
         method: 'DELETE'
       })
 
       if (response.ok) {
-        onGalleryChange(gallery.filter(img => img.id !== imageId))
-        toast.success('Obrázek byl smazán')
+        onGalleryChange(gallery.filter(m => m.id !== mediaId))
+        toast.success('Položka byla smazána')
       } else {
-        toast.error('Nepodařilo se smazat obrázek')
+        toast.error('Nepodařilo se smazat položku')
       }
     } catch (error) {
       console.error('Delete error:', error)
-      toast.error('Nepodařilo se smazat obrázek')
+      toast.error('Nepodařilo se smazat položku')
     }
   }
 
-  const handleCaptionChange = async (imageId: string, caption: string) => {
-    const updatedGallery = gallery.map(img =>
-      img.id === imageId ? { ...img, caption } : img
+  const handleCaptionChange = async (mediaId: string, caption: string) => {
+    const updatedGallery = gallery.map(m =>
+      m.id === mediaId ? { ...m, caption } : m
     )
     onGalleryChange(updatedGallery)
   }
@@ -218,10 +365,10 @@ export function ArticleGalleryUpload({
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          images: gallery.map(img => ({
-            id: img.id,
-            caption: img.caption,
-            sort_order: img.sort_order
+          images: gallery.map(m => ({
+            id: m.id,
+            caption: m.caption,
+            sort_order: m.sort_order
           }))
         })
       })
@@ -232,14 +379,14 @@ export function ArticleGalleryUpload({
     setEditingCaption(null)
   }
 
-  const moveImage = async (fromIndex: number, toIndex: number) => {
-    const newGallery = [...gallery]
-    const [movedImage] = newGallery.splice(fromIndex, 1)
-    newGallery.splice(toIndex, 0, movedImage)
+  const moveMedia = async (fromIndex: number, toIndex: number) => {
+    const sortedGallery = [...gallery].sort((a, b) => a.sort_order - b.sort_order)
+    const [movedItem] = sortedGallery.splice(fromIndex, 1)
+    sortedGallery.splice(toIndex, 0, movedItem)
 
     // Update sort_order
-    const updatedGallery = newGallery.map((img, index) => ({
-      ...img,
+    const updatedGallery = sortedGallery.map((m, index) => ({
+      ...m,
       sort_order: index
     }))
 
@@ -251,10 +398,10 @@ export function ArticleGalleryUpload({
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          images: updatedGallery.map(img => ({
-            id: img.id,
-            caption: img.caption,
-            sort_order: img.sort_order
+          images: updatedGallery.map(m => ({
+            id: m.id,
+            caption: m.caption,
+            sort_order: m.sort_order
           }))
         })
       })
@@ -263,22 +410,46 @@ export function ArticleGalleryUpload({
     }
   }
 
+  const sortedGallery = [...gallery].sort((a, b) => a.sort_order - b.sort_order)
+
   return (
     <div className="space-y-4">
       {/* Existing gallery */}
-      {gallery.length > 0 && (
+      {sortedGallery.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {gallery.sort((a, b) => a.sort_order - b.sort_order).map((image, index) => (
+          {sortedGallery.map((media, index) => (
             <div
-              key={image.id}
+              key={media.id}
               className="relative group border rounded-lg overflow-hidden bg-gray-50"
             >
-              <div className="aspect-square">
-                <img
-                  src={image.image_url}
-                  alt={image.caption || `Obrázek ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
+              <div className="aspect-square relative">
+                {media.media_type === 'video' ? (
+                  <>
+                    <img
+                      src={media.thumbnail_url || '/video-placeholder.png'}
+                      alt={media.caption || `Video ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Video indicator */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center">
+                        <Play className="w-6 h-6 text-white ml-1" />
+                      </div>
+                    </div>
+                    {/* Duration badge */}
+                    {media.duration && (
+                      <span className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        {formatDuration(media.duration)}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <img
+                    src={media.image_url}
+                    alt={media.caption || `Obrázek ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </div>
 
               {/* Controls overlay */}
@@ -289,7 +460,7 @@ export function ArticleGalleryUpload({
                       type="button"
                       size="sm"
                       variant="secondary"
-                      onClick={() => moveImage(index, index - 1)}
+                      onClick={() => moveMedia(index, index - 1)}
                     >
                       ←
                     </Button>
@@ -298,10 +469,10 @@ export function ArticleGalleryUpload({
                     type="button"
                     size="sm"
                     variant="secondary"
-                    onClick={() => copyMarkdown(image)}
+                    onClick={() => copyMarkdown(media)}
                     title="Kopírovat Markdown pro vložení do textu"
                   >
-                    {copiedId === image.id ? (
+                    {copiedId === media.id ? (
                       <Check className="h-4 w-4 text-green-500" />
                     ) : (
                       <Copy className="h-4 w-4" />
@@ -311,22 +482,25 @@ export function ArticleGalleryUpload({
                     type="button"
                     size="sm"
                     variant="destructive"
-                    onClick={() => handleDeleteImage(image.id)}
+                    onClick={() => handleDeleteMedia(media.id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                  {index < gallery.length - 1 && (
+                  {index < sortedGallery.length - 1 && (
                     <Button
                       type="button"
                       size="sm"
                       variant="secondary"
-                      onClick={() => moveImage(index, index + 1)}
+                      onClick={() => moveMedia(index, index + 1)}
                     >
                       →
                     </Button>
                   )}
                 </div>
-                <p className="text-xs text-white/80">Klikni na kopírovat pro vložení do textu</p>
+                <p className="text-xs text-white/80">
+                  {media.media_type === 'video' ? 'Video' : 'Obrázek'}
+                  {media.file_size && ` • ${formatFileSize(media.file_size)}`}
+                </p>
               </div>
 
               {/* Caption input */}
@@ -334,9 +508,9 @@ export function ArticleGalleryUpload({
                 <Input
                   type="text"
                   placeholder="Popisek..."
-                  value={image.caption || ''}
-                  onChange={(e) => handleCaptionChange(image.id, e.target.value)}
-                  onFocus={() => setEditingCaption(image.id)}
+                  value={media.caption || ''}
+                  onChange={(e) => handleCaptionChange(media.id, e.target.value)}
+                  onFocus={() => setEditingCaption(media.id)}
                   onBlur={handleCaptionBlur}
                   className="text-xs"
                 />
@@ -366,13 +540,13 @@ export function ArticleGalleryUpload({
           )}
           <div>
             <p className="text-sm font-medium">
-              {uploading ? 'Nahrávám...' : 'Přetáhněte obrázky sem'}
+              {uploading ? 'Nahrávám...' : 'Přetáhněte obrázky nebo videa sem'}
             </p>
             <p className="text-xs text-gray-500">
-              PNG, JPG nebo WebP • Max 5MB • Automaticky optimalizováno
+              Obrázky: PNG, JPG, WebP (max 5MB) • Videa: MP4, WebM (max 100MB)
             </p>
             <p className="text-xs text-gray-400 mt-1">
-              Doporučeno: 1200×800 px (poměr 3:2) nebo 1200×675 px (16:9)
+              Obrázky budou automaticky optimalizovány
             </p>
           </div>
           <Button
@@ -388,7 +562,7 @@ export function ArticleGalleryUpload({
         <input
           ref={inputRef}
           type="file"
-          accept="image/png,image/jpeg,image/webp"
+          accept="image/png,image/jpeg,image/webp,video/mp4,video/webm"
           multiple
           onChange={handleChange}
           className="hidden"
@@ -397,7 +571,7 @@ export function ArticleGalleryUpload({
 
       {gallery.length === 0 && (
         <p className="text-sm text-gray-500 text-center">
-          Zatím žádné obrázky v galerii
+          Zatím žádná média v galerii
         </p>
       )}
     </div>
