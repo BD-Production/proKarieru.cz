@@ -81,6 +81,9 @@ export function ArticleContent({ content }: ArticleContentProps) {
   // [text] (url) -> [text](url)
   normalizedContent = normalizedContent.replace(/\]\s+\(/g, '](')
 
+  // Fix links without protocol: [text](www.example.com) -> [text](https://www.example.com)
+  normalizedContent = normalizedContent.replace(/\]\(www\./g, '](https://www.')
+
   // Split into lines, trim and filter empty
   const lines = normalizedContent
     .split('\n')
@@ -93,7 +96,7 @@ export function ArticleContent({ content }: ArticleContentProps) {
   const parts = processCustomEmbeds(normalizedContent)
 
   return (
-    <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mb-6 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_p]:mb-6 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_ol]:space-y-2 [&_li]:text-gray-700">
+    <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mb-6 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_p]:mb-6 [&>*:first-child_p:first-of-type]:italic [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_ol]:space-y-2 [&_li]:text-gray-900">
       {parts.map((part, index) => {
         if (typeof part === 'string') {
           return (
