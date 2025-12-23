@@ -73,20 +73,27 @@ function processCustomEmbeds(content: string): ContentPart[] {
 
 export function ArticleContent({ content }: ArticleContentProps) {
   // Normalize line endings and ensure proper paragraph breaks
-  const lines = content
+  let normalizedContent = content
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
+
+  // Fix common Markdown mistakes: spaces between ] and ( in links
+  // [text] (url) -> [text](url)
+  normalizedContent = normalizedContent.replace(/\]\s+\(/g, '](')
+
+  // Split into lines, trim and filter empty
+  const lines = normalizedContent
     .split('\n')
     .map(line => line.trim())
     .filter(line => line.length > 0)
 
   // Join with double newlines for proper paragraph separation
-  const normalizedContent = lines.join('\n\n')
+  normalizedContent = lines.join('\n\n')
 
   const parts = processCustomEmbeds(normalizedContent)
 
   return (
-    <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_p]:mb-8">
+    <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mb-6 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_p]:mb-6 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_ol]:space-y-2 [&_li]:text-gray-700">
       {parts.map((part, index) => {
         if (typeof part === 'string') {
           return (
