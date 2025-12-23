@@ -2,7 +2,7 @@
 
 Dulezite informace k zapamatovani mezi sessions.
 
-**Posledni aktualizace:** 2025-12-16
+**Posledni aktualizace:** 2025-12-23
 
 ---
 
@@ -35,8 +35,8 @@ Dulezite informace k zapamatovani mezi sessions.
 
 ## Aktualni stav
 
-**Stav:** AKTIVNI VYVOJ - MVP skoro hotove
-**Datum posledni aktualizace:** 2025-12-16
+**Stav:** AKTIVNI VYVOJ - MVP 95% hotove
+**Datum posledni aktualizace:** 2025-12-23
 
 ### Co je hotove:
 - Kompletni infrastruktura (Next.js, Supabase, middleware)
@@ -46,20 +46,31 @@ Dulezite informace k zapamatovani mezi sessions.
 - Search v katalogu (FUNGUJE!)
 - Prepinani edici (FUNGUJE!)
 - Carousel stranek (FUNGUJE - BrochureCarousel)
-- **NOVE (2025-12-16): Blog/Clanky system**
+- Blog/Clanky system (DOKONCENO 2025-12-16)
+- **NOVE (2025-12-23): Video podpora v clancich**
+- **NOVE (2025-12-23): Opravy Markdown renderovani**
 
-### Posledni implementace - Blog/Clanky (2025-12-16):
-- 4 nove DB tabulky: `article_tags`, `articles`, `article_gallery`, `article_tag_relations`
-- Storage bucket `article-images`
-- Admin: `/admin/articles` (seznam, new, edit, tags)
-- Frontend: `/clanky`, `/clanky/[slug]`
-- Komponenty: ArticleContent (Markdown + YouTube), ArticleGallery (lightbox)
-- **STAV:** Kod hotovy, ceka na DB migraci
+### Posledni implementace - Video + Markdown opravy (2025-12-23):
+
+#### Video podpora:
+- SQL migrace pro `article_gallery` (media_type, thumbnail_url, duration, file_size)
+- Novy storage bucket `article-videos`
+- Nova komponenta `VideoPlayer.tsx`
+- Uprava `ArticleGalleryUpload.tsx` - nahravani videi (MP4, WebM, max 100MB)
+- Uprava `ArticleContent.tsx` - syntaxe `::video[URL]`
+- Uprava `ArticleGallery.tsx` - zobrazeni videi s Play ikonou
+
+#### Markdown opravy:
+- H1 nadpis - margin-bottom
+- Seznamy - bullet points (disc/decimal)
+- Odkazy bez protokolu - automaticka oprava
+- Odkazy s mezerou - automaticka oprava
+- Text v seznamech - cerna barva
+- Perex - kurziva
 
 ### Dalsi kroky:
-1. Spustit SQL migraci `add_articles.sql` v Supabase Dashboard
-2. Otestovat funkcnost lokalne
-3. Deploy na Vercel
+1. Testovani funkcnosti
+2. Deploy na Vercel
 
 ---
 
@@ -124,18 +135,22 @@ D:\dev\proKarieru.cz\
 
 ## Poznámky pro další session
 
-### DULEZITE - Stav k 2025-12-16:
-- MVP je prakticky HOTOVY (katalog, search, edice, carousel, CLANKY)
-- Blog/Clanky system IMPLEMENTOVAN - ceka na DB migraci
+### DULEZITE - Stav k 2025-12-23:
+- MVP je na 95% (katalog, search, edice, carousel, CLANKY, VIDEO PODPORA)
+- Blog/Clanky system DOKONCEN vcetne video podpory
+- Markdown renderovani opraveno a vylepseno
 - Fair data z DB zustava jako budouci ukol (Faze 2)
 
 ### Klicove soubory pro Blog/Clanky:
-1. `supabase/migrations/add_articles.sql` - DB migrace (SPUSTIT!)
-2. `src/types/database.ts` - TypeScript typy (Article*, ArticleTag*, atd.)
-3. `src/app/admin/articles/` - Admin CRUD pro clanky
-4. `src/app/clanky/` - Frontend stranky
-5. `src/components/ArticleContent.tsx` - Markdown rendering
-6. `src/components/ArticleGallery.tsx` - Lightbox galerie
+1. `supabase/migrations/add_articles.sql` - DB migrace (zakladni tabulky)
+2. SQL migrace pro video rozsireni `article_gallery` (media_type, thumbnail_url, duration, file_size)
+3. `src/types/database.ts` - TypeScript typy (Article*, ArticleTag*, atd.)
+4. `src/app/admin/articles/` - Admin CRUD pro clanky
+5. `src/app/clanky/` - Frontend stranky
+6. `src/components/ArticleContent.tsx` - Markdown + YouTube + Video rendering
+7. `src/components/ArticleGallery.tsx` - Lightbox galerie (obrazky + videa)
+8. `src/components/VideoPlayer.tsx` - HTML5 video prehravac (NOVE)
+9. `src/components/admin/ArticleGalleryUpload.tsx` - Upload obrazku a videi
 
 ### API Endpointy pro clanky:
 **Public:**
@@ -145,7 +160,11 @@ D:\dev\proKarieru.cz\
 **Admin:**
 - `/api/admin/articles` - CRUD clanku
 - `/api/admin/article-tags` - CRUD tagu
-- `/api/admin/article-gallery` - sprava galerie
+- `/api/admin/article-gallery` - sprava galerie (obrazky + videa)
+
+### Markdown syntaxe v clancich:
+- `::youtube[VIDEO_ID]` - YouTube embed
+- `::video[URL]` - Video z galerie nebo externi URL (NOVE)
 
 ### Tech Stack:
 - Next.js 16 + React 19

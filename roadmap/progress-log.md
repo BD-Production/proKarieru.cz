@@ -4,6 +4,56 @@ Chronologicky zaznam vsech provedenych praci.
 
 ---
 
+## 2025-12-23
+
+### Implementace nahravani videi do clanku
+
+Rozsireni blogoveho systemu o podporu video obsahu.
+
+#### 1. Databazove zmeny
+- SQL migrace pro rozsireni tabulky `article_gallery`:
+  - `media_type` - rozliseni obrazek/video
+  - `thumbnail_url` - nahledovy obrazek pro videa
+  - `duration` - delka videa v sekundach
+  - `file_size` - velikost souboru v bytech
+- Novy storage bucket `article-videos` pro Supabase
+
+#### 2. Nova komponenta VideoPlayer
+- `src/components/VideoPlayer.tsx`
+- HTML5 video prehravac s vlastnimi ovladacimi prvky
+- Podpora MP4 a WebM formatu
+
+#### 3. Upravene komponenty
+- `ArticleGalleryUpload.tsx` - rozsireno o nahravani videi (MP4, WebM, max 100MB)
+- `ArticleContent.tsx` - nova Markdown syntaxe `::video[URL]` pro vlozeni videa
+- `ArticleGallery.tsx` - zobrazeni videi v galerii s Play ikonou a delkou
+
+#### 4. API zmeny
+- Aktualizace galerie API endpointu pro podporu video metadat
+
+---
+
+### Opravy Markdown renderovani v clancich
+
+Vylepseni vizualniho zobrazeni Markdown obsahu.
+
+#### Provedene opravy:
+1. **H1 nadpis** - pridan margin-bottom pro lepsi vizualni oddeleni
+2. **Seznamy** - pridany bullet points (disc pro ul, decimal pro ol)
+3. **Odkazy bez protokolu** - automaticka oprava:
+   - `[text](www.example.com)` se prevede na `[text](https://www.example.com)`
+4. **Odkazy s mezerou** - automaticka oprava:
+   - `[text] (url)` se prevede na `[text](url)`
+5. **Text v seznamech** - zmena barvy na cernou (gray-900) pro lepsi citelnost
+6. **Perex** - prvni odstavec clanku nyni zobrazen kurzivou pro vizualni odliseni
+
+#### Technicka implementace:
+- Vsechny zmeny v `src/components/ArticleContent.tsx`
+- Pouziti custom renderers pro react-markdown
+- Preprocessing Markdown textu pred renderovanim
+
+---
+
 ## 2025-12-16
 
 ### Implementace Blog/Clanky systemu

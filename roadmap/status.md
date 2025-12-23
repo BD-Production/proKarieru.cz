@@ -1,26 +1,49 @@
 # proKarieru - Status projektu
 
-**Posledni aktualizace:** 2025-12-16
+**Posledni aktualizace:** 2025-12-23
 
 ---
 
 ## Aktualni stav: AKTIVNI VYVOJ
 
-Projekt je v pokrocile fazi implementace (~80% MVP). Prave byla dokoncena implementace blogove sekce (clanky).
+Projekt je v pokrocile fazi implementace (~85% MVP). Prave byly dokonceny vylepseni pro clanky - podpora videi a opravy Markdown renderovani.
 
 ---
 
-## Posledni dokoncena feature: Blog/Clanky (2025-12-16)
+## Posledni dokoncene prace: Video podpora + Markdown opravy (2025-12-23)
+
+### 1. Implementace nahravani videi do clanku
+- SQL migrace pro rozsireni tabulky `article_gallery` (media_type, thumbnail_url, duration, file_size)
+- Novy storage bucket `article-videos` pro Supabase
+- Nova komponenta `VideoPlayer.tsx` - HTML5 prehravac s vlastnimi ovladacimi prvky
+- Uprava `ArticleGalleryUpload.tsx` - podpora nahravani videi (MP4, WebM, max 100MB)
+- Uprava `ArticleContent.tsx` - podpora syntaxe `::video[URL]` v Markdown
+- Uprava `ArticleGallery.tsx` - zobrazeni videi v galerii s Play ikonou a delkou
+- Uprava API endpointu pro galerii
+
+### 2. Opravy Markdown renderovani
+- H1 nadpis - pridan margin-bottom
+- Seznamy - pridany bullet points (disc/decimal)
+- Odkazy bez protokolu - automaticka oprava `[text](www.example.com)` na `[text](https://www.example.com)`
+- Odkazy s mezerou - automaticka oprava `[text] (url)` na `[text](url)`
+- Text v seznamech - zmenen na cernou barvu (gray-900)
+- Perex (prvni odstavec) - pridana kurziva
+
+**Stav:** Kod hotovy, pripraveno k testovani
+
+---
+
+## Predchozi dokoncena feature: Blog/Clanky (2025-12-16)
 
 Kompletni blogovy system pro portaly:
-- 4 nove DB tabulky: `article_tags`, `articles`, `article_gallery`, `article_tag_relations`
+- 4 DB tabulky: `article_tags`, `articles`, `article_gallery`, `article_tag_relations`
 - Storage bucket `article-images`
 - Admin CRUD pro clanky a tagy
 - Public stranky `/clanky` a `/clanky/[slug]`
 - Markdown obsah s YouTube embed podporou
 - Galerie s lightboxem
 
-**Stav:** Kod hotovy, ceka na DB migraci a testovani
+**Stav:** DOKONCENO
 
 ---
 

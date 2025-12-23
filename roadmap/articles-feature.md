@@ -1,7 +1,8 @@
 # Blog/Clanky - Dokumentace feature
 
 **Datum implementace:** 2025-12-16
-**Stav:** Kod hotovy, ceka na DB migraci
+**Posledni aktualizace:** 2025-12-23
+**Stav:** DOKONCENO
 
 ---
 
@@ -9,8 +10,9 @@
 
 Blogovy system umoznuje spravovat clanky pro kazdy portal zvlast. Clanky podporuji:
 - Markdown obsah s GitHub Flavored Markdown
-- YouTube video embed
-- Galerii obrazku s lightboxem
+- YouTube video embed (`::youtube[VIDEO_ID]`)
+- Video embed z galerie (`::video[URL]`)
+- Galerii obrazku a videi s lightboxem
 - Tagovani (per portal)
 - SEO a OpenGraph metadata
 
@@ -52,14 +54,19 @@ CREATE TABLE articles (
   UNIQUE(portal_id, slug)
 );
 
--- article_gallery: Galerie obrazku k clanku
+-- article_gallery: Galerie obrazku a videi k clanku
 CREATE TABLE article_gallery (
   id UUID PRIMARY KEY,
   article_id UUID REFERENCES articles(id),
   image_url TEXT NOT NULL,
   caption VARCHAR(255),
   sort_order INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ
+  created_at TIMESTAMPTZ,
+  -- Nove sloupce pro video podporu (2025-12-23):
+  media_type VARCHAR(10) DEFAULT 'image',  -- 'image' nebo 'video'
+  thumbnail_url TEXT,                       -- nahledovy obrazek pro videa
+  duration INTEGER,                         -- delka videa v sekundach
+  file_size BIGINT                          -- velikost souboru v bytech
 );
 
 -- article_tag_relations: M:N vazba
@@ -79,6 +86,7 @@ Obsahuje:
 - 7 indexu pro vykon
 - RLS policies (public read, admin full access)
 - Storage bucket `article-images`
+- Storage bucket `article-videos` (pridano 2025-12-23)
 
 ---
 
@@ -145,12 +153,13 @@ src/app/clanky/
 
 ```
 src/components/
-  ArticleContent.tsx       # Markdown rendering + YouTube embed
-  ArticleGallery.tsx       # Lightbox galerie
+  ArticleContent.tsx       # Markdown rendering + YouTube/Video embed
+  ArticleGallery.tsx       # Lightbox galerie (obrazky + videa)
   ArticlesSection.tsx      # Sekce clanku pro homepage
+  VideoPlayer.tsx          # HTML5 video prehravac (pridano 2025-12-23)
   admin/
     ArticleImageUpload.tsx   # Upload hlavniho obrazku
-    ArticleGalleryUpload.tsx # Sprava galerie (drag&drop, caption)
+    ArticleGalleryUpload.tsx # Sprava galerie (obrazky + videa)
 ```
 
 ### API Routes
@@ -268,15 +277,32 @@ Napriklad:
 ::youtube[dQw4w9WgXcQ]
 ```
 
+### Video embed (pridano 2025-12-23)
+
+Specialni syntax pro vlozeni videa z galerie nebo externiho zdroje:
+
+```markdown
+::video[URL]
+```
+
+Napriklad:
+```markdown
+::video[https://example.supabase.co/storage/v1/object/public/article-videos/video.mp4]
+```
+
+Pouziva komponentu VideoPlayer s vlastnimi ovladacimi prvky.
+
 ### Galerie
 
-- Drag&drop upload obrazku
+- Drag&drop upload obrazku a videi (MP4, WebM do 100MB)
 - Editace popisku (caption)
 - Razeni pretazenim
+- Zobrazeni videi s Play ikonou a delkou
 - Lightbox zobrazeni s:
   - Klavesnicova navigace (sipky, Escape)
   - Swipe gesta na mobilu
   - Zoom
+  - Video prehravani
 
 ### SEO a OpenGraph
 
@@ -304,21 +330,22 @@ Pokud OG pole nejsou vyplnena, pouzije se:
 
 ---
 
-## Dalsi kroky
+## Markdown rendering opravy (2025-12-23)
 
-1. **Spustit DB migraci:**
-   - Otevrit Supabase Dashboard
-   - SQL Editor
-   - Vlozit a spustit obsah `add_articles.sql`
+Implementovane opravy a vylepseni Markdown renderovani:
 
-2. **Otestovat lokalne:**
-   - Vytvorit testovaci tag
-   - Vytvorit testovaci clanek
-   - Overit zobrazeni na frontendu
+1. **H1 nadpis** - pridan margin-bottom pro vizualni oddeleni
+2. **Seznamy** - pridany bullet points:
+   - `ul` pouziva `list-disc`
+   - `ol` pouziva `list-decimal`
+3. **Odkazy bez protokolu** - automaticka oprava:
+   - `[text](www.example.com)` -> `[text](https://www.example.com)`
+4. **Odkazy s mezerou** - automaticka oprava:
+   - `[text] (url)` -> `[text](url)`
+5. **Text v seznamech** - zmena barvy na `text-gray-900` pro lepsi citelnost
+6. **Perex** - prvni odstavec zobrazen kurzivou pro vizualni odliseni
 
-3. **Deploy:**
-   - Push na GitHub
-   - Vercel automaticky deployuje
+Implementace: preprocessing Markdown textu + custom renderers v react-markdown.
 
 ---
 

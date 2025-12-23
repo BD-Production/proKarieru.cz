@@ -2,11 +2,11 @@
 
 Prehled hlavnich milniku a jejich stavu.
 
-**Posledni aktualizace:** 2025-12-16
+**Posledni aktualizace:** 2025-12-23
 
 ---
 
-## Faze 1 - MVP (Katalog firem + Blog) - 85% DOKONCENO
+## Faze 1 - MVP (Katalog firem + Blog) - 95% DOKONCENO
 
 **Cil:** Funkcni katalog firem a blog na prostavare.cz s admin rozhranim.
 
@@ -24,11 +24,13 @@ Prehled hlavnich milniku a jejich stavu.
 | 10 | Detail firmy (carousel stranek) | DOKONCENO | BrochureCarousel komponenta |
 | 11 | Prepinac edici | DOKONCENO | URL parametry, filtry |
 | 12 | Landing page prokarieru.cz | DOKONCENO | Plne funkcni |
-| 13 | Blog/Clanky - DB schema | DOKONCENO | 4 tabulky, migrace pripravena |
-| 14 | Blog/Clanky - Admin CRUD | DOKONCENO | Clanky + tagy + galerie |
+| 13 | Blog/Clanky - DB schema | DOKONCENO | 4 tabulky + video rozsireni |
+| 14 | Blog/Clanky - Admin CRUD | DOKONCENO | Clanky + tagy + galerie + videa |
 | 15 | Blog/Clanky - Frontend | DOKONCENO | Seznam + detail + homepage sekce |
+| 16 | Blog/Clanky - Video podpora | DOKONCENO | VideoPlayer, upload, ::video[] syntax |
+| 17 | Blog/Clanky - Markdown opravy | DOKONCENO | H1, seznamy, odkazy, perex kurziva |
 
-**Zbyva:** Spustit DB migraci pro clanky, otestovat, deploy
+**Zbyva:** Testovani, deploy
 
 ---
 
@@ -81,13 +83,13 @@ Prehled hlavnich milniku a jejich stavu.
 
 | Faze | Dokonceno | Celkem | Procenta |
 |------|-----------|--------|----------|
-| Faze 1 - MVP + Blog | 15 | 15 | 100%* |
+| Faze 1 - MVP + Blog | 17 | 17 | 100% |
 | Faze 2 - Veletrh | 0 | 8 | 0% |
 | Faze 3 - Polish | 0 | 5 | 0% |
 | Faze 4 - Budoucnost | 0 | 3 | 0% |
-| **Celkem** | **15** | **31** | **48%** |
+| **Celkem** | **17** | **33** | **52%** |
 
-*Pozn: Kod hotovy, ceka na spusteni DB migrace a testovani
+*Pozn: Faze 1 kod kompletni, pripraveno k testovani a deploy
 
 ---
 
